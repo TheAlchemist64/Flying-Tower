@@ -21,5 +21,12 @@
   "bugs": {
     "url": "https://github.com/TheAlchemist64/Shrouded-Tower/issues"
   },
-  "homepage": "https://github.com/TheAlchemist64/Shrouded-Tower#readme"
+  "homepage": "https://github.com/TheAlchemist64/Shrouded-Tower#readme",
+  "devDependencies": {
+    "babel-preset-env": "^1.5.2",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8"
+  }
 }
