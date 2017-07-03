@@ -1,0 +1,25 @@
+{
+  "name": "shrouded-tower",
+  "version": "0.1.0",
+  "description": "\u0016Open source roguelike that uses ES6 features",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheAlchemist64/Shrouded-Tower.git"
+  },
+  "keywords": [
+    "javascript",
+    "es6-javascript",
+    "rougelike",
+    "dungeon-crawler"
+  ],
+  "author": "TheAlchemist64",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/TheAlchemist64/Shrouded-Tower/issues"
+  },
+  "homepage": "https://github.com/TheAlchemist64/Shrouded-Tower#readme"
+}
