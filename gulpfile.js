@@ -1,13 +1,8 @@
-/**
-* Gulpfile to make my life easier.
-*/
-
 var gulp = require('gulp');
 var browserify = require('browserify');
 var gutil = require('gulp-util');
 var source = require('vinyl-source-stream');
 
-// Lets bring es6 to es5 with this.
 // Babel - converts ES6 code to ES5 - however it doesn't handle imports.
 // Browserify - crawls your code for dependencies and packages them up 
 // into one file. can have plugins.
