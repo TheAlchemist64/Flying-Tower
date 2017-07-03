@@ -4,6 +4,7 @@
   "description": "\u0016Open source roguelike that uses ES6 features",
   "main": "index.html",
   "scripts": {
+    "gulp": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,6 +28,7 @@
     "babelify": "^7.3.0",
     "browserify": "^14.4.0",
     "gulp": "^3.9.1",
-    "gulp-util": "^3.0.8"
+    "gulp-util": "^3.0.8",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
