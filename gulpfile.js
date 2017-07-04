@@ -10,7 +10,7 @@ var source = require('vinyl-source-stream');
 // handle es6 including imports.
 gulp.task('bundle', function() {
 	browserify({
-    	entries: './scripts/game.js',
+    	entries: './assets/game.js',
     	debug: true
   	})
     .transform('babelify',{presets: ['env']})
@@ -22,7 +22,7 @@ gulp.task('bundle', function() {
 });
 
 gulp.task('watch',function() {
-	gulp.watch('./scripts/*.js',['bundle'])
+	gulp.watch('./assets/*.js',['bundle'])
 });
  
 gulp.task('default', ['watch']);
