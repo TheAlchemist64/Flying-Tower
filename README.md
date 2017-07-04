@@ -3,7 +3,7 @@ Open source roguelike dungeon crawler that uses ES6 features
 ## Motivation
 - To learn ES6 features by practice
 - To create examples of how to use ES6 features, escpecially with JS games
-- To make and *finish* a complete game
+- To make and *finish* a roguelike game
 ## Special Thanks
 - [ondras](https://github.com/ondras) for the Rot.js library
 - Jean-Pierre Sierens, for his [tutorial](http://jpsierens.com/use-es6-right-now/).
