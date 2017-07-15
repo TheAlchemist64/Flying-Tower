@@ -1,4 +1,4 @@
-# Shrouded Tower
+# Flying Tower
 Open source roguelike dungeon crawler that uses ES6 features
 ## Motivation
 - To learn ES6 features by practice
