@@ -1,9 +1,9 @@
 import ROT from "../../vendor/rot"
+import Game from './game'
 
 if(!ROT.isSupported()){
 	alert("The rot.js library isn't supported by your browser.");
 }
 else{
-	var display = new ROT.Display({width: 50, height: 25});
-	document.body.appendChild(display.getContainer());
+	Game.init();
 }
