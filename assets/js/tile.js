@@ -1,4 +1,5 @@
 import Enum from './enum';
+import Game from './game';
 
 export let TileTypes = new Enum('EMPTY','FLOOR','WALL');
 
@@ -9,6 +10,6 @@ export class Tile {
 		this.chr = chr;
 	}
 	draw(){
-		
+		Game.display.draw(this.x, this.y, this.chr, '#fff');
 	}
 }
