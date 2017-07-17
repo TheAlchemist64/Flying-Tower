@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
 var gutil = require('gulp-util');
+var watch = require('gulp-watch');
 var source = require('vinyl-source-stream');
 
 // Babel - converts ES6 code to ES5 - however it doesn't handle imports.
@@ -22,7 +23,7 @@ gulp.task('bundle', function() {
 });
 
 gulp.task('watch',function() {
-	gulp.watch('./assets/*.js',['bundle'])
+	watch(['./assets','./assets/**/*.js','./assets/js/*.js'],{ignoreInitial: false}).pipe(gulp.dest('bundle'));
 });
  
-gulp.task('default', ['watch']);
+gulp.task('default', ['bundle','watch']);
