@@ -1,5 +1,5 @@
 {
-  "name": "shrouded-tower",
+  "name": "flying-tower",
   "version": "0.1.0",
   "description": "\u0016Open source roguelike that uses ES6 features",
   "main": "index.html",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheAlchemist64/Shrouded-Tower.git"
+    "url": "git+https://github.com/TheAlchemist64/Flying-Tower.git"
   },
   "keywords": [
     "javascript",
@@ -20,9 +20,9 @@
   "author": "TheAlchemist64",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/TheAlchemist64/Shrouded-Tower/issues"
+    "url": "https://github.com/TheAlchemist64/Flying-Tower/issues"
   },
-  "homepage": "https://github.com/TheAlchemist64/Shrouded-Tower#readme",
+  "homepage": "https://github.com/TheAlchemist64/Flying-Tower#readme",
   "devDependencies": {
     "babel-preset-env": "^1.5.2",
     "babelify": "^7.3.0",
