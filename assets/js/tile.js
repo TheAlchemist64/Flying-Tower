@@ -1,6 +1,6 @@
 import Enum from './enum';
 
-export var TileTypes = new Enum('EMPTY','FLOOR','WALL');
+export let TileTypes = new Enum('EMPTY','FLOOR','WALL');
 
 export class Tile {
 	constructor(x, y, chr){
