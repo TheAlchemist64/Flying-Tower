@@ -11,7 +11,7 @@ var source = require('vinyl-source-stream');
 // handle es6 including imports.
 gulp.task('bundle', function() {
 	browserify({
-    	entries: './assets/js/game.js',
+    	entries: './assets/js/app.js',
     	debug: true
   	})
     .transform('babelify',{presets: ['env']})
