@@ -1,4 +1,4 @@
-import Game from './game'
+import Game from './game';
 
 export class Being {
 	constructor(name, x, y){

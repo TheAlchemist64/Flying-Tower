@@ -11,6 +11,6 @@ export class Tile {
 		this.fg = fg;
 	}
 	draw(){
-		Game.display.draw(this.x, this.y, this.chr, this.fg || '#fff');
+		Game.display.draw(this.x, this.y, this.chr, this.fg || null);
 	}
 }
