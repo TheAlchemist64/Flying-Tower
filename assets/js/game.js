@@ -18,7 +18,7 @@ export default {
 		this.display = new ROT.Display({width: w, height: h});
 		document.body.appendChild(this.display.getContainer());
 		
-		this.map = new TileMap();
+		this.map = new TileMap(w, h);
 		
 		let generator = new ROT.Map.Arena(w,h);
 		generator.create((x, y, wall)=>{
