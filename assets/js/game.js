@@ -1,9 +1,9 @@
 import ROT from '../../vendor/rot';
-import { EventBus } from '../../vendor/eventbus.min';
+import EventBus from '../../vendor/eventbus.min';
 
 import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
-import { Actor } from './actor';
+import { Player } from './actor';
 import Glyph from './glyph';
 
 const w = 50;
@@ -31,7 +31,10 @@ export default {
 		
 		this.bus = EventBus;
 		
-		let a = new Actor('Player',4,4,new Glyph('@','#fff'));
+		this.bus.addEventListener('move',this.map.reset,this.map);
+		
+		let a = new Player('Player',4,4,new Glyph('@','#fff'));
 		a.draw();
+		window.addEventListener('keydown',a.handleEvent.bind(a));
 	}
 }
