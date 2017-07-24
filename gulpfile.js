@@ -3,7 +3,6 @@ var browserify = require('browserify');
 var gutil = require('gulp-util');
 var watch = require('gulp-watch');
 var source = require('vinyl-source-stream');
-var guppy = require('git-guppy')(gulp);
 
 // Babel - converts ES6 code to ES5 - however it doesn't handle imports.
 // Browserify - crawls your code for dependencies and packages them up 

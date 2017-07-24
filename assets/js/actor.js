@@ -1,7 +1,6 @@
-import ROT from '../../vendor/rot';
 import Game from './game';
 
-export class Actor {
+export default class Actor {
 	constructor(name, x, y, glyph){
 		this.name = name;
 		this.x = x;
@@ -23,27 +22,5 @@ export class Actor {
 		this.y = y;
 		//Dispatch event for graphical change
 		Game.bus.dispatch('move', this, cx, cy);
-	}
-}
-
-export class Player extends Actor{
-	handleEvent(e){
-		let code = e.keyCode;
-		let x = this.x;
-		let y = this.y;
-		switch(code){
-			case ROT.VK_UP:
-				super.move(x,y-1);
-				break;
-			case ROT.VK_RIGHT:
-				super.move(x+1,y);
-				break;
-			case ROT.VK_DOWN:
-				super.move(x,y+1);
-				break;
-			case ROT.VK_LEFT:
-				super.move(x-1,y);
-				break;
-		}
 	}
 }
