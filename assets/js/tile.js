@@ -1,4 +1,3 @@
-import Enum from './enum';
 import Glyph from './glyph';
 import Game from './game';
 
