@@ -15,16 +15,24 @@ export default class Actor {
 	}
 	move(x, y){
 		if(!Game.map.inBounds(x, y) || Game.map.get(x, y).type == 'wall'){
-			return;
+			return 0;
 		}
 		let collides = false;
+		let other = null;
 		Game.actors.forEach((actor)=>{
 			if(x==actor.x && y==actor.y){
 				collides = true;
+				other = actor;
 			}
 		});
 		if(collides){
-			return;
+			//Push actor
+			let dx = x - this.x;
+			let dy = y - this.y;
+			let mv = other.move(other.x+dx,other.y+dy);
+			if(!mv){
+				return 0;
+			}
 		}
 		//Capture current position
 		let cx = this.x;
@@ -34,5 +42,6 @@ export default class Actor {
 		this.y = y;
 		//Dispatch event for graphical change
 		Game.bus.dispatch('move', this, cx, cy);
+		return 1;
 	}
 }
