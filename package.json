@@ -27,14 +27,9 @@
     "babel-preset-env": "^1.5.2",
     "babelify": "^7.3.0",
     "browserify": "^14.4.0",
-    "git-guppy": "^2.1.0",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
-    "guppy-pre-push": "^0.2.1",
     "vinyl-source-stream": "^1.1.0"
   },
-  "dependencies": {
-    "guppy-cli": "^1.0.1"
-  }
 }

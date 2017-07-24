@@ -23,19 +23,6 @@ gulp.task('bundle', function() {
     .pipe(gulp.dest(''));
 });
 
-gulp.task('pre-push', guppy.src('pre-push', function(files, extra, cb){
-	browserify({
-    	entries: './assets/js/app.js',
-    	debug: true
-  	})
-    .transform('babelify',{presets: ['env']})
-    .on('error',cb)
-    .bundle()
-    .on('error',cb)
-    .pipe(source('bundle.js'))
-    .pipe(gulp.dest(''));
-}));
-
 gulp.task('watch',function() {
 	watch(['./assets','./assets/**/*.js','./assets/js/*.js'],{ignoreInitial: false}).pipe(gulp.dest('bundle'));
 });
