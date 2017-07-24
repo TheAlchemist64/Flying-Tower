@@ -13,6 +13,7 @@ export default {
 	display: null,
 	map: null,
 	bus: null,
+	player: null,
 	
 	init: function(){
 		this.display = new ROT.Display({width: w, height: h});
@@ -33,8 +34,8 @@ export default {
 		
 		this.bus.addEventListener('move',this.map.reset,this.map);
 		
-		let a = new Player('Player',4,4,new Glyph('@','#fff'));
-		a.draw();
-		window.addEventListener('keydown',a.handleEvent.bind(a));
+		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
+		this.player.draw();
+		window.addEventListener('keydown',this.player.handleEvent.bind(this.player));
 	}
 }
