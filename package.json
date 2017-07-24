@@ -33,5 +33,8 @@
     "gulp-watch": "^4.3.11",
     "guppy-pre-push": "^0.2.1",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "guppy-cli": "^1.0.1"
   }
 }
