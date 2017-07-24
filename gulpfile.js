@@ -18,7 +18,7 @@ gulp.task('bundle', function() {
     .on('error',gutil.log)
     .bundle()
     .on('error',gutil.log)
-    .pipe(source('bundle.js'))
+    .pipe(source('dist/bundle.js'))
     .pipe(gulp.dest(''));
 });
 
