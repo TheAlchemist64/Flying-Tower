@@ -12,6 +12,9 @@ export class Actor {
 		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
 	}
 	move(x, y){
+		if(!Game.map.inBounds(x, y) || Game.map.get(x, y).type == 'wall'){
+			return;
+		}
 		//Capture current position
 		let cx = this.x;
 		let cy = this.y;

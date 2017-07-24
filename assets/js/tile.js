@@ -3,15 +3,22 @@ import Glyph from './glyph';
 import Game from './game';
 
 export let TileTypes = {
-	WALL: new Glyph('#'),
-	FLOOR: new Glyph('.')
+	WALL: {
+		name: 'wall',
+		glyph: new Glyph('#')
+	},
+	FLOOR: {
+		name: 'floor',
+		glyph: new Glyph('.')
+	}
 }
 
 export class Tile {
-	constructor(x, y, glyph){
+	constructor(x, y, type){
 		this.x = x;
 		this.y = y;
-		this._glyph = glyph;
+		this.type = type.name;
+		this._glyph = type.glyph;
 	}
 	get glyph(){ return this._glyph; }
 	set glyph(glyph) { this._glyph = glyph; this.draw(); }
