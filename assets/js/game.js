@@ -3,7 +3,8 @@ import EventBus from '../../vendor/eventbus.min';
 
 import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
-import { Player } from './actor';
+import Actor from './actor';
+import Player from './actors/player';
 import Glyph from './glyph';
 
 const w = 50;
@@ -13,6 +14,10 @@ export default {
 	display: null,
 	map: null,
 	bus: null,
+	actors: [],
+	player: null,
+	scheduler: null,
+	engine: null,
 	
 	init: function(){
 		this.display = new ROT.Display({width: w, height: h});
@@ -33,8 +38,15 @@ export default {
 		
 		this.bus.addEventListener('move',this.map.reset,this.map);
 		
-		let a = new Player('Player',4,4,new Glyph('@','#fff'));
-		a.draw();
-		window.addEventListener('keydown',a.handleEvent.bind(a));
+		this.scheduler = new ROT.Scheduler.Simple();
+		this.engine = new ROT.Engine(this.scheduler);
+		
+		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
+		this.player.draw();
+		
+		let m = new Actor('Monster',8,8,new Glyph('m','#f00'));
+		m.draw();
+		
+		this.engine.start();
 	}
 }

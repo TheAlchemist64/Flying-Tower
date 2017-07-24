@@ -1,19 +1,38 @@
-import ROT from '../../vendor/rot';
 import Game from './game';
 
-export class Actor {
+export default class Actor {
 	constructor(name, x, y, glyph){
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		Game.actors.push(this);
+		Game.scheduler.add(this,true);
 	}
+	act(){}
 	draw(){
 		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
 	}
 	move(x, y){
 		if(!Game.map.inBounds(x, y) || Game.map.get(x, y).type == 'wall'){
-			return;
+			return 0;
+		}
+		let collides = false;
+		let other = null;
+		Game.actors.forEach((actor)=>{
+			if(x==actor.x && y==actor.y){
+				collides = true;
+				other = actor;
+			}
+		});
+		if(collides){
+			//Push actor
+			let dx = x - this.x;
+			let dy = y - this.y;
+			let mv = other.move(other.x+dx,other.y+dy);
+			if(!mv){
+				return 0;
+			}
 		}
 		//Capture current position
 		let cx = this.x;
@@ -23,27 +42,6 @@ export class Actor {
 		this.y = y;
 		//Dispatch event for graphical change
 		Game.bus.dispatch('move', this, cx, cy);
-	}
-}
-
-export class Player extends Actor{
-	handleEvent(e){
-		let code = e.keyCode;
-		let x = this.x;
-		let y = this.y;
-		switch(code){
-			case ROT.VK_UP:
-				super.move(x,y-1);
-				break;
-			case ROT.VK_RIGHT:
-				super.move(x+1,y);
-				break;
-			case ROT.VK_DOWN:
-				super.move(x,y+1);
-				break;
-			case ROT.VK_LEFT:
-				super.move(x-1,y);
-				break;
-		}
+		return 1;
 	}
 }
