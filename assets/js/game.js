@@ -36,7 +36,16 @@ export default {
 		
 		this.bus = EventBus;
 		
-		this.bus.addEventListener('move',this.map.reset,this.map);
+		this.bus.addEventListener('move',(e, x, y)=>{
+			this.map.reset(e, x, y);
+			e.target.draw();
+		},this.map);
+		
+		this.bus.addEventListener('fall',(e)=>{
+			this.map.reset(e,e.target.x,e.target.y);
+			this.scheduler.remove(e.target);
+			this.actors.splice(this.actors.indexOf(e.target),1);
+		},this.map);
 		
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);

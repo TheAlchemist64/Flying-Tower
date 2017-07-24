@@ -24,6 +24,5 @@ export default class TileMap {
 	reset(e, x, y){
 		//Redraw Tile
 		this.get(x, y).draw();
-		e.target.draw();
 	}
 }
