@@ -6,7 +6,9 @@ export default class Actor {
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		Game.scheduler.add(this,true);
 	}
+	act(){}
 	draw(){
 		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
 	}

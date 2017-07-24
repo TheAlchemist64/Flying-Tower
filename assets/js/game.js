@@ -14,6 +14,8 @@ export default {
 	map: null,
 	bus: null,
 	player: null,
+	scheduler: null,
+	engine: null,
 	
 	init: function(){
 		this.display = new ROT.Display({width: w, height: h});
@@ -34,8 +36,12 @@ export default {
 		
 		this.bus.addEventListener('move',this.map.reset,this.map);
 		
+		this.scheduler = new ROT.Scheduler.Simple();
+		this.engine = new ROT.Engine(this.scheduler);
+		
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
-		window.addEventListener('keydown',this.player.handleEvent.bind(this.player));
+		
+		this.engine.start();
 	}
 }
