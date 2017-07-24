@@ -6,6 +6,7 @@ export default class Actor {
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
 	act(){}
@@ -14,6 +15,15 @@ export default class Actor {
 	}
 	move(x, y){
 		if(!Game.map.inBounds(x, y) || Game.map.get(x, y).type == 'wall'){
+			return;
+		}
+		let collides = false;
+		Game.actors.forEach((actor)=>{
+			if(x==actor.x && y==actor.y){
+				collides = true;
+			}
+		});
+		if(collides){
 			return;
 		}
 		//Capture current position

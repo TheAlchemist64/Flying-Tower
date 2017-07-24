@@ -3,6 +3,7 @@ import EventBus from '../../vendor/eventbus.min';
 
 import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
+import Actor from './actor';
 import Player from './actors/player';
 import Glyph from './glyph';
 
@@ -13,6 +14,7 @@ export default {
 	display: null,
 	map: null,
 	bus: null,
+	actors: [],
 	player: null,
 	scheduler: null,
 	engine: null,
@@ -41,6 +43,9 @@ export default {
 		
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
+		
+		let m = new Actor('Monster',8,8,new Glyph('m','#f00'));
+		m.draw();
 		
 		this.engine.start();
 	}
