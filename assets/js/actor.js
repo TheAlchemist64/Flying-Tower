@@ -1,6 +1,6 @@
 import Game from './game';
 
-export class Being {
+export class Actor {
 	constructor(name, x, y){
 		this.name = name;
 		this.x = x;
@@ -9,6 +9,6 @@ export class Being {
 	act(){}
 }
 
-export class Player extends Being{
+export class Player extends Actor{
 	
 }
