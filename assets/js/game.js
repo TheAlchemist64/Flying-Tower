@@ -56,6 +56,9 @@ export default {
 			this.map.reset(e,e.target.x,e.target.y);
 			this.scheduler.remove(e.target);
 			this.actors.splice(this.actors.indexOf(e.target),1);
+			if(e.target == this.player){
+				this.over(false);
+			}
 		},this.map);
 		
 		this.scheduler = new ROT.Scheduler.Simple();
@@ -68,5 +71,17 @@ export default {
 		m.draw();
 		
 		this.engine.start();
+	},
+	over(victory){
+		this.scheduler = null;
+		this.engine = null;
+		let text = '';
+		if(victory){
+			text = 'Congradulations! You won!';
+		}
+		else{
+			text = 'Game over. You lost!';
+		}
+		this.display.drawText(w/2-text.length/2,h/2,text);
 	}
 }
