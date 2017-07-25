@@ -23,7 +23,7 @@ export default {
 	scheduler: null,
 	engine: null,
 	
-	init: function(){
+	init(){
 		this.display = new ROT.Display({width: w, height: h});
 		document.body.appendChild(this.display.getContainer());
 		
@@ -83,5 +83,12 @@ export default {
 			text = 'Game over. You lost!';
 		}
 		this.display.drawText(w/2-text.length/2,h/2,text);
+	},
+	atEdge(x, y){
+		let result = new Map();
+		let neighbors = [[x-1,y],[x,y-1],[x+1,y],[x,y+1]];
+		neighbors.forEach((n)=>{
+		});
+		return result['sky'];
 	}
 }
