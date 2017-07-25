@@ -40,9 +40,6 @@ export default {
 		while(holes > 0){
 			let x = randInt(0, w);
 			let y = randInt(0, h);
-			if(this.map.get(x,y).type == 'wall'){
-				continue;
-			}
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
