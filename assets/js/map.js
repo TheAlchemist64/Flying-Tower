@@ -1,11 +1,16 @@
 import Game from './game';
-import { Tile } from './tile';
+import { Tile, TileTypes } from './tile';
 
 export default class TileMap {
 	constructor(width, height){
 		this.width = width;
 		this.height = height;
 		this.tiles = new Map();
+		for(let x = 0; x < width; x++){
+			for(let y = 0; y < height; y++){
+				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
+			}
+		}
 	}
 	set(x, y, tile){
 		this.tiles.set(x+','+y,tile);
