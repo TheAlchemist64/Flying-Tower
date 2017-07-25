@@ -26,6 +26,6 @@ export class Tile {
 	get glyph(){ return this._glyph; }
 	set glyph(glyph) { this._glyph = glyph; this.draw(); }
 	draw(){
-		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
+		Game.bus.dispatch('draw', this);
 	}
 }

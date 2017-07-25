@@ -43,7 +43,6 @@ export default {
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
-		this.map.draw();
 		
 		this.bus = EventBus;
 		
@@ -66,13 +65,20 @@ export default {
 			this.scheduler.add(e.target,true);
 		});
 		
+		this.bus.addEventListener('draw',(e)=>{
+			let obj = e.target;
+			this.display.draw(obj.x, obj.y, obj.glyph.chr, obj.glyph.fg, obj.glyph.bg);
+		});
+		
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
-		this.player.draw();
 		
 		let m = new Actor('Monster',8,8,new Glyph('m','#f00'));
+		//Draw to Screen
+		this.map.draw();
+		this.player.draw();
 		m.draw();
 		
 		this.engine.start();
