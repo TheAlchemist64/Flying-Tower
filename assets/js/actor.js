@@ -6,8 +6,7 @@ export default class Actor {
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
-		Game.actors.push(this);
-		Game.scheduler.add(this,true);
+		Game.bus.dispatch('add-to-game', this);
 	}
 	act(){}
 	draw(){
