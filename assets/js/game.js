@@ -88,6 +88,7 @@ export default {
 		let result = new Map();
 		let neighbors = [[x-1,y],[x,y-1],[x+1,y],[x,y+1]];
 		neighbors.forEach((n)=>{
+			result[this.map.get(n[0],n[1]).type] = true;
 		});
 		return result['sky'];
 	}
