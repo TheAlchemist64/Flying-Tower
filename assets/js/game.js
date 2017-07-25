@@ -36,7 +36,7 @@ export default {
 			this.map.set(x, y, new Tile(x, y, wall ? WALL: FLOOR));
 		});
 		//Generate holes in the floor
-		let holes = 10;
+		let holes = 5;
 		while(holes > 0){
 			let x = randInt(0, w);
 			let y = randInt(0, h);
