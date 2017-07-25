@@ -14,8 +14,17 @@ export default class Actor {
 		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
 	}
 	move(x, y){
-		if(!Game.map.inBounds(x, y) || Game.map.get(x, y).type == 'wall'){
+		if(!Game.map.inBounds(x, y)){
 			return 0;
+		}
+		let tileType = Game.map.get(x, y).type;
+		switch(tileType){
+			case 'wall':
+				return 0;
+				break;
+			case 'sky':
+				Game.bus.dispatch('fall',this);
+				return 1;
 		}
 		let collides = false;
 		let other = null;

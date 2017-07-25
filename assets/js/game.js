@@ -10,6 +10,10 @@ import Glyph from './glyph';
 const w = 50;
 const h = 25;
 
+var randInt = function(a, b){
+	return a + Math.floor((b-a) * ROT.RNG.getUniform());
+}
+
 export default {
 	display: null,
 	map: null,
@@ -25,18 +29,34 @@ export default {
 		
 		this.map = new TileMap(w, h);
 		
-		let generator = new ROT.Map.Arena(w,h);
+		let generator = new ROT.Map.Arena(w-2,h-2);
 		generator.create((x, y, wall)=>{
 			let WALL = TileTypes.WALL;
 			let FLOOR = TileTypes.FLOOR;
 			this.map.set(x, y, new Tile(x, y, wall ? WALL: FLOOR));
 		});
-		
+		//Generate holes in the floor
+		let holes = 5;
+		while(holes > 0){
+			let x = randInt(0, w);
+			let y = randInt(0, h);
+			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
+			holes--;
+		}
 		this.map.draw();
 		
 		this.bus = EventBus;
 		
-		this.bus.addEventListener('move',this.map.reset,this.map);
+		this.bus.addEventListener('move',(e, x, y)=>{
+			this.map.reset(e, x, y);
+			e.target.draw();
+		},this.map);
+		
+		this.bus.addEventListener('fall',(e)=>{
+			this.map.reset(e,e.target.x,e.target.y);
+			this.scheduler.remove(e.target);
+			this.actors.splice(this.actors.indexOf(e.target),1);
+		},this.map);
 		
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
