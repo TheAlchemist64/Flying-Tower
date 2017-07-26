@@ -47,15 +47,6 @@ export default {
 		
 		this.bus = EventBus;
 		
-		this.bus.addEventListener('fall',(e)=>{
-			this.map.reset(e,e.target.x,e.target.y);
-			this.scheduler.remove(e.target);
-			this.actors.splice(this.actors.indexOf(e.target),1);
-			if(e.target == this.player){
-				this.over(false);
-			}
-		},this.map);
-		
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		
