@@ -30,17 +30,17 @@ export default {
 		document.body.appendChild(this.display.getContainer());
 		//Generate Map
 		this.map = new TileMap(w, h);
-		let generator = new ROT.Map.Arena(w-4,h-4);
+		let generator = new ROT.Map.Arena(w-2,h-2);
 		generator.create((x, y, wall)=>{
 			let WALL = TileTypes.WALL;
 			let FLOOR = TileTypes.FLOOR;
-			this.map.set(x+2, y+2, new Tile(x+2, y+2, wall ? WALL: FLOOR));
+			this.map.set(x+1, y+1, new Tile(x+1, y+1, wall ? WALL: FLOOR));
 		});
 		//Generate holes in the floor
 		let holes = 5;
 		while(holes > 0){
-			let x = randInt(2, w-2);
-			let y = randInt(2, h-2);
+			let x = randInt(1, w-1);
+			let y = randInt(1, h-1);
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
