@@ -47,9 +47,8 @@ export default {
 		
 		this.bus = EventBus;
 		
-		this.bus.addEventListener('move',(e, x, y)=>{
+		this.bus.addEventListener('reset',(e, x, y)=>{
 			this.map.reset(e, x, y);
-			e.target.draw();
 		},this.map);
 		
 		this.bus.addEventListener('fall',(e)=>{

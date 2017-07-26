@@ -49,7 +49,8 @@ export default class Actor {
 		this.x = x;
 		this.y = y;
 		//Dispatch event for graphical change
-		Game.bus.dispatch('move', this, cx, cy);
+		Game.bus.dispatch('reset', this, cx, cy);
+		this.draw();
 		return 1;
 	}
 }
