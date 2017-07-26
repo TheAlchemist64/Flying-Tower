@@ -47,8 +47,6 @@ export default {
 		
 		this.bus = EventBus;
 		
-		this.bus.addEventListener('in-bounds',this.map.inBounds,this.map);
-		
 		this.bus.addEventListener('fall',(e)=>{
 			this.map.reset(e,e.target.x,e.target.y);
 			this.scheduler.remove(e.target);
