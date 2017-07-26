@@ -28,6 +28,10 @@ export default class Player extends Actor{
 				super.move(x-1,y);
 				Game.bus.dispatch('playermove', this);
 				break;
+			case ROT.VK_PERIOD:
+				break; //Wait
+			default:
+				return; //Keyboard input not recognized.
 		}
 		window.removeEventListener('keydown',this);
 		Game.engine.unlock();
