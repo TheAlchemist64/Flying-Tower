@@ -62,8 +62,8 @@ export default {
 	},
 	over(victory){
 		//Game ended. Delete Scheduler and Engine
-		this.scheduler = null;
-		this.engine = null;
+		this.scheduler.clear();
+		//this.engine = null;
 		let text = '';
 		if(victory){
 			text = 'Congradulations! You won!';

@@ -13,6 +13,17 @@ export default class Actor {
 	draw(){
 		this.glyph.draw(this.x, this.y);
 	}
+	collides(x, y){
+		let collides = false;
+		let other = null;
+		Game.actors.forEach((actor)=>{
+			if(this!=actor && x==actor.x && y==actor.y){
+				collides = true;
+				other = actor;
+			}
+		});
+		return [collides, other];
+	}
 	move(x, y){
 		if(!Game.map.inBounds(x, y)){
 			return 0;
@@ -31,14 +42,7 @@ export default class Actor {
 				}
 				return 1;
 		}
-		let collides = false;
-		let other = null;
-		Game.actors.forEach((actor)=>{
-			if(x==actor.x && y==actor.y){
-				collides = true;
-				other = actor;
-			}
-		});
+		let [collides, other] = this.collides(x, y);
 		if(collides){
 			//Push actor
 			let dx = x - this.x;
@@ -58,21 +62,5 @@ export default class Actor {
 		Game.map.get(cx, cy).draw();
 		this.draw();
 		return 1;
-	}
-	nearEdge(){
-		let x = this.x;
-		let y = this.y;
-		let results = [];
-		let neighbors = [[x-1,y],[x,y-1],[x+1,y],[x,y+1]];
-		let sky = null;
-		neighbors.forEach((n)=>{
-			if(Game.map.get(n[0],n[1]).type == 'sky'){
-				results.push({x:n[0],y:n[1]});
-			}
-		});
-		if(results.length < 1){
-			return 0;
-		}
-		return results;
 	}
 }
