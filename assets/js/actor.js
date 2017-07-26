@@ -10,7 +10,7 @@ export default class Actor {
 	}
 	act(){}
 	draw(){
-		Game.bus.dispatch('draw', this);
+		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
 	}
 	move(x, y){
 		if(!Game.map.inBounds(x, y)){
