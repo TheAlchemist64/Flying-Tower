@@ -59,4 +59,20 @@ export default class Actor {
 		this.draw();
 		return 1;
 	}
+	nearEdge(){
+		let x = this.x;
+		let y = this.y;
+		let results = [];
+		let neighbors = [[x-1,y],[x,y-1],[x+1,y],[x,y+1]];
+		let sky = null;
+		neighbors.forEach((n)=>{
+			if(Game.map.get(n[0],n[1]).type == 'sky'){
+				results.push({x:n[0],y:n[1]});
+			}
+		});
+		if(results.length < 1){
+			return 0;
+		}
+		return results;
+	}
 }
