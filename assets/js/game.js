@@ -60,11 +60,6 @@ export default {
 			}
 		},this.map);
 		
-		this.bus.addEventListener('add-to-game',(e)=>{
-			this.actors.push(e.target);
-			this.scheduler.add(e.target,true);
-		});
-		
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		
