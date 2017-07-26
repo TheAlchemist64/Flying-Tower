@@ -5,7 +5,9 @@ import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
 import Actor from './actor';
 import Player from './actors/player';
+import Monster from './actors/monster';
 import Glyph from './glyph';
+import { BasicAI } from './ai/basic';
 
 const w = 50;
 const h = 25;
@@ -23,50 +25,52 @@ export default {
 	scheduler: null,
 	engine: null,
 	
-	init: function(){
+	init(){
+		//Initialize Display
 		this.display = new ROT.Display({width: w, height: h});
 		document.body.appendChild(this.display.getContainer());
-		
+		//Generate Map
 		this.map = new TileMap(w, h);
-		
-		let generator = new ROT.Map.Arena(w-2,h-2);
+		let generator = new ROT.Map.Arena(w-4,h-4);
 		generator.create((x, y, wall)=>{
 			let WALL = TileTypes.WALL;
 			let FLOOR = TileTypes.FLOOR;
-			this.map.set(x, y, new Tile(x, y, wall ? WALL: FLOOR));
+			this.map.set(x+2, y+2, new Tile(x+2, y+2, wall ? WALL: FLOOR));
 		});
 		//Generate holes in the floor
 		let holes = 5;
 		while(holes > 0){
-			let x = randInt(0, w);
-			let y = randInt(0, h);
+			let x = randInt(2, w-2);
+			let y = randInt(2, h-2);
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
 		this.map.draw();
-		
+		//Add Event Bus to global object
 		this.bus = EventBus;
-		
-		this.bus.addEventListener('move',(e, x, y)=>{
-			this.map.reset(e, x, y);
-			e.target.draw();
-		},this.map);
-		
-		this.bus.addEventListener('fall',(e)=>{
-			this.map.reset(e,e.target.x,e.target.y);
-			this.scheduler.remove(e.target);
-			this.actors.splice(this.actors.indexOf(e.target),1);
-		},this.map);
-		
+		//Initialize Turn Engine
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
-		
+		//Create Player
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
-		
-		let m = new Actor('Monster',8,8,new Glyph('m','#f00'));
+		//Create test monster
+		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new BasicAI());
 		m.draw();
 		
 		this.engine.start();
+	},
+	over(victory){
+		//Game ended. Delete Scheduler and Engine
+		this.scheduler = null;
+		this.engine = null;
+		let text = '';
+		if(victory){
+			text = 'Congradulations! You won!';
+		}
+		else{
+			text = 'Game over. You lost!';
+		}
+		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	}
 }

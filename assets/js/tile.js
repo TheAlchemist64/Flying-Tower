@@ -1,5 +1,4 @@
 import Glyph from './glyph';
-import Game from './game';
 
 export let TileTypes = {
 	WALL: {
@@ -26,6 +25,6 @@ export class Tile {
 	get glyph(){ return this._glyph; }
 	set glyph(glyph) { this._glyph = glyph; this.draw(); }
 	draw(){
-		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
+		this.glyph.draw(this.x, this.y);
 	}
 }

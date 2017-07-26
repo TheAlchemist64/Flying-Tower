@@ -11,7 +11,7 @@ export default class Actor {
 	}
 	act(){}
 	draw(){
-		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
+		this.glyph.draw(this.x, this.y);
 	}
 	move(x, y){
 		if(!Game.map.inBounds(x, y)){
@@ -23,7 +23,12 @@ export default class Actor {
 				return 0;
 				break;
 			case 'sky':
-				Game.bus.dispatch('fall',this);
+				Game.map.get(this.x, this.y).draw();
+				Game.scheduler.remove(this);
+				Game.actors.splice(Game.actors.indexOf(this),1);
+				if(this == Game.player){
+					Game.over(false);
+				}
 				return 1;
 		}
 		let collides = false;
@@ -49,8 +54,25 @@ export default class Actor {
 		//Set new position
 		this.x = x;
 		this.y = y;
-		//Dispatch event for graphical change
-		Game.bus.dispatch('move', this, cx, cy);
+		//Reset actor's previous tile and draw actor on new tile
+		Game.map.get(cx, cy).draw();
+		this.draw();
 		return 1;
+	}
+	nearEdge(){
+		let x = this.x;
+		let y = this.y;
+		let results = [];
+		let neighbors = [[x-1,y],[x,y-1],[x+1,y],[x,y+1]];
+		let sky = null;
+		neighbors.forEach((n)=>{
+			if(Game.map.get(n[0],n[1]).type == 'sky'){
+				results.push({x:n[0],y:n[1]});
+			}
+		});
+		if(results.length < 1){
+			return 0;
+		}
+		return results;
 	}
 }

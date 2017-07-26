@@ -1,4 +1,3 @@
-import Game from './game';
 import { Tile, TileTypes } from './tile';
 
 export default class TileMap {
@@ -25,9 +24,5 @@ export default class TileMap {
 		for(var tile of this.tiles.values()){
 			tile.draw();
 		}
-	}
-	reset(e, x, y){
-		//Redraw Tile
-		this.get(x, y).draw();
 	}
 }
