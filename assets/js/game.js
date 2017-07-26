@@ -3,7 +3,6 @@ import EventBus from '../../vendor/eventbus.min';
 
 import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
-import Actor from './actor';
 import Player from './actors/player';
 import Monster from './actors/monster';
 import Glyph from './glyph';
