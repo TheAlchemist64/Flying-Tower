@@ -37,9 +37,9 @@ var Actor = function () {
 	}, {
 		key: 'move',
 		value: function move(x, y) {
-			_game2.default.bus.dispatch('in-bounds', this, x, y, function (result) {
+			if (!_game2.default.map.inBounds(x, y)) {
 				return 0;
-			});
+			}
 			var tileType = _game2.default.map.get(x, y).type;
 			switch (tileType) {
 				case 'wall':
@@ -358,8 +358,8 @@ var TileMap = function () {
 		}
 	}, {
 		key: 'inBounds',
-		value: function inBounds(e, x, y, cb) {
-			cb(x > 0 && x < this.width && y > 0 && y < this.height);
+		value: function inBounds(x, y) {
+			return x > 0 && x < this.width && y > 0 && y < this.height;
 		}
 	}, {
 		key: 'nearEdge',
