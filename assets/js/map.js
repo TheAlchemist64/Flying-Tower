@@ -1,4 +1,3 @@
-import Game from './game';
 import { Tile, TileTypes } from './tile';
 
 export default class TileMap {

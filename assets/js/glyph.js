@@ -1,5 +1,3 @@
-import Game from './game';
-
 export default class Glyph {
 	constructor(chr, fg, bg){
 		this.chr = chr || ' ';
