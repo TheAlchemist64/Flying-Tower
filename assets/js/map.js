@@ -18,8 +18,8 @@ export default class TileMap {
 	get(x, y){
 		return this.tiles.get(x+','+y);
 	}
-	inBounds(x, y){
-		return x > 0 && x < this.width && y> 0 && y < this.height;
+	inBounds(e, x, y, cb){
+		cb(x > 0 && x < this.width && y> 0 && y < this.height);
 	}
 	nearEdge(x, y){
 		let result = new Map();

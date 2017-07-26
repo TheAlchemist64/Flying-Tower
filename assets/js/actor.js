@@ -13,9 +13,9 @@ export default class Actor {
 		Game.display.draw(this.x, this.y, this.glyph.chr, this.glyph.fg, this.glyph.bg);
 	}
 	move(x, y){
-		if(!Game.map.inBounds(x, y)){
+		Game.bus.dispatch('in-bounds', this, x, y, (result)=>{
 			return 0;
-		}
+		});
 		let tileType = Game.map.get(x, y).type;
 		switch(tileType){
 			case 'wall':

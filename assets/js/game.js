@@ -47,6 +47,8 @@ export default {
 		
 		this.bus = EventBus;
 		
+		this.bus.addEventListener('in-bounds',this.map.inBounds,this.map);
+		
 		this.bus.addEventListener('reset',(e, x, y)=>{
 			this.map.reset(e, x, y);
 		},this.map);
