@@ -24,11 +24,11 @@ export default {
 	engine: null,
 	
 	init(){
+		//Initialize Display
 		this.display = new ROT.Display({width: w, height: h});
 		document.body.appendChild(this.display.getContainer());
-		
+		//Generate Map
 		this.map = new TileMap(w, h);
-		
 		let generator = new ROT.Map.Arena(w-4,h-4);
 		generator.create((x, y, wall)=>{
 			let WALL = TileTypes.WALL;
@@ -44,21 +44,22 @@ export default {
 			holes--;
 		}
 		this.map.draw();
-		
+		//Add Event Bus to global object
 		this.bus = EventBus;
-		
+		//Initialize Turn Engine
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
-		
+		//Create Player
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
-		
+		//Create test monster
 		let m = new Actor('Monster',8,8,new Glyph('m','#f00'));
 		m.draw();
 		
 		this.engine.start();
 	},
 	over(victory){
+		//Game ended. Delete Scheduler and Engine
 		this.scheduler = null;
 		this.engine = null;
 		let text = '';
