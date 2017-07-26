@@ -88,6 +88,6 @@ export default {
 		else{
 			text = 'Game over. You lost!';
 		}
-		this.display.drawText(w/2-text.length/2,h/2,text);
+		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	}
 }
