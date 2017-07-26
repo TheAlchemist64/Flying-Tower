@@ -49,8 +49,8 @@ export default class Actor {
 		//Set new position
 		this.x = x;
 		this.y = y;
-		//Dispatch event for graphical change
-		Game.bus.dispatch('reset', this, cx, cy);
+		//Reset actor's previous tile and draw actor on new tile
+		Game.map.get(cx, cy).draw();
 		this.draw();
 		return 1;
 	}
