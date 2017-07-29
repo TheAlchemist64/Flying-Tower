@@ -4,8 +4,9 @@
   "description": "\u0016Open source roguelike that uses ES6 features",
   "main": "index.html",
   "scripts": {
-    "gulp": "gulp",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"build": "rollup -c",
+	"dev": "rollup -c -w"
   },
   "repository": {
     "type": "git",
@@ -25,11 +26,8 @@
   "homepage": "https://github.com/TheAlchemist64/Flying-Tower#readme",
   "devDependencies": {
     "babel-preset-env": "^1.5.2",
-    "babelify": "^7.3.0",
-    "browserify": "^14.4.0",
-    "gulp": "^3.9.1",
-    "gulp-util": "^3.0.8",
-    "gulp-watch": "^4.3.11",
-    "vinyl-source-stream": "^1.1.0"
+    "rollup": "^0.45.2",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-watch": "^4.3.1"
   }
 }
