@@ -5565,10 +5565,6 @@ function isPassable(x, y, actor){
 }
 
 class PusherAI {
-	constructor(){
-		this.finder = null;
-		this.path = [];
-	}
 	run(actor){
 		let [result, tile] = Game.player.canFall();
 		if(!result){
@@ -5583,17 +5579,17 @@ class PusherAI {
 			return result;
 		};
 		//Initialize pathfinder
-		this.finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
+		let finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
 		//Find path to tile where ai can push the player off
-		this.path = [];
-		this.finder.compute(actor.x, actor.y, (x, y)=>{
-			this.path.push({x: x, y: y});
+		let path = [];
+		finder.compute(actor.x, actor.y, (x, y)=>{
+			path.push({x: x, y: y});
 		});
-		if(this.path.length == 1){
+		if(path.length == 1){
 			actor.move(Game.player.x, Game.player.y);
 		}
-		else if(this.path.length > 1){
-			actor.move(this.path[1].x, this.path[1].y);
+		else if(path.length > 1){
+			actor.move(path[1].x, path[1].y);
 		}
 	}
 }
