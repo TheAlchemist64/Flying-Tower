@@ -10,15 +10,9 @@ class PusherAI extends BasicAI{
 		//Get the tile the AI needs to be on in order to push the player off
 		let x = Game.player.x - (tile.x - Game.player.x);
 		let y = Game.player.y - (tile.y - Game.player.y);
-		//Find path
+		//Move actor towards that tile
 		let path = this.findPath(actor, x, y);
-		//Move actor
-		if(path.length == 1){
-			actor.move(Game.player.x, Game.player.y);
-		}
-		else if(path.length > 1){
-			actor.move(path[1].x, path[1].y);
-		}
+		this.moveToPlayer(actor, path);
 	}
 }
 

@@ -32,4 +32,12 @@ export default class BasicAI {
 		});
 		return path;
 	}
+	moveToPlayer(actor, path){
+		if(path.length == 1){
+			actor.move(Game.player.x, Game.player.y);
+		}
+		else if(path.length > 1){
+			actor.move(path[1].x, path[1].y);
+		}
+	}
 }
