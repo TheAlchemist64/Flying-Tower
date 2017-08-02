@@ -1,19 +1,7 @@
-import ROT from '../../../vendor/rot';
 import Game from '../game';
+import BasicAI from './basic';
 
-function isPassable(x, y, actor){
-	let passable = true;
-	if(['wall','sky'].includes(Game.map.get(x, y).type)){
-		passable = false;
-	}
-	let [collides, other] = actor.collides(x, y);
-	if(collides){
-		passable = false;
-	}
-	return passable;
-}
-
-class PusherAI {
+class PusherAI extends BasicAI{
 	run(actor){
 		let [result, tile] = Game.player.canFall();
 		if(!result){
@@ -22,18 +10,9 @@ class PusherAI {
 		//Get the tile the AI needs to be on in order to push the player off
 		let x = Game.player.x - (tile.x - Game.player.x);
 		let y = Game.player.y - (tile.y - Game.player.y);
-		//Make passable function callback
-		let passableCallback = function(x, y){
-			let result = isPassable(x, y, actor);
-			return result;
-		}
-		//Initialize pathfinder
-		let finder = new ROT.Path.AStar(x, y, passableCallback, {topology:4});
-		//Find path to tile where ai can push the player off
-		let path = [];
-		finder.compute(actor.x, actor.y, (x, y)=>{
-			path.push({x: x, y: y});
-		});
+		//Find path
+		let path = this.findPath(actor, x, y);
+		//Move actor
 		if(path.length == 1){
 			actor.move(Game.player.x, Game.player.y);
 		}
