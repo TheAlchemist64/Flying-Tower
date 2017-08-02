@@ -5450,13 +5450,17 @@ class Actor {
 		});
 		return [collides, other];
 	}
-	move(x, y){
+	move(x, y, pusher){
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
 		let tileType = Game.map.get(x, y).type;
 		switch(tileType){
 			case 'wall':
+				if(pusher){
+					//Player/Actor was pushed into the wall, knocked out
+					console.log("stun");
+				}
 				return 0;
 				break;
 			case 'sky':
@@ -5473,7 +5477,7 @@ class Actor {
 			//Push actor
 			let dx = x - this.x;
 			let dy = y - this.y;
-			let mv = other.move(other.x+dx,other.y+dy);
+			let mv = other.move(other.x+dx,other.y+dy, this);
 			if(!mv){
 				return 0;
 			}
