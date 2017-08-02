@@ -5564,7 +5564,7 @@ function isPassable(x, y, actor){
 	return passable;
 }
 
-class BasicAI {
+class PusherAI {
 	constructor(){
 		this.finder = null;
 		this.path = [];
@@ -5644,7 +5644,7 @@ var Game = {
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new BasicAI());
+		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		m.draw();
 		
 		this.engine.start();

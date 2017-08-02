@@ -13,7 +13,7 @@ function isPassable(x, y, actor){
 	return passable;
 }
 
-class BasicAI {
+class PusherAI {
 	constructor(){
 		this.finder = null;
 		this.path = [];
@@ -47,4 +47,4 @@ class BasicAI {
 	}
 }
 
-export { BasicAI };
+export { PusherAI };
