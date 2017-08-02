@@ -5565,6 +5565,10 @@ function isPassable(x, y, actor){
 }
 
 class BasicAI {
+	constructor(){
+		this.finder = null;
+		this.path = [];
+	}
 	run(actor){
 		let [result, tile] = Game.player.canFall();
 		if(!result){
@@ -5579,17 +5583,17 @@ class BasicAI {
 			return result;
 		};
 		//Initialize pathfinder
-		let finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
+		this.finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
 		//Find path to tile where ai can push the player off
-		let path = [];
-		finder.compute(actor.x, actor.y, (x, y)=>{
-			path.push({x: x, y: y});
+		this.path = [];
+		this.finder.compute(actor.x, actor.y, (x, y)=>{
+			this.path.push({x: x, y: y});
 		});
-		if(path.length == 1){
+		if(this.path.length == 1){
 			actor.move(Game.player.x, Game.player.y);
 		}
-		else if(path.length > 1){
-			actor.move(path[1].x, path[1].y);
+		else if(this.path.length > 1){
+			actor.move(this.path[1].x, this.path[1].y);
 		}
 	}
 }
@@ -5616,17 +5620,17 @@ var Game = {
 		document.body.appendChild(this.display.getContainer());
 		//Generate Map
 		this.map = new TileMap(w, h);
-		let generator = new rot.Map.Arena(w-2,h-2);
+		let generator = new rot.Map.Arena(w-4,h-4);
 		generator.create((x, y, wall)=>{
 			let WALL = TileTypes.WALL;
 			let FLOOR = TileTypes.FLOOR;
-			this.map.set(x+1, y+1, new Tile(x+1, y+1, wall ? WALL: FLOOR));
+			this.map.set(x+2, y+2, new Tile(x+2, y+2, wall ? WALL: FLOOR));
 		});
 		//Generate holes in the floor
 		let holes = 5;
 		while(holes > 0){
-			let x = randInt(1, w-1);
-			let y = randInt(1, h-1);
+			let x = randInt(2, w-2);
+			let y = randInt(2, h-2);
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
