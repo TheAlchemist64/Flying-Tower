@@ -7,7 +7,7 @@ import Actor from './actor';
 import Player from './actors/player';
 import Monster from './actors/monster';
 import Glyph from './glyph';
-//import { PusherAI } from './ai/pushoff';
+import { PusherAI } from './ai/pushoff';
 import StunnerAI from './ai/stun';
 
 const w = 50;
@@ -56,7 +56,7 @@ export default {
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new StunnerAI());
+		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		m.draw();
 		
 		this.engine.start();

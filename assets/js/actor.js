@@ -13,8 +13,19 @@ export default class Actor {
 		Game.scheduler.add(this,true);
 	}
 	act(){
-		//console.log("act");
-		if(this.state=="immune"){
+		if(this.state=="stunned"){
+			this.stunned--;
+			if(this.stunned > 0){
+				this.glyph.chr = this.stunned;
+			}
+			else{
+				this.state = "immune";
+				this.immune = 1;
+				this.glyph.chr = "*";
+			}
+			this.draw();
+		}
+		else if(this.state=="immune"){
 			this.immune--;
 			if(!this.immune){
 				this.state = "active";
@@ -54,25 +65,14 @@ export default class Actor {
 					//Player/Actor was pushed into the wall, knocked out
 					if(this.state=="active"){
 						this.state = "stunned";
-						this.stunned = 3;
+						this.stunned = 4;
 						this._chr = this.glyph.chr;
 						this._fg = this.glyph.fg;
 						this.glyph.chr = this.stunned;
 						this.glyph.fg = "yellow";
-					}
-					else if(this.state=="stunned"){
-						this.stunned--;
-						if(this.stunned > 0){
-							this.glyph.chr = this.stunned;
-						}
-						else{
-							this.state = "immune";
-							this.immune = 2;
-							this.glyph.chr = "*";
-						}
+						this.draw();
 					}
 				}
-				this.draw();
 				return 0;
 				break;
 			case 'sky':

@@ -5439,8 +5439,19 @@ class Actor {
 		Game.scheduler.add(this,true);
 	}
 	act(){
-		//console.log("act");
-		if(this.state=="immune"){
+		if(this.state=="stunned"){
+			this.stunned--;
+			if(this.stunned > 0){
+				this.glyph.chr = this.stunned;
+			}
+			else{
+				this.state = "immune";
+				this.immune = 1;
+				this.glyph.chr = "*";
+			}
+			this.draw();
+		}
+		else if(this.state=="immune"){
 			this.immune--;
 			if(!this.immune){
 				this.state = "active";
@@ -5480,25 +5491,14 @@ class Actor {
 					//Player/Actor was pushed into the wall, knocked out
 					if(this.state=="active"){
 						this.state = "stunned";
-						this.stunned = 3;
+						this.stunned = 4;
 						this._chr = this.glyph.chr;
 						this._fg = this.glyph.fg;
 						this.glyph.chr = this.stunned;
 						this.glyph.fg = "yellow";
-					}
-					else if(this.state=="stunned"){
-						this.stunned--;
-						if(this.stunned > 0){
-							this.glyph.chr = this.stunned;
-						}
-						else{
-							this.state = "immune";
-							this.immune = 2;
-							this.glyph.chr = "*";
-						}
+						this.draw();
 					}
 				}
-				this.draw();
 				return 0;
 				break;
 			case 'sky':
@@ -5637,14 +5637,21 @@ class BasicAI {
 	}
 }
 
-class StunnerAI extends BasicAI{
-	run(actor) {
-		let path = this.findPath(actor, Game.player.x, Game.player.y);
+class PusherAI extends BasicAI{
+	run(actor){
+		let [result, tile] = Game.player.canFall();
+		if(!result){
+			return;
+		}
+		//Get the tile the AI needs to be on in order to push the player off
+		let x = Game.player.x - (tile.x - Game.player.x);
+		let y = Game.player.y - (tile.y - Game.player.y);
+		//Move actor towards that tile
+		let path = this.findPath(actor, x, y);
 		this.moveToPlayer(actor, path);
 	}
 }
 
-//import { PusherAI } from './ai/pushoff';
 const w = 50;
 const h = 25;
 
@@ -5691,7 +5698,7 @@ var Game = {
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new StunnerAI());
+		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		m.draw();
 		
 		this.engine.start();
