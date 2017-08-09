@@ -6,10 +6,26 @@ export default class Actor {
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		this.state = "active";
+		this.stunned = 0;
+		this.immune = 0;
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
-	act(){}
+	act(){
+		//console.log("act");
+		if(this.state=="immune"){
+			this.immune--;
+			if(!this.immune){
+				this.state = "active";
+				this.glyph.chr = this._chr;
+				delete this._chr;
+				this.glyph.fg = this._fg;
+				delete this._fg;
+				this.draw();
+			}
+		}
+	}
 	draw(){
 		this.glyph.draw(this.x, this.y);
 	}
@@ -25,6 +41,9 @@ export default class Actor {
 		return [collides, other];
 	}
 	move(x, y, pusher){
+		if(this.stunned && !pusher){
+			return 0;
+		}
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
@@ -33,8 +52,27 @@ export default class Actor {
 			case 'wall':
 				if(pusher){
 					//Player/Actor was pushed into the wall, knocked out
-					console.log("stun");
+					if(this.state=="active"){
+						this.state = "stunned";
+						this.stunned = 3;
+						this._chr = this.glyph.chr;
+						this._fg = this.glyph.fg;
+						this.glyph.chr = this.stunned;
+						this.glyph.fg = "yellow";
+					}
+					else if(this.state=="stunned"){
+						this.stunned--;
+						if(this.stunned > 0){
+							this.glyph.chr = this.stunned;
+						}
+						else{
+							this.state = "immune";
+							this.immune = 2;
+							this.glyph.chr = "*";
+						}
+					}
 				}
+				this.draw();
 				return 0;
 				break;
 			case 'sky':

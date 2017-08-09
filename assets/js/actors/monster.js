@@ -7,6 +7,7 @@ export default class Monster extends Actor{
 		this.ai = ai;
 	}
 	act(){
+		super.act.call(this);
 		this.ai.run(this);
 	}
 }
