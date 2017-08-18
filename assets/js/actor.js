@@ -6,10 +6,37 @@ export default class Actor {
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		this.state = "active";
+		this.stunned = 0;
+		this.immune = 0;
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
-	act(){}
+	act(){
+		if(this.state=="stunned"){
+			this.stunned--;
+			if(this.stunned > 0){
+				this.glyph.chr = this.stunned;
+			}
+			else{
+				this.state = "immune";
+				this.immune = 1;
+				this.glyph.chr = "*";
+			}
+			this.draw();
+		}
+		else if(this.state=="immune"){
+			this.immune--;
+			if(!this.immune){
+				this.state = "active";
+				this.glyph.chr = this._chr;
+				delete this._chr;
+				this.glyph.fg = this._fg;
+				delete this._fg;
+				this.draw();
+			}
+		}
+	}
 	draw(){
 		this.glyph.draw(this.x, this.y);
 	}
@@ -24,13 +51,28 @@ export default class Actor {
 		});
 		return [collides, other];
 	}
-	move(x, y){
+	move(x, y, pusher){
+		if(this.stunned && !pusher){
+			return 0;
+		}
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
 		let tileType = Game.map.get(x, y).type;
 		switch(tileType){
 			case 'wall':
+				if(pusher){
+					//Player/Actor was pushed into the wall, knocked out
+					if(this.state=="active"){
+						this.state = "stunned";
+						this.stunned = 4;
+						this._chr = this.glyph.chr;
+						this._fg = this.glyph.fg;
+						this.glyph.chr = this.stunned;
+						this.glyph.fg = "yellow";
+						this.draw();
+					}
+				}
 				return 0;
 				break;
 			case 'sky':
@@ -47,7 +89,7 @@ export default class Actor {
 			//Push actor
 			let dx = x - this.x;
 			let dy = y - this.y;
-			let mv = other.move(other.x+dx,other.y+dy);
+			let mv = other.move(other.x+dx,other.y+dy, this);
 			if(!mv){
 				return 0;
 			}

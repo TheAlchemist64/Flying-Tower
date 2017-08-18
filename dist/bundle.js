@@ -5432,10 +5432,37 @@ class Actor {
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		this.state = "active";
+		this.stunned = 0;
+		this.immune = 0;
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
-	act(){}
+	act(){
+		if(this.state=="stunned"){
+			this.stunned--;
+			if(this.stunned > 0){
+				this.glyph.chr = this.stunned;
+			}
+			else{
+				this.state = "immune";
+				this.immune = 1;
+				this.glyph.chr = "*";
+			}
+			this.draw();
+		}
+		else if(this.state=="immune"){
+			this.immune--;
+			if(!this.immune){
+				this.state = "active";
+				this.glyph.chr = this._chr;
+				delete this._chr;
+				this.glyph.fg = this._fg;
+				delete this._fg;
+				this.draw();
+			}
+		}
+	}
 	draw(){
 		this.glyph.draw(this.x, this.y);
 	}
@@ -5450,13 +5477,28 @@ class Actor {
 		});
 		return [collides, other];
 	}
-	move(x, y){
+	move(x, y, pusher){
+		if(this.stunned && !pusher){
+			return 0;
+		}
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
 		let tileType = Game.map.get(x, y).type;
 		switch(tileType){
 			case 'wall':
+				if(pusher){
+					//Player/Actor was pushed into the wall, knocked out
+					if(this.state=="active"){
+						this.state = "stunned";
+						this.stunned = 4;
+						this._chr = this.glyph.chr;
+						this._fg = this.glyph.fg;
+						this.glyph.chr = this.stunned;
+						this.glyph.fg = "yellow";
+						this.draw();
+					}
+				}
 				return 0;
 				break;
 			case 'sky':
@@ -5473,7 +5515,7 @@ class Actor {
 			//Push actor
 			let dx = x - this.x;
 			let dy = y - this.y;
-			let mv = other.move(other.x+dx,other.y+dy);
+			let mv = other.move(other.x+dx,other.y+dy, this);
 			if(!mv){
 				return 0;
 			}
@@ -5493,6 +5535,7 @@ class Actor {
 
 class Player extends Actor{
 	act(){
+		super.act();
 		Game.engine.lock();
 		window.addEventListener('keydown',this);
 	}
@@ -5548,11 +5591,38 @@ class Monster extends Actor{
 		this.ai = ai;
 	}
 	act(){
+		super.act.call(this);
 		this.ai.run(this);
 	}
 }
 
-function isPassable(x, y, actor){
+class Collapser{
+	constructor(delay){
+		this.delay = delay || 0; // # of turns to wait before collapsing tiles
+		Game.scheduler.add(this,true);
+	}
+	act(){
+		if(this.delay > 0){
+			this.delay--;
+		}
+		else{
+			let [x, y] = [null, null];
+			while(!x && !y){
+				//Choose a random tile
+				let pick = randTile();
+				//Check that it's not the tile the player is currently standing on.
+				if(Game.player.x != pick[0] || Game.player.y != pick[1]){
+					[x, y] = pick;
+				}
+			}
+			//Collapse tile
+			Game.map.set(x, y, new Tile(x, y, TileTypes.SKY));
+			Game.map.get(x, y).draw();
+		}
+	}
+}
+
+function isPassable(actor, x, y){
 	let passable = true;
 	if(['wall','sky'].includes(Game.map.get(x, y).type)){
 		passable = false;
@@ -5565,10 +5635,35 @@ function isPassable(x, y, actor){
 }
 
 class BasicAI {
-	constructor(){
-		this.finder = null;
-		this.path = [];
+	findPath(actor, x, y){
+		/*
+			Passable function callback for ROT.Path.Astar can only take x and y as parameters
+			Create encapsulating function around isPassable to meet those requirements
+		*/
+		let passableCallback = function(x, y){
+			let result = isPassable(actor, x, y);
+			return result;
+		};
+		//Initialize pathfinder
+		let finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
+		//Find path to tile where ai can push the player off
+		let path = [];
+		finder.compute(actor.x, actor.y, (x, y)=>{
+			path.push({x: x, y: y});
+		});
+		return path;
 	}
+	moveToPlayer(actor, path){
+		if(path.length == 1){
+			actor.move(Game.player.x, Game.player.y);
+		}
+		else if(path.length > 1){
+			actor.move(path[1].x, path[1].y);
+		}
+	}
+}
+
+class PusherAI extends BasicAI{
 	run(actor){
 		let [result, tile] = Game.player.canFall();
 		if(!result){
@@ -5577,24 +5672,9 @@ class BasicAI {
 		//Get the tile the AI needs to be on in order to push the player off
 		let x = Game.player.x - (tile.x - Game.player.x);
 		let y = Game.player.y - (tile.y - Game.player.y);
-		//Make passable function callback
-		let passableCallback = function(x, y){
-			let result = isPassable(x, y, actor);
-			return result;
-		};
-		//Initialize pathfinder
-		this.finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
-		//Find path to tile where ai can push the player off
-		this.path = [];
-		this.finder.compute(actor.x, actor.y, (x, y)=>{
-			this.path.push({x: x, y: y});
-		});
-		if(this.path.length == 1){
-			actor.move(Game.player.x, Game.player.y);
-		}
-		else if(this.path.length > 1){
-			actor.move(this.path[1].x, this.path[1].y);
-		}
+		//Move actor towards that tile
+		let path = this.findPath(actor, x, y);
+		this.moveToPlayer(actor, path);
 	}
 }
 
@@ -5604,6 +5684,10 @@ const h = 25;
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 };
+
+function randTile(){
+	return [randInt(2, w-2), randInt(2, h-2)];
+}
 
 var Game = {
 	display: null,
@@ -5629,8 +5713,7 @@ var Game = {
 		//Generate holes in the floor
 		let holes = 5;
 		while(holes > 0){
-			let x = randInt(2, w-2);
-			let y = randInt(2, h-2);
+			let [x, y] = randTile();
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
@@ -5644,7 +5727,9 @@ var Game = {
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new BasicAI());
+		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//Add Tile Collapser to map
+		let c = new Collapser();
 		m.draw();
 		
 		this.engine.start();
@@ -5672,3 +5757,4 @@ else{
 }
 
 }());
+//# sourceMappingURL=bundle.js.map

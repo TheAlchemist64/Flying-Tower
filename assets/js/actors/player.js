@@ -4,6 +4,7 @@ import Game from './../game';
 
 export default class Player extends Actor{
 	act(){
+		super.act();
 		Game.engine.lock();
 		window.addEventListener('keydown',this);
 	}

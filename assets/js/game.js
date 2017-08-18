@@ -5,14 +5,20 @@ import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
 import Player from './actors/player';
 import Monster from './actors/monster';
+import Collapser from './actors/collapser';
 import Glyph from './glyph';
-import { BasicAI } from './ai/basic';
+import { PusherAI } from './ai/pushoff';
+import StunnerAI from './ai/stun';
 
 const w = 50;
 const h = 25;
 
-var randInt = function(a, b){
+export var randInt = function(a, b){
 	return a + Math.floor((b-a) * ROT.RNG.getUniform());
+}
+
+export function randTile(){
+	return [randInt(2, w-2), randInt(2, h-2)];
 }
 
 export default {
@@ -39,8 +45,7 @@ export default {
 		//Generate holes in the floor
 		let holes = 5;
 		while(holes > 0){
-			let x = randInt(1, w-1);
-			let y = randInt(1, h-1);
+			let [x, y] = randTile();
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
@@ -54,7 +59,9 @@ export default {
 		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new BasicAI());
+		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//Add Tile Collapser to map
+		let c = new Collapser();
 		m.draw();
 		
 		this.engine.start();

@@ -4,5 +4,6 @@ export default {
 	entry: 'assets/js/app.js',
 	format: 'iife',
 	plugins: [ commonjs() ],
-	dest: 'dist/bundle.js'
+	dest: 'dist/bundle.js',
+	sourceMap: true
 }
