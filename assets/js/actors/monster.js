@@ -1,5 +1,5 @@
 import Actor from '../actor';
-import Game from './../game';
+import Game from '../game';
 
 export default class Monster extends Actor{
 	constructor(name, x, y, glyph, ai){
