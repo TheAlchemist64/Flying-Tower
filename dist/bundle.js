@@ -5381,7 +5381,11 @@ let TileTypes = {
 	},
 	SKY: {
 		name: 'sky',
-		glyph: new Glyph(' ','#fff','skyblue')
+		glyph: new Glyph(' ',null,'skyblue')
+	},
+	EXIT: {
+		name: 'exit',
+		glyph: new Glyph('^', 'gold')
 	}
 };
 
@@ -5610,6 +5614,10 @@ class Collapser{
 			while(!x && !y){
 				//Choose a random tile
 				let pick = randTile();
+				//Check that tile is not exit
+				if(Game.map.get(pick[0], pick[1]).type == 'exit'){
+					continue;
+				}
 				//Check that it's not the tile the player is currently standing on.
 				if(Game.player.x != pick[0] || Game.player.y != pick[1]){
 					[x, y] = pick;
@@ -5717,6 +5725,10 @@ var Game = {
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
+		//Create exit
+		let [exitX, exitY] = randTile();
+		this.map.set(exitX, exitY, new Tile(exitX, exitY, TileTypes.EXIT));
+		//Draw map
 		this.map.draw();
 		//Add Event Bus to global object
 		this.bus = eventbus_min;
@@ -5728,9 +5740,9 @@ var Game = {
 		this.player.draw();
 		//Create test monster
 		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser();
-		m.draw();
 		
 		this.engine.start();
 	},

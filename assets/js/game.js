@@ -50,6 +50,10 @@ export default {
 			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
 			holes--;
 		}
+		//Create exit
+		let [exitX, exitY] = randTile();
+		this.map.set(exitX, exitY, new Tile(exitX, exitY, TileTypes.EXIT));
+		//Draw map
 		this.map.draw();
 		//Add Event Bus to global object
 		this.bus = EventBus;
@@ -61,9 +65,9 @@ export default {
 		this.player.draw();
 		//Create test monster
 		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser();
-		m.draw();
 		
 		this.engine.start();
 	},
