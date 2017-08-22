@@ -5513,6 +5513,10 @@ class Actor {
 					Game.over(false);
 				}
 				return 1;
+				break;
+			case 'exit':
+				Game.nextLevel();
+				break;
 		}
 		let [collides, other] = this.collides(x, y);
 		if(collides){
@@ -5745,6 +5749,11 @@ var Game = {
 		let c = new Collapser();
 		
 		this.engine.start();
+	},
+	nextLevel(){
+		this.scheduler.clear();
+		let text = 'Multiple levels not implemented yet.';
+		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	},
 	over(victory){
 		//Game ended. Delete Scheduler and Engine
