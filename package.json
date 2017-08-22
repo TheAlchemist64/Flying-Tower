@@ -1,6 +1,6 @@
 {
   "name": "flying-tower",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "description": "\u0016Open source roguelike that uses ES6 features",
   "main": "index.html",
   "scripts": {
