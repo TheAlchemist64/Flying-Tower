@@ -1,5 +1,5 @@
 # Flying Tower
-Open source roguelike dungeon crawler that uses ES6 features
+Open source turn based roguelike that uses ES6 features
 
 Currently in **Alpha** state (Not Playable in any capacity of the word)
 ## Motivations
