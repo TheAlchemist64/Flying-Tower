@@ -1,26 +1,39 @@
 import ROT from '../../vendor/rot';
-import Game, { randTile } from './game';
+import Game, { randFloor } from './game';
 import TileMap from './map';
 import { Tile, TileTypes } from './tile';
 
 export default function generateMap(w,h){
-	//Generate Arena
+	/*
+		Map Generation is divided into "layers"
+			1. Map is initialized with all sky tiles
+			2. Use 'Digger/Tunneler' algorithm to draw 'dungeon' made up of walls and 
+				floor tiles
+			3. Draw outer walls: Layer a rectangle of walls over "dungeon" from step 2
+			4. Mark tiles "inside" or "outside" based on position of walls from step 3
+			5. Assign appropriate glyph
+	*/
 	let map = new TileMap(w, h);
-	let generator = new ROT.Map.Arena(w-4,h-4);
+	//Generate Arena
+	//let generator = new ROT.Map.Arena(w-4,h-4);
+	let generator = new ROT.Map.Digger(w-4, h-4);
 	generator.create((x, y, wall)=>{
 		let WALL = TileTypes.WALL;
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x+2, y+2, wall ? WALL: FLOOR));
 	});
+	//Generate Rooms
+	
+	//Generate Corridors
 	//Generate holes in the floor
-	let holes = 5;
+	/*let holes = 5;
 	while(holes > 0){
 		let [x, y] = randTile();
 		map.set(new Tile(x, y, TileTypes.SKY));
 		holes--;
-	}
+	}*/
 	//Create exit
-	let [exitX, exitY] = randTile();
+	let [exitX, exitY] = randFloor(map);
 	map.set(new Tile(exitX, exitY, TileTypes.EXIT));
 	
 	return map;

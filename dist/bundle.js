@@ -5408,6 +5408,7 @@ class TileMap {
 		this.width = width;
 		this.height = height;
 		this.tiles = new Map();
+		this.floors = {};
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
@@ -5416,6 +5417,9 @@ class TileMap {
 	}
 	set(tile){
 		this.tiles.set(tile.x+','+tile.y,tile);
+		if(tile.type=="floor"){
+			this.floors[tile.x+','+tile.y] = true;
+		}
 	}
 	get(x, y){
 		return this.tiles.get(x+','+y);
@@ -5593,17 +5597,6 @@ class Player extends Actor{
 	}
 }
 
-class Monster extends Actor{
-	constructor(name, x, y, glyph, ai){
-		super(name, x, y, glyph);
-		this.ai = ai;
-	}
-	act(){
-		super.act.call(this);
-		this.ai.run(this);
-	}
-}
-
 class Collapser{
 	constructor(delay){
 		this.delay = delay || 0; // # of turns to wait before collapsing tiles
@@ -5628,86 +5621,43 @@ class Collapser{
 				}
 			}
 			//Collapse tile
-			Game.map.set(x, y, new Tile(x, y, TileTypes.SKY));
+			Game.map.set(new Tile(x, y, TileTypes.SKY));
 			Game.map.get(x, y).draw();
 		}
 	}
 }
 
-function isPassable(actor, x, y){
-	let passable = true;
-	if(['wall','sky'].includes(Game.map.get(x, y).type)){
-		passable = false;
-	}
-	let [collides, other] = actor.collides(x, y);
-	if(collides){
-		passable = false;
-	}
-	return passable;
-}
-
-class BasicAI {
-	findPath(actor, x, y){
-		/*
-			Passable function callback for ROT.Path.Astar can only take x and y as parameters
-			Create encapsulating function around isPassable to meet those requirements
-		*/
-		let passableCallback = function(x, y){
-			let result = isPassable(actor, x, y);
-			return result;
-		};
-		//Initialize pathfinder
-		let finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
-		//Find path to tile where ai can push the player off
-		let path = [];
-		finder.compute(actor.x, actor.y, (x, y)=>{
-			path.push({x: x, y: y});
-		});
-		return path;
-	}
-	moveToPlayer(actor, path){
-		if(path.length == 1){
-			actor.move(Game.player.x, Game.player.y);
-		}
-		else if(path.length > 1){
-			actor.move(path[1].x, path[1].y);
-		}
-	}
-}
-
-class PusherAI extends BasicAI{
-	run(actor){
-		let [result, tile] = Game.player.canFall();
-		if(!result){
-			return;
-		}
-		//Get the tile the AI needs to be on in order to push the player off
-		let x = Game.player.x - (tile.x - Game.player.x);
-		let y = Game.player.y - (tile.y - Game.player.y);
-		//Move actor towards that tile
-		let path = this.findPath(actor, x, y);
-		this.moveToPlayer(actor, path);
-	}
-}
-
 function generateMap(w,h){
-	//Generate Arena
+	/*
+		Map Generation is divided into "layers"
+			1. Map is initialized with all sky tiles
+			2. Use 'Digger/Tunneler' algorithm to draw 'dungeon' made up of walls and 
+				floor tiles
+			3. Draw outer walls: Layer a rectangle of walls over "dungeon" from step 2
+			4. Mark tiles "inside" or "outside" based on position of walls from step 3
+			5. Assign appropriate glyph
+	*/
 	let map = new TileMap(w, h);
-	let generator = new rot.Map.Arena(w-4,h-4);
+	//Generate Arena
+	//let generator = new ROT.Map.Arena(w-4,h-4);
+	let generator = new rot.Map.Digger(w-4, h-4);
 	generator.create((x, y, wall)=>{
 		let WALL = TileTypes.WALL;
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x+2, y+2, wall ? WALL: FLOOR));
 	});
+	//Generate Rooms
+	
+	//Generate Corridors
 	//Generate holes in the floor
-	let holes = 5;
+	/*let holes = 5;
 	while(holes > 0){
 		let [x, y] = randTile();
 		map.set(new Tile(x, y, TileTypes.SKY));
 		holes--;
-	}
+	}*/
 	//Create exit
-	let [exitX, exitY] = randTile();
+	let [exitX, exitY] = randFloor(map);
 	map.set(new Tile(exitX, exitY, TileTypes.EXIT));
 	
 	return map;
@@ -5722,6 +5672,14 @@ var randInt = function(a, b){
 
 function randTile(){
 	return [randInt(2, w-2), randInt(2, h-2)];
+}
+
+function randFloor(map){
+	let floors = Object.keys(map.floors);
+	let floor = floors[randInt(0, floors.length)];
+	delete map.floors[floor];
+	let [x, y] = floor.split(',');
+	return [Number(x), Number(y)];
 }
 
 var Game = {
@@ -5747,11 +5705,12 @@ var Game = {
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
+		let [rX, rY] = randFloor(this.map);
+		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
-		m.draw();
+		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser();
 		

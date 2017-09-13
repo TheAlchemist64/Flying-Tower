@@ -23,6 +23,14 @@ export function randTile(){
 	return [randInt(2, w-2), randInt(2, h-2)];
 }
 
+export function randFloor(map){
+	let floors = Object.keys(map.floors);
+	let floor = floors[randInt(0, floors.length)];
+	delete map.floors[floor];
+	let [x, y] = floor.split(',');
+	return [Number(x), Number(y)];
+}
+
 export default {
 	display: null,
 	map: null,
@@ -46,11 +54,12 @@ export default {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
+		let [rX, rY] = randFloor(this.map);
+		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
-		m.draw();
+		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser();
 		
