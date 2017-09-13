@@ -25,7 +25,7 @@ export default class Collapser{
 				}
 			}
 			//Collapse tile
-			Game.map.set(x, y, new Tile(x, y, TileTypes.SKY));
+			Game.map.set(new Tile(x, y, TileTypes.SKY));
 			Game.map.get(x, y).draw();
 		}
 	}
