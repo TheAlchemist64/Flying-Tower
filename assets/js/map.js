@@ -11,8 +11,8 @@ export default class TileMap {
 			}
 		}
 	}
-	set(x, y, tile){
-		this.tiles.set(x+','+y,tile);
+	set(tile){
+		this.tiles.set(tile.x+','+tile.y,tile);
 	}
 	get(x, y){
 		return this.tiles.get(x+','+y);
