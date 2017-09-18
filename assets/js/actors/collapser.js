@@ -6,15 +6,17 @@ export default class Collapser{
 		this.delay = delay || 0; // # of turns to wait before collapsing tiles
 		Game.scheduler.add(this,true);
 	}
+	collapseTile(x, y){
+		Game.map.set(new Tile(x, y, TileTypes.SKY));
+		Game.map.get(x, y).draw();
+	}
 	act(){
 		if(this.delay > 0){
 			this.delay--;
 		}
 		else{
-			let [x, y] = randFloor(Game.map);
-			//Collapse tile
-			Game.map.set(new Tile(x, y, TileTypes.SKY));
-			Game.map.get(x, y).draw();
+			this.collapseTile.apply(this, randFloor(Game.map));
+			
 		}
 	}
 }
