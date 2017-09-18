@@ -10,6 +10,12 @@ export default class Collapser{
 		Game.map.set(new Tile(x, y, TileTypes.SKY));
 		Game.map.get(x, y).draw();
 	}
+	collapseTileGroup(tiles){
+		tiles.forEach(tile => this.collapseTile(tile.x, tile.y));
+	}
+	checkConnections(map){
+		
+	}
 	act(){
 		if(this.delay > 0){
 			this.delay--;

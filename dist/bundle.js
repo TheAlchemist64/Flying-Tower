@@ -5415,14 +5415,17 @@ class TileMap {
 			}
 		}
 	}
+	get(x, y){
+		return this.tiles.get(x+','+y);
+	}
 	set(tile){
-		this.tiles.set(tile.x+','+tile.y,tile);
 		if(tile.type=="floor"){
 			this.floors[tile.x+','+tile.y] = true;
 		}
-	}
-	get(x, y){
-		return this.tiles.get(x+','+y);
+		else if(tile.type!="floor" && this.floors[tile.x+','+tile.y]){
+			delete this.floors[tile.x+','+tile.y];
+		}
+		this.tiles.set(tile.x+','+tile.y,tile);
 	}
 	inBounds(x, y){
 		return x > 0 && x < this.width && y> 0 && y < this.height;
@@ -5605,6 +5608,12 @@ class Collapser{
 	collapseTile(x, y){
 		Game.map.set(new Tile(x, y, TileTypes.SKY));
 		Game.map.get(x, y).draw();
+	}
+	collapseTileGroup(tiles){
+		tiles.forEach(tile => this.collapseTile(tile.x, tile.y));
+	}
+	checkConnections(map){
+		
 	}
 	act(){
 		if(this.delay > 0){
