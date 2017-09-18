@@ -25,10 +25,12 @@ export function randTile(){
 
 export function randFloor(map){
 	let floors = Object.keys(map.floors);
-	let floor = floors[randInt(0, floors.length)];
-	delete map.floors[floor];
-	let [x, y] = floor.split(',');
-	return [Number(x), Number(y)];
+	if(floors.length > 0){
+		let floor = floors[randInt(0, floors.length)];
+		delete map.floors[floor];
+		let [x, y] = floor.split(',');
+		return [Number(x), Number(y)];
+	}
 }
 
 export default {

@@ -5377,7 +5377,7 @@ let TileTypes = {
 	},
 	FLOOR: {
 		name: 'floor',
-		glyph: new Glyph('.')
+		glyph: new Glyph(' ')
 	},
 	SKY: {
 		name: 'sky',
@@ -5607,19 +5607,7 @@ class Collapser{
 			this.delay--;
 		}
 		else{
-			let [x, y] = [null, null];
-			while(!x && !y){
-				//Choose a random tile
-				let pick = randTile();
-				//Check that tile is not exit
-				if(Game.map.get(pick[0], pick[1]).type == 'exit'){
-					continue;
-				}
-				//Check that it's not the tile the player is currently standing on.
-				if(Game.player.x != pick[0] || Game.player.y != pick[1]){
-					[x, y] = pick;
-				}
-			}
+			let [x, y] = randFloor(Game.map);
 			//Collapse tile
 			Game.map.set(new Tile(x, y, TileTypes.SKY));
 			Game.map.get(x, y).draw();
@@ -5640,9 +5628,9 @@ function generateMap(w,h){
 	let map = new TileMap(w, h);
 	//Generate Arena
 	//let generator = new ROT.Map.Arena(w-4,h-4);
-	let generator = new rot.Map.Digger(w-4, h-4);
+	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
 	generator.create((x, y, wall)=>{
-		let WALL = TileTypes.WALL;
+		let WALL = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x+2, y+2, wall ? WALL: FLOOR));
 	});
@@ -5670,16 +5658,16 @@ var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 };
 
-function randTile(){
-	return [randInt(2, w-2), randInt(2, h-2)];
-}
+
 
 function randFloor(map){
 	let floors = Object.keys(map.floors);
-	let floor = floors[randInt(0, floors.length)];
-	delete map.floors[floor];
-	let [x, y] = floor.split(',');
-	return [Number(x), Number(y)];
+	if(floors.length > 0){
+		let floor = floors[randInt(0, floors.length)];
+		delete map.floors[floor];
+		let [x, y] = floor.split(',');
+		return [Number(x), Number(y)];
+	}
 }
 
 var Game = {

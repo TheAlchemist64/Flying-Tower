@@ -16,9 +16,9 @@ export default function generateMap(w,h){
 	let map = new TileMap(w, h);
 	//Generate Arena
 	//let generator = new ROT.Map.Arena(w-4,h-4);
-	let generator = new ROT.Map.Digger(w-4, h-4);
+	let generator = new ROT.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
 	generator.create((x, y, wall)=>{
-		let WALL = TileTypes.WALL;
+		let WALL = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x+2, y+2, wall ? WALL: FLOOR));
 	});
