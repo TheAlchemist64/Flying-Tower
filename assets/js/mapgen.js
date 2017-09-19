@@ -1,5 +1,5 @@
 import ROT from '../../vendor/rot';
-import Game, { randFloor } from './game';
+import Game, { randFloor, distance } from './game';
 import TileMap from './map';
 import { Tile, TileTypes } from './tile';
 

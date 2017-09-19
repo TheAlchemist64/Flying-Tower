@@ -36,6 +36,10 @@ export function randFloor(map){
 	}
 }
 
+export function distance(x1, y1, x2, y2){ 
+	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2)); 
+}
+
 export default {
 	display: null,
 	map: null,
@@ -59,7 +63,14 @@ export default {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
-		let [rX, rY] = randFloor(this.map);
+		let validStart = false;
+		let [rX, rY] = [null, null];
+		while(!validStart){
+			[rX, rY] = randFloor(this.map);
+			if(distance(this.exit[0], this.exit[1], rX, rY) >= 10){
+				validStart = true;
+			}
+		}
 		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
