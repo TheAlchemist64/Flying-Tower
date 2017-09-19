@@ -5717,6 +5717,7 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
+const distFromExit = 20;
 
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
@@ -5768,7 +5769,7 @@ var Game = {
 		let [rX, rY] = [null, null];
 		while(!validStart){
 			[rX, rY] = randFloor(this.map);
-			if(distance(this.exit[0], this.exit[1], rX, rY) >= 10){
+			if(distance(this.exit[0], this.exit[1], rX, rY) >= distFromExit){
 				validStart = true;
 			}
 		}
