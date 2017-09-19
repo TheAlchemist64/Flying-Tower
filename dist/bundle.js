@@ -5514,13 +5514,16 @@ class Actor {
 				return 0;
 				break;
 			case 'sky':
-				Game.map.get(this.x, this.y).draw();
-				Game.scheduler.remove(this);
-				Game.actors.splice(Game.actors.indexOf(this),1);
-				if(this == Game.player){
-					Game.over(false);
+				if(pusher){
+					Game.map.get(this.x, this.y).draw();
+					Game.scheduler.remove(this);
+					Game.actors.splice(Game.actors.indexOf(this),1);
+					if(this == Game.player){
+						Game.over(false);
+					}
+					return 1;
 				}
-				return 1;
+				return 0;
 				break;
 			case 'exit':
 				Game.nextLevel();
@@ -5559,31 +5562,35 @@ class Player extends Actor{
 		let code = e.keyCode;
 		let x = this.x;
 		let y = this.y;
+		let endTurn = 0;
 		switch(code){
 			case rot.VK_UP:
-				super.move(x,y-1);
+				endTurn = super.move(x,y-1);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case rot.VK_RIGHT:
-				super.move(x+1,y);
+				endTurn = super.move(x+1,y);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case rot.VK_DOWN:
-				super.move(x,y+1);
+				endTurn = super.move(x,y+1);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case rot.VK_LEFT:
-				super.move(x-1,y);
+				endTurn = super.move(x-1,y);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case rot.VK_PERIOD:
+				endTurn = true;
 				this.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
 		}
-		window.removeEventListener('keydown',this);
-		Game.engine.unlock();
+		if(endTurn){
+			window.removeEventListener('keydown',this);
+			Game.engine.unlock();
+		}
 	}	
 	canFall(){
 		let x = this.x;

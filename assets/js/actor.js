@@ -76,13 +76,16 @@ export default class Actor {
 				return 0;
 				break;
 			case 'sky':
-				Game.map.get(this.x, this.y).draw();
-				Game.scheduler.remove(this);
-				Game.actors.splice(Game.actors.indexOf(this),1);
-				if(this == Game.player){
-					Game.over(false);
+				if(pusher){
+					Game.map.get(this.x, this.y).draw();
+					Game.scheduler.remove(this);
+					Game.actors.splice(Game.actors.indexOf(this),1);
+					if(this == Game.player){
+						Game.over(false);
+					}
+					return 1;
 				}
-				return 1;
+				return 0;
 				break;
 			case 'exit':
 				Game.nextLevel();

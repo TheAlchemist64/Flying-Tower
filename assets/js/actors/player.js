@@ -12,31 +12,35 @@ export default class Player extends Actor{
 		let code = e.keyCode;
 		let x = this.x;
 		let y = this.y;
+		let endTurn = 0;
 		switch(code){
 			case ROT.VK_UP:
-				super.move(x,y-1);
+				endTurn = super.move(x,y-1);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_RIGHT:
-				super.move(x+1,y);
+				endTurn = super.move(x+1,y);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_DOWN:
-				super.move(x,y+1);
+				endTurn = super.move(x,y+1);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_LEFT:
-				super.move(x-1,y);
+				endTurn = super.move(x-1,y);
 				Game.bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_PERIOD:
+				endTurn = true;
 				this.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
 		}
-		window.removeEventListener('keydown',this);
-		Game.engine.unlock();
+		if(endTurn){
+			window.removeEventListener('keydown',this);
+			Game.engine.unlock();
+		}
 	}	
 	canFall(){
 		let x = this.x;
