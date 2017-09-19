@@ -6,6 +6,7 @@ export default class TileMap {
 		this.height = height;
 		this.tiles = new Map();
 		this.floors = {};
+		this.start = {};
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));

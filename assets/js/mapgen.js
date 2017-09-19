@@ -3,6 +3,8 @@ import Game, { randFloor, distance } from './game';
 import TileMap from './map';
 import { Tile, TileTypes } from './tile';
 
+const distFromExit = 25;
+
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
 	//Generate Arena
@@ -15,6 +17,21 @@ export default function generateMap(w,h){
 	//Create exit
 	Game.exit = randFloor(map);
 	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
+	//Create start location
+	let validStart = false;
+	let [rX, rY] = [null, null];
+	while(!validStart){
+		let f = randFloor(map);
+		if(f){
+			[rX, rY] = f;
+			let dist = distance(Game.exit[0], Game.exit[1], rX, rY);
+			if(dist >= distFromExit){
+				validStart = true;
+				console.log(dist);
+			}
+		}
+	}
+	map.start = { x: rX, y: rY };
 	
 	return map;
 }

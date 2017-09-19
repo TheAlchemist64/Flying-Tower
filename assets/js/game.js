@@ -62,20 +62,7 @@ export default {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
-		let validStart = false;
-		let [rX, rY] = [null, null];
-		while(!validStart){
-			let f = randFloor(this.map);
-			if(f){
-				[rX, rY] = f;
-				let dist = distance(this.exit[0], this.exit[1], rX, rY);
-				if(dist >= distFromExit){
-					validStart = true;
-					console.log(dist);
-				}
-			}
-		}
-		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
+		this.player = new Player('Player',this.map.start.x,this.map.start.y,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());

@@ -5410,6 +5410,7 @@ class TileMap {
 		this.height = height;
 		this.tiles = new Map();
 		this.floors = {};
+		this.start = {};
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
@@ -5683,6 +5684,8 @@ class Collapser{
 	}
 }
 
+const distFromExit$1 = 25;
+
 function generateMap(w,h){
 	let map = new TileMap(w, h);
 	//Generate Arena
@@ -5695,14 +5698,27 @@ function generateMap(w,h){
 	//Create exit
 	Game.exit = randFloor(map);
 	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
+	//Create start location
+	let validStart = false;
+	let [rX, rY] = [null, null];
+	while(!validStart){
+		let f = randFloor(map);
+		if(f){
+			[rX, rY] = f;
+			let dist = distance(Game.exit[0], Game.exit[1], rX, rY);
+			if(dist >= distFromExit$1){
+				validStart = true;
+				console.log(dist);
+			}
+		}
+	}
+	map.start = { x: rX, y: rY };
 	
 	return map;
 }
 
 const w = 50;
 const h = 25;
-const distFromExit = 25;
-
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 };
@@ -5748,20 +5764,7 @@ var Game = {
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
 		//Create Player
-		let validStart = false;
-		let [rX, rY] = [null, null];
-		while(!validStart){
-			let f = randFloor(this.map);
-			if(f){
-				[rX, rY] = f;
-				let dist = distance(this.exit[0], this.exit[1], rX, rY);
-				if(dist >= distFromExit){
-					validStart = true;
-					console.log(dist);
-				}
-			}
-		}
-		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
+		this.player = new Player('Player',this.map.start.x,this.map.start.y,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
