@@ -5395,6 +5395,7 @@ class Tile {
 		this.y = y;
 		this.type = type.name;
 		this._glyph = type.glyph;
+		this.connected = false;
 	}
 	get glyph(){ return this._glyph; }
 	set glyph(glyph) { this._glyph = glyph; this.draw(); }
@@ -5621,8 +5622,21 @@ class Collapser{
 		});
 		return path;
 	}
-	checkConnections(map){
-		
+	updateConnections(map, x, y){
+		if(x < 0 || y < 0 || x >= map.width || y >= map.height){
+			return;
+		}
+		if(map.get(x, y).connected){
+			return;
+		}
+		if(map.get(x, y).type == "sky"){
+			return;
+		}
+		map.get(x, y).connected = true;
+		this.updateConnections(map, x, y-1);
+		this.updateConnections(map, x+1, y);
+		this.updateConnections(map, x, y+1);
+		this.updateConnections(map, x-1, y);
 	}
 	act(){
 		if(this.delay > 0){
@@ -5636,6 +5650,21 @@ class Collapser{
 					this.collapseTile(...pick);
 					if(this.getPathToExit().length > 0){
 						Game.map.get(...pick).draw();
+						Game.map.tiles.forEach((tile,k)=>{
+							tile.connected = false;
+						});
+						this.updateConnections(Game.map, Game.exit[0], Game.exit[1]);
+						console.log(Object.keys(Game.map.floors).map(floor => {
+							let [x,y] = floor.split(',');
+							return Game.map.get(x, y).connected;
+						}));
+						Object.keys(Game.map.floors).forEach(floor => {
+							let [x,y] = floor.split(',');
+							if(!Game.map.get(x, y).connected){
+								this.collapseTile(x, y);
+								Game.map.get(x, y).draw();
+							}
+						});
 						break;
 					}
 					else{
@@ -5668,6 +5697,7 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
+const distFromExit = 20;
 
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
@@ -5719,7 +5749,7 @@ var Game = {
 		let [rX, rY] = [null, null];
 		while(!validStart){
 			[rX, rY] = randFloor(this.map);
-			if(distance(this.exit[0], this.exit[1], rX, rY) >= 10){
+			if(distance(this.exit[0], this.exit[1], rX, rY) >= distFromExit){
 				validStart = true;
 			}
 		}

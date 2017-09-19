@@ -13,6 +13,7 @@ import generateMap from './mapgen';
 
 const w = 50;
 const h = 25;
+const distFromExit = 20;
 
 export var randInt = function(a, b){
 	return a + Math.floor((b-a) * ROT.RNG.getUniform());
@@ -66,7 +67,7 @@ export default {
 		let [rX, rY] = [null, null];
 		while(!validStart){
 			[rX, rY] = randFloor(this.map);
-			if(distance(this.exit[0], this.exit[1], rX, rY) >= 10){
+			if(distance(this.exit[0], this.exit[1], rX, rY) >= distFromExit){
 				validStart = true;
 			}
 		}

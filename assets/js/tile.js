@@ -25,6 +25,7 @@ export class Tile {
 		this.y = y;
 		this.type = type.name;
 		this._glyph = type.glyph;
+		this.connected = false;
 	}
 	get glyph(){ return this._glyph; }
 	set glyph(glyph) { this._glyph = glyph; this.draw(); }
