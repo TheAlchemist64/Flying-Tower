@@ -7,11 +7,15 @@ export let TileTypes = {
 	},
 	FLOOR: {
 		name: 'floor',
-		glyph: new Glyph('.')
+		glyph: new Glyph(' ')
 	},
 	SKY: {
 		name: 'sky',
-		glyph: new Glyph(' ','#fff','skyblue')
+		glyph: new Glyph(' ',null,'skyblue')
+	},
+	EXIT: {
+		name: 'exit',
+		glyph: new Glyph('^', 'gold')
 	}
 }
 

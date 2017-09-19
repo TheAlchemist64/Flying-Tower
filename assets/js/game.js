@@ -9,6 +9,7 @@ import Collapser from './actors/collapser';
 import Glyph from './glyph';
 import { PusherAI } from './ai/pushoff';
 import StunnerAI from './ai/stun';
+import generateMap from './mapgen';
 
 const w = 50;
 const h = 25;
@@ -19,6 +20,23 @@ export var randInt = function(a, b){
 
 export function randTile(){
 	return [randInt(2, w-2), randInt(2, h-2)];
+}
+
+export function randFloor(map){
+	let floors = Object.keys(map.floors);
+	if(floors.length > 0){
+		let floor = floors[randInt(0, floors.length)];
+		delete map.floors[floor];
+		let [x, y] = floor.split(',');
+		return [Number(x), Number(y)];
+	}
+	else{
+		return null;
+	}
+}
+
+export function distance(x1, y1, x2, y2){ 
+	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2)); 
 }
 
 export default {
@@ -34,21 +52,9 @@ export default {
 		//Initialize Display
 		this.display = new ROT.Display({width: w, height: h});
 		document.body.appendChild(this.display.getContainer());
-		//Generate Map
-		this.map = new TileMap(w, h);
-		let generator = new ROT.Map.Arena(w-2,h-2);
-		generator.create((x, y, wall)=>{
-			let WALL = TileTypes.WALL;
-			let FLOOR = TileTypes.FLOOR;
-			this.map.set(x+1, y+1, new Tile(x+1, y+1, wall ? WALL: FLOOR));
-		});
-		//Generate holes in the floor
-		let holes = 5;
-		while(holes > 0){
-			let [x, y] = randTile();
-			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
-			holes--;
-		}
+		//Generate map with dimensions (w, h)
+		this.map = generateMap(w, h);
+		//Draw map
 		this.map.draw();
 		//Add Event Bus to global object
 		this.bus = EventBus;
@@ -56,15 +62,28 @@ export default {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
+		let validStart = false;
+		let [rX, rY] = [null, null];
+		while(!validStart){
+			[rX, rY] = randFloor(this.map);
+			if(distance(this.exit[0], this.exit[1], rX, rY) >= 10){
+				validStart = true;
+			}
+		}
+		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser();
-		m.draw();
 		
 		this.engine.start();
+	},
+	nextLevel(){
+		this.scheduler.clear();
+		let text = 'Multiple levels not implemented yet.'
+		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	},
 	over(victory){
 		//Game ended. Delete Scheduler and Engine

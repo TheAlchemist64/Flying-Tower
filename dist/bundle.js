@@ -5377,11 +5377,15 @@ let TileTypes = {
 	},
 	FLOOR: {
 		name: 'floor',
-		glyph: new Glyph('.')
+		glyph: new Glyph(' ')
 	},
 	SKY: {
 		name: 'sky',
-		glyph: new Glyph(' ','#fff','skyblue')
+		glyph: new Glyph(' ',null,'skyblue')
+	},
+	EXIT: {
+		name: 'exit',
+		glyph: new Glyph('^', 'gold')
 	}
 };
 
@@ -5404,17 +5408,24 @@ class TileMap {
 		this.width = width;
 		this.height = height;
 		this.tiles = new Map();
+		this.floors = {};
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
 			}
 		}
 	}
-	set(x, y, tile){
-		this.tiles.set(x+','+y,tile);
-	}
 	get(x, y){
 		return this.tiles.get(x+','+y);
+	}
+	set(tile){
+		if(tile.type=="floor"){
+			this.floors[tile.x+','+tile.y] = true;
+		}
+		else if(tile.type!="floor" && this.floors[tile.x+','+tile.y]){
+			delete this.floors[tile.x+','+tile.y];
+		}
+		this.tiles.set(tile.x+','+tile.y,tile);
 	}
 	inBounds(x, y){
 		return x > 0 && x < this.width && y> 0 && y < this.height;
@@ -5509,6 +5520,10 @@ class Actor {
 					Game.over(false);
 				}
 				return 1;
+				break;
+			case 'exit':
+				Game.nextLevel();
+				break;
 		}
 		let [collides, other] = this.collides(x, y);
 		if(collides){
@@ -5561,6 +5576,7 @@ class Player extends Actor{
 				Game.bus.dispatch('playermove', this);
 				break;
 			case rot.VK_PERIOD:
+				this.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
@@ -5585,97 +5601,89 @@ class Player extends Actor{
 	}
 }
 
-class Monster extends Actor{
-	constructor(name, x, y, glyph, ai){
-		super(name, x, y, glyph);
-		this.ai = ai;
-	}
-	act(){
-		super.act.call(this);
-		this.ai.run(this);
-	}
-}
-
 class Collapser{
 	constructor(delay){
 		this.delay = delay || 0; // # of turns to wait before collapsing tiles
 		Game.scheduler.add(this,true);
+	}
+	collapseTile(x, y){
+		Game.map.set(new Tile(x, y, TileTypes.SKY));
+	}
+	collapseTileGroup(tiles){
+		tiles.forEach(tile => this.collapseTile(tile.x, tile.y));
+	}
+	getPathToExit(){
+		let passable = (x, y) => Game.map.get(x, y).type != "sky";
+		let astar = new rot.Path.AStar(Game.exit[0], Game.exit[1], passable, {topology: 4});
+		let path = [];
+		astar.compute(Game.player.x, Game.player.y, (x, y) => {
+			path.push([x, y]);
+		});
+		return path;
+	}
+	checkConnections(map){
+		
 	}
 	act(){
 		if(this.delay > 0){
 			this.delay--;
 		}
 		else{
-			let [x, y] = [null, null];
-			while(!x && !y){
-				//Choose a random tile
-				let pick = randTile();
-				//Check that it's not the tile the player is currently standing on.
-				if(Game.player.x != pick[0] || Game.player.y != pick[1]){
-					[x, y] = pick;
+			while(Object.keys(Game.map.floors).length > this.getPathToExit().length){
+				let pick = randFloor(Game.map);
+				if(pick!=null){
+					let tmp = Game.map.get(...pick);
+					this.collapseTile(...pick);
+					if(this.getPathToExit().length > 0){
+						Game.map.get(...pick).draw();
+						break;
+					}
+					else{
+						Game.map.set(tmp);
+					}
+				}
+				else if(Object.keys(Game.map.floors).length == 0){
+					break;
 				}
 			}
-			//Collapse tile
-			Game.map.set(x, y, new Tile(x, y, TileTypes.SKY));
-			Game.map.get(x, y).draw();
 		}
 	}
 }
 
-function isPassable(actor, x, y){
-	let passable = true;
-	if(['wall','sky'].includes(Game.map.get(x, y).type)){
-		passable = false;
-	}
-	let [collides, other] = actor.collides(x, y);
-	if(collides){
-		passable = false;
-	}
-	return passable;
-}
-
-class BasicAI {
-	findPath(actor, x, y){
-		/*
-			Passable function callback for ROT.Path.Astar can only take x and y as parameters
-			Create encapsulating function around isPassable to meet those requirements
-		*/
-		let passableCallback = function(x, y){
-			let result = isPassable(actor, x, y);
-			return result;
-		};
-		//Initialize pathfinder
-		let finder = new rot.Path.AStar(x, y, passableCallback, {topology:4});
-		//Find path to tile where ai can push the player off
-		let path = [];
-		finder.compute(actor.x, actor.y, (x, y)=>{
-			path.push({x: x, y: y});
-		});
-		return path;
-	}
-	moveToPlayer(actor, path){
-		if(path.length == 1){
-			actor.move(Game.player.x, Game.player.y);
-		}
-		else if(path.length > 1){
-			actor.move(path[1].x, path[1].y);
-		}
-	}
-}
-
-class PusherAI extends BasicAI{
-	run(actor){
-		let [result, tile] = Game.player.canFall();
-		if(!result){
-			return;
-		}
-		//Get the tile the AI needs to be on in order to push the player off
-		let x = Game.player.x - (tile.x - Game.player.x);
-		let y = Game.player.y - (tile.y - Game.player.y);
-		//Move actor towards that tile
-		let path = this.findPath(actor, x, y);
-		this.moveToPlayer(actor, path);
-	}
+function generateMap(w,h){
+	/*
+		Map Generation is divided into "layers"
+			1. Map is initialized with all sky tiles
+			2. Use 'Digger/Tunneler' algorithm to draw 'dungeon' made up of walls and 
+				floor tiles
+			3. Draw outer walls: Layer a rectangle of walls over "dungeon" from step 2
+			4. Mark tiles "inside" or "outside" based on position of walls from step 3
+			5. Assign appropriate glyph
+	*/
+	let map = new TileMap(w, h);
+	//Generate Arena
+	//let generator = new ROT.Map.Arena(w-4,h-4);
+	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
+	generator.create((x, y, wall)=>{
+		let SKY = TileTypes.SKY;
+		let FLOOR = TileTypes.FLOOR;
+		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
+	});
+	//Generate Rooms
+	
+	//Generate Corridors
+	//Generate holes in the floor
+	/*let holes = 5;
+	while(holes > 0){
+		let [x, y] = randTile();
+		map.set(new Tile(x, y, TileTypes.SKY));
+		holes--;
+	}*/
+	//Create exit
+	Game.exit = randFloor(map);
+	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
+	
+	return map;
 }
 
 const w = 50;
@@ -5685,8 +5693,23 @@ var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 };
 
-function randTile(){
-	return [randInt(2, w-2), randInt(2, h-2)];
+
+
+function randFloor(map){
+	let floors = Object.keys(map.floors);
+	if(floors.length > 0){
+		let floor = floors[randInt(0, floors.length)];
+		delete map.floors[floor];
+		let [x, y] = floor.split(',');
+		return [Number(x), Number(y)];
+	}
+	else{
+		return null;
+	}
+}
+
+function distance(x1, y1, x2, y2){ 
+	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2)); 
 }
 
 var Game = {
@@ -5702,21 +5725,9 @@ var Game = {
 		//Initialize Display
 		this.display = new rot.Display({width: w, height: h});
 		document.body.appendChild(this.display.getContainer());
-		//Generate Map
-		this.map = new TileMap(w, h);
-		let generator = new rot.Map.Arena(w-4,h-4);
-		generator.create((x, y, wall)=>{
-			let WALL = TileTypes.WALL;
-			let FLOOR = TileTypes.FLOOR;
-			this.map.set(x+2, y+2, new Tile(x+2, y+2, wall ? WALL: FLOOR));
-		});
-		//Generate holes in the floor
-		let holes = 5;
-		while(holes > 0){
-			let [x, y] = randTile();
-			this.map.set(x, y, new Tile(x, y, TileTypes.SKY));
-			holes--;
-		}
+		//Generate map with dimensions (w, h)
+		this.map = generateMap(w, h);
+		//Draw map
 		this.map.draw();
 		//Add Event Bus to global object
 		this.bus = eventbus_min;
@@ -5724,15 +5735,28 @@ var Game = {
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',4,4,new Glyph('@','#fff'));
+		let validStart = false;
+		let [rX, rY] = [null, null];
+		while(!validStart){
+			[rX, rY] = randFloor(this.map);
+			if(distance(this.exit[0], this.exit[1], rX, rY) >= 10){
+				validStart = true;
+			}
+		}
+		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));
 		this.player.draw();
 		//Create test monster
-		let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
+		//m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser();
-		m.draw();
 		
 		this.engine.start();
+	},
+	nextLevel(){
+		this.scheduler.clear();
+		let text = 'Multiple levels not implemented yet.';
+		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	},
 	over(victory){
 		//Game ended. Delete Scheduler and Engine
