@@ -31,6 +31,9 @@ export function randFloor(map){
 		let [x, y] = floor.split(',');
 		return [Number(x), Number(y)];
 	}
+	else{
+		return null;
+	}
 }
 
 export default {

@@ -5576,6 +5576,7 @@ class Player extends Actor{
 				Game.bus.dispatch('playermove', this);
 				break;
 			case rot.VK_PERIOD:
+				this.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
@@ -5607,10 +5608,18 @@ class Collapser{
 	}
 	collapseTile(x, y){
 		Game.map.set(new Tile(x, y, TileTypes.SKY));
-		Game.map.get(x, y).draw();
 	}
 	collapseTileGroup(tiles){
 		tiles.forEach(tile => this.collapseTile(tile.x, tile.y));
+	}
+	isExitReachable(){
+		let passable = (x, y) => Game.map.get(x, y).type != "sky";
+		let astar = new rot.Path.AStar(Game.exit[0], Game.exit[1], passable, {topology: 4});
+		let path = [];
+		astar.compute(Game.player.x, Game.player.y, (x, y) => {
+			path.push([x, y]);
+		});
+		return path.length > 0;
 	}
 	checkConnections(map){
 		
@@ -5620,8 +5629,23 @@ class Collapser{
 			this.delay--;
 		}
 		else{
-			this.collapseTile.apply(this, randFloor(Game.map));
-			
+			while(true){
+				let pick = randFloor(Game.map);
+				if(pick!=null){
+					let tmp = Game.map.get(...pick);
+					this.collapseTile(...pick);
+					if(this.isExitReachable()){
+						Game.map.get(...pick).draw();
+						break;
+					}
+					else{
+						Game.map.set(tmp);
+					}
+				}
+				else if(Object.keys(Game.map.floors).length == 0){
+					break;
+				}
+			}
 		}
 	}
 }
@@ -5641,9 +5665,9 @@ function generateMap(w,h){
 	//let generator = new ROT.Map.Arena(w-4,h-4);
 	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
 	generator.create((x, y, wall)=>{
-		let WALL = TileTypes.SKY;
+		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x+2, y+2, wall ? WALL: FLOOR));
+		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
 	});
 	//Generate Rooms
 	
@@ -5656,8 +5680,8 @@ function generateMap(w,h){
 		holes--;
 	}*/
 	//Create exit
-	let [exitX, exitY] = randFloor(map);
-	map.set(new Tile(exitX, exitY, TileTypes.EXIT));
+	Game.exit = randFloor(map);
+	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
 	
 	return map;
 }
@@ -5678,6 +5702,9 @@ function randFloor(map){
 		delete map.floors[floor];
 		let [x, y] = floor.split(',');
 		return [Number(x), Number(y)];
+	}
+	else{
+		return null;
 	}
 }
 

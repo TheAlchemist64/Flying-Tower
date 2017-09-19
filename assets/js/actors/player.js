@@ -30,6 +30,7 @@ export default class Player extends Actor{
 				Game.bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_PERIOD:
+				this.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.

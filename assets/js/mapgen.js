@@ -18,9 +18,9 @@ export default function generateMap(w,h){
 	//let generator = new ROT.Map.Arena(w-4,h-4);
 	let generator = new ROT.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
 	generator.create((x, y, wall)=>{
-		let WALL = TileTypes.SKY;
+		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x+2, y+2, wall ? WALL: FLOOR));
+		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
 	});
 	//Generate Rooms
 	
@@ -33,8 +33,8 @@ export default function generateMap(w,h){
 		holes--;
 	}*/
 	//Create exit
-	let [exitX, exitY] = randFloor(map);
-	map.set(new Tile(exitX, exitY, TileTypes.EXIT));
+	Game.exit = randFloor(map);
+	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
 	
 	return map;
 }
