@@ -5649,15 +5649,12 @@ class Collapser{
 					let tmp = Game.map.get(...pick);
 					this.collapseTile(...pick);
 					if(this.getPathToExit().length > 0){
+						delete Game.map.floors[pick];
 						Game.map.get(...pick).draw();
 						Game.map.tiles.forEach((tile,k)=>{
 							tile.connected = false;
 						});
 						this.updateConnections(Game.map, Game.exit[0], Game.exit[1]);
-						console.log(Object.keys(Game.map.floors).map(floor => {
-							let [x,y] = floor.split(',');
-							return Game.map.get(x, y).connected;
-						}));
 						Object.keys(Game.map.floors).forEach(floor => {
 							let [x,y] = floor.split(',');
 							if(!Game.map.get(x, y).connected){
@@ -5697,7 +5694,7 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
-const distFromExit = 20;
+const distFromExit = 25;
 
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
@@ -5709,7 +5706,6 @@ function randFloor(map){
 	let floors = Object.keys(map.floors);
 	if(floors.length > 0){
 		let floor = floors[randInt(0, floors.length)];
-		delete map.floors[floor];
 		let [x, y] = floor.split(',');
 		return [Number(x), Number(y)];
 	}
@@ -5748,9 +5744,14 @@ var Game = {
 		let validStart = false;
 		let [rX, rY] = [null, null];
 		while(!validStart){
-			[rX, rY] = randFloor(this.map);
-			if(distance(this.exit[0], this.exit[1], rX, rY) >= distFromExit){
-				validStart = true;
+			let f = randFloor(this.map);
+			if(f){
+				[rX, rY] = f;
+				let dist = distance(this.exit[0], this.exit[1], rX, rY);
+				if(dist >= distFromExit){
+					validStart = true;
+					console.log(dist);
+				}
 			}
 		}
 		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));

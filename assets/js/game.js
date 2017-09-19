@@ -13,7 +13,7 @@ import generateMap from './mapgen';
 
 const w = 50;
 const h = 25;
-const distFromExit = 20;
+const distFromExit = 25;
 
 export var randInt = function(a, b){
 	return a + Math.floor((b-a) * ROT.RNG.getUniform());
@@ -27,7 +27,6 @@ export function randFloor(map){
 	let floors = Object.keys(map.floors);
 	if(floors.length > 0){
 		let floor = floors[randInt(0, floors.length)];
-		delete map.floors[floor];
 		let [x, y] = floor.split(',');
 		return [Number(x), Number(y)];
 	}
@@ -66,9 +65,14 @@ export default {
 		let validStart = false;
 		let [rX, rY] = [null, null];
 		while(!validStart){
-			[rX, rY] = randFloor(this.map);
-			if(distance(this.exit[0], this.exit[1], rX, rY) >= distFromExit){
-				validStart = true;
+			let f = randFloor(this.map);
+			if(f){
+				[rX, rY] = f;
+				let dist = distance(this.exit[0], this.exit[1], rX, rY);
+				if(dist >= distFromExit){
+					validStart = true;
+					console.log(dist);
+				}
 			}
 		}
 		this.player = new Player('Player',rX,rY,new Glyph('@','#fff'));

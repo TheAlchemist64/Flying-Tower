@@ -49,15 +49,12 @@ export default class Collapser{
 					let tmp = Game.map.get(...pick);
 					this.collapseTile(...pick);
 					if(this.getPathToExit().length > 0){
+						delete Game.map.floors[pick];
 						Game.map.get(...pick).draw();
 						Game.map.tiles.forEach((tile,k)=>{
 							tile.connected = false;
 						});
 						this.updateConnections(Game.map, Game.exit[0], Game.exit[1]);
-						console.log(Object.keys(Game.map.floors).map(floor => {
-							let [x,y] = floor.split(',');
-							return Game.map.get(x, y).connected;
-						}));
 						Object.keys(Game.map.floors).forEach(floor => {
 							let [x,y] = floor.split(',');
 							if(!Game.map.get(x, y).connected){
