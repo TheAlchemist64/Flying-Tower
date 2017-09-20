@@ -5778,14 +5778,14 @@ var Game = {
 		let c = new Collapser(this.map, 10);
 		eventbus_min.addEventListener('tickCollapseTimer', (e, delay) => {
 			let x = w - 2;
-			let timerText = '';
+			let timerText = '%c{black}%b{skyblue}';
 			if(delay < 10){
-				timerText = '0'+delay;
+				timerText += '0'+delay;
 			}
 			else{
-				timerText = ''+delay;
+				timerText += delay;
 			}
-			this.display.drawText(x, 0, timerText, null, 'skyblue');
+			this.display.drawText(x, 0, timerText);
 		});
 		
 		eventbus_min.dispatch('tickCollapseTimer', this, c.delay);
