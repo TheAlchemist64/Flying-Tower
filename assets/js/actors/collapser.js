@@ -12,7 +12,7 @@ export default class Collapser{
 	}
 	getPathToExit(){
 		let passable = (x, y) => Game.map.get(x, y).type != "sky";
-		let astar = new ROT.Path.AStar(Game.exit[0], Game.exit[1], passable, {topology: 4});
+		let astar = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
 		let path = [];
 		astar.compute(Game.player.x, Game.player.y, (x, y) => {
 			path.push([x, y]);
@@ -51,7 +51,7 @@ export default class Collapser{
 						Game.map.tiles.forEach((tile,k)=>{
 							tile.connected = false;
 						});
-						this.updateConnections(Game.map, Game.exit[0], Game.exit[1]);
+						this.updateConnections(Game.map, Game.map.exit[0], Game.map.exit[1]);
 						Object.keys(Game.map.floors).forEach(floor => {
 							let [x,y] = floor.split(',');
 							if(!Game.map.get(x, y).connected){

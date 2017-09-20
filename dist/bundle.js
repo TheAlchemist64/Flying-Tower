@@ -5413,6 +5413,7 @@ class TileMap {
 		this.tiles = new Map();
 		this.floors = {};
 		this.start = {};
+		this.exit = [];
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
@@ -5622,7 +5623,7 @@ class Collapser{
 	}
 	getPathToExit(){
 		let passable = (x, y) => Game.map.get(x, y).type != "sky";
-		let astar = new rot.Path.AStar(Game.exit[0], Game.exit[1], passable, {topology: 4});
+		let astar = new rot.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
 		let path = [];
 		astar.compute(Game.player.x, Game.player.y, (x, y) => {
 			path.push([x, y]);
@@ -5661,7 +5662,7 @@ class Collapser{
 						Game.map.tiles.forEach((tile,k)=>{
 							tile.connected = false;
 						});
-						this.updateConnections(Game.map, Game.exit[0], Game.exit[1]);
+						this.updateConnections(Game.map, Game.map.exit[0], Game.map.exit[1]);
 						Object.keys(Game.map.floors).forEach(floor => {
 							let [x,y] = floor.split(',');
 							if(!Game.map.get(x, y).connected){
@@ -5699,9 +5700,9 @@ function generateMap(w,h){
 		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
 	});
 	//Create exit
-	Game.exit = randFloor(map);
-	delete map.floors[Game.exit.join(',')];
-	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
+	map.exit = randFloor(map);
+	delete map.floors[map.exit.join(',')];
+	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let queue = new priorityQueue_min({ 
 		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
@@ -5711,7 +5712,7 @@ function generateMap(w,h){
 	while(queue.length > 0){
 		let f = queue.dequeue();
 		[rX, rY] = f.split(',').map(x => Number(x));
-		let dist = distance(...Game.exit, rX, rY);
+		let dist = distance(...map.exit, rX, rY);
 		if(dist >= distFromExit$1){
 			console.log(dist);
 			break;

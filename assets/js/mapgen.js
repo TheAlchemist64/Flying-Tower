@@ -16,9 +16,9 @@ export default function generateMap(w,h){
 		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
 	});
 	//Create exit
-	Game.exit = randFloor(map);
-	delete map.floors[Game.exit.join(',')];
-	map.set(new Tile(Game.exit[0], Game.exit[1], TileTypes.EXIT));
+	map.exit = randFloor(map);
+	delete map.floors[map.exit.join(',')];
+	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let queue = new PriorityQueue({ 
 		comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
@@ -28,7 +28,7 @@ export default function generateMap(w,h){
 	while(queue.length > 0){
 		let f = queue.dequeue();
 		[rX, rY] = f.split(',').map(x => Number(x));
-		let dist = distance(...Game.exit, rX, rY);
+		let dist = distance(...map.exit, rX, rY);
 		if(dist >= distFromExit){
 			console.log(dist);
 			break;
