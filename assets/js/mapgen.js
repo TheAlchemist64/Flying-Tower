@@ -1,6 +1,7 @@
 import ROT from '../../vendor/rot';
 import PriorityQueue from '../../vendor/priority-queue.min';
-import Game, { randFloor, distance } from './game';
+
+import { randFloor, distance } from './game';
 import TileMap from './map';
 import { Tile, TileTypes } from './tile';
 
@@ -8,8 +9,8 @@ const distFromExit = 25;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
-	//Generate Arena
 	let generator = new ROT.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
+	//Create Floor and Sky tiles
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;

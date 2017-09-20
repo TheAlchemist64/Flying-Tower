@@ -1,14 +1,9 @@
 import ROT from '../../vendor/rot';
 import bus from '../../vendor/eventbus.min';
 
-import TileMap from './map.js';
-import { Tile, TileTypes } from './tile.js';
 import Player from './actors/player';
-import Monster from './actors/monster';
 import Collapser from './actors/collapser';
 import Glyph from './glyph';
-import { PusherAI } from './ai/pushoff';
-import StunnerAI from './ai/stun';
 import generateMap from './mapgen';
 
 const w = 50;
