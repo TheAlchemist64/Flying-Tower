@@ -10,9 +10,6 @@ export default class Collapser{
 	collapseTile(x, y){
 		Game.map.set(new Tile(x, y, TileTypes.SKY));
 	}
-	collapseTileGroup(tiles){
-		tiles.forEach(tile => this.collapseTile(tile.x, tile.y));
-	}
 	getPathToExit(){
 		let passable = (x, y) => Game.map.get(x, y).type != "sky";
 		let astar = new ROT.Path.AStar(Game.exit[0], Game.exit[1], passable, {topology: 4});
