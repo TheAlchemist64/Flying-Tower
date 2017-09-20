@@ -5614,16 +5614,17 @@ class Player extends Actor{
 }
 
 class Collapser{
-	constructor(delay){
+	constructor(map, delay){
+		this.map = map;
 		this.delay = delay || 0; // # of turns to wait before collapsing tiles
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){
-		Game.map.set(new Tile(x, y, TileTypes.SKY));
+		this.map.set(new Tile(x, y, TileTypes.SKY));
 	}
 	getPathToExit(){
-		let passable = (x, y) => Game.map.get(x, y).type != "sky";
-		let astar = new rot.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
+		let passable = (x, y) => this.map.get(x, y).type != "sky";
+		let astar = new rot.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
 		let path = [];
 		astar.compute(Game.player.x, Game.player.y, (x, y) => {
 			path.push([x, y]);
@@ -5651,32 +5652,32 @@ class Collapser{
 			this.delay--;
 		}
 		else{
-			while(Object.keys(Game.map.floors).length > this.getPathToExit().length){
-				let pick = randFloor(Game.map);
+			while(Object.keys(this.map.floors).length > this.getPathToExit().length){
+				let pick = randFloor(this.map);
 				if(pick!=null){
-					let tmp = Game.map.get(...pick);
+					let tmp = this.map.get(...pick);
 					this.collapseTile(...pick);
 					if(this.getPathToExit().length > 0){
-						delete Game.map.floors[pick];
-						Game.map.get(...pick).draw();
-						Game.map.tiles.forEach((tile,k)=>{
+						delete this.map.floors[pick];
+						this.map.get(...pick).draw();
+						this.map.tiles.forEach((tile,k)=>{
 							tile.connected = false;
 						});
-						this.updateConnections(Game.map, Game.map.exit[0], Game.map.exit[1]);
-						Object.keys(Game.map.floors).forEach(floor => {
+						this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+						Object.keys(this.map.floors).forEach(floor => {
 							let [x,y] = floor.split(',');
-							if(!Game.map.get(x, y).connected){
+							if(!this.map.get(x, y).connected){
 								this.collapseTile(x, y);
-								Game.map.get(x, y).draw();
+								this.map.get(x, y).draw();
 							}
 						});
 						break;
 					}
 					else{
-						Game.map.set(tmp);
+						this.map.set(tmp);
 					}
 				}
-				else if(Object.keys(Game.map.floors).length == 0){
+				else if(Object.keys(this.map.floors).length == 0){
 					break;
 				}
 			}
@@ -5776,7 +5777,7 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser();
+		let c = new Collapser(this.map);
 		
 		this.engine.start();
 	},

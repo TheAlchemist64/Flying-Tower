@@ -68,7 +68,7 @@ export default {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser();
+		let c = new Collapser(this.map);
 		
 		this.engine.start();
 	},
