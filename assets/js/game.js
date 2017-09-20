@@ -65,8 +65,20 @@ export default {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map);
+		let c = new Collapser(this.map, 10);
+		bus.addEventListener('tickCollapseTimer', (e, delay) => {
+			let x = w - 2;
+			let timerText = '';
+			if(delay < 10){
+				timerText = '0'+delay;
+			}
+			else{
+				timerText = ''+delay;
+			}
+			this.display.drawText(x, 0, timerText, null, 'skyblue');
+		});
 		
+		bus.dispatch('tickCollapseTimer', this, c.delay);
 		this.engine.start();
 	},
 	nextLevel(){

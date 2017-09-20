@@ -1,4 +1,6 @@
 import ROT from '../../../vendor/rot';
+import bus from '../../../vendor/eventbus.min';
+
 import Game, { randTile, randFloor } from "../game";
 import { Tile, TileTypes } from "../tile";
 
@@ -39,6 +41,7 @@ export default class Collapser{
 	act(){
 		if(this.delay > 0){
 			this.delay--;
+			bus.dispatch('tickCollapseTimer', this, this.delay);
 		}
 		else{
 			while(Object.keys(this.map.floors).length > this.getPathToExit().length){

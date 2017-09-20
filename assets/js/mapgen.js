@@ -13,7 +13,7 @@ export default function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
+		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
 	//Create exit
 	map.exit = randFloor(map);

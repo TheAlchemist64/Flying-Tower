@@ -5650,6 +5650,7 @@ class Collapser{
 	act(){
 		if(this.delay > 0){
 			this.delay--;
+			eventbus_min.dispatch('tickCollapseTimer', this, this.delay);
 		}
 		else{
 			while(Object.keys(this.map.floors).length > this.getPathToExit().length){
@@ -5698,7 +5699,7 @@ function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x+2, y+2, wall ? SKY: FLOOR));
+		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
 	//Create exit
 	map.exit = randFloor(map);
@@ -5774,8 +5775,20 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map);
+		let c = new Collapser(this.map, 10);
+		eventbus_min.addEventListener('tickCollapseTimer', (e, delay) => {
+			let x = w - 2;
+			let timerText = '';
+			if(delay < 10){
+				timerText = '0'+delay;
+			}
+			else{
+				timerText = ''+delay;
+			}
+			this.display.drawText(x, 0, timerText, null, 'skyblue');
+		});
 		
+		eventbus_min.dispatch('tickCollapseTimer', this, c.delay);
 		this.engine.start();
 	},
 	nextLevel(){
