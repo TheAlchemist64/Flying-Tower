@@ -1,5 +1,5 @@
 import ROT from '../../vendor/rot';
-import EventBus from '../../vendor/eventbus.min';
+import bus from '../../vendor/eventbus.min';
 
 import TileMap from './map.js';
 import { Tile, TileTypes } from './tile.js';
@@ -42,7 +42,6 @@ export function distance(x1, y1, x2, y2){
 export default {
 	display: null,
 	map: null,
-	bus: null,
 	actors: [],
 	player: null,
 	scheduler: null,
@@ -56,8 +55,6 @@ export default {
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
-		//Add Event Bus to global object
-		this.bus = EventBus;
 		//Initialize Turn Engine
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);

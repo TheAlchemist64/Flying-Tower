@@ -1,6 +1,8 @@
-import Actor from '../actor';
 import ROT from '../../../vendor/rot';
+import bus from '../../../vendor/eventbus.min';
+
 import Game from './../game';
+import Actor from '../actor';
 
 export default class Player extends Actor{
 	act(){
@@ -16,19 +18,19 @@ export default class Player extends Actor{
 		switch(code){
 			case ROT.VK_UP:
 				endTurn = super.move(x,y-1);
-				Game.bus.dispatch('playermove', this);
+				bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_RIGHT:
 				endTurn = super.move(x+1,y);
-				Game.bus.dispatch('playermove', this);
+				bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_DOWN:
 				endTurn = super.move(x,y+1);
-				Game.bus.dispatch('playermove', this);
+				bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_LEFT:
 				endTurn = super.move(x-1,y);
-				Game.bus.dispatch('playermove', this);
+				bus.dispatch('playermove', this);
 				break;
 			case ROT.VK_PERIOD:
 				endTurn = true;

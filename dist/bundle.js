@@ -5570,19 +5570,19 @@ class Player extends Actor{
 		switch(code){
 			case rot.VK_UP:
 				endTurn = super.move(x,y-1);
-				Game.bus.dispatch('playermove', this);
+				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_RIGHT:
 				endTurn = super.move(x+1,y);
-				Game.bus.dispatch('playermove', this);
+				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_DOWN:
 				endTurn = super.move(x,y+1);
-				Game.bus.dispatch('playermove', this);
+				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_LEFT:
 				endTurn = super.move(x-1,y);
-				Game.bus.dispatch('playermove', this);
+				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_PERIOD:
 				endTurn = true;
@@ -5751,7 +5751,6 @@ function distance(x1, y1, x2, y2){
 var Game = {
 	display: null,
 	map: null,
-	bus: null,
 	actors: [],
 	player: null,
 	scheduler: null,
@@ -5765,8 +5764,6 @@ var Game = {
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
-		//Add Event Bus to global object
-		this.bus = eventbus_min;
 		//Initialize Turn Engine
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
