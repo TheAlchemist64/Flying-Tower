@@ -5596,7 +5596,7 @@ class Collapser{
 		return path;
 	}
 	updateConnections(map, x, y){
-		if(x < 0 || y < 0 || x >= map.width || y >= map.height){
+		if(!map.inBounds(x, y)){
 			return;
 		}
 		if(map.get(x, y).connected){
