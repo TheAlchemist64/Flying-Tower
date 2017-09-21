@@ -5489,19 +5489,15 @@ class Player extends Actor{
 		switch(code){
 			case rot.VK_UP:
 				endTurn = super.move(x,y-1);
-				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_RIGHT:
 				endTurn = super.move(x+1,y);
-				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_DOWN:
 				endTurn = super.move(x,y+1);
-				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_LEFT:
 				endTurn = super.move(x-1,y);
-				eventbus_min.dispatch('playermove', this);
 				break;
 			case rot.VK_PERIOD:
 				endTurn = true;
