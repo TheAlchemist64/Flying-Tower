@@ -3,7 +3,7 @@ import bus from '../vendor/eventbus.min';
 
 import Actor from './actor';
 import PlayerController from './controllers/player';
-import Collapser from './actors/collapser';
+import Collapser from './collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
 

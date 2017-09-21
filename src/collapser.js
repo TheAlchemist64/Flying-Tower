@@ -1,9 +1,9 @@
-import ROT from '../../vendor/rot';
-import bus from '../../vendor/eventbus.min';
+import ROT from '../vendor/rot';
+import bus from '../vendor/eventbus.min';
 
-import Game, { randTile, randFloor } from "../game";
-import Tile from "../map/tile";
-import TileTypes from '../map/tiletypes';
+import Game, { randTile, randFloor } from "./game";
+import Tile from "./map/tile";
+import TileTypes from './map/tiletypes';
 
 export default class Collapser{
 	constructor(map, delay){
