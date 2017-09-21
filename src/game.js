@@ -4,7 +4,7 @@ import bus from '../vendor/eventbus.min';
 import Player from './actors/player';
 import Collapser from './actors/collapser';
 import Glyph from './glyph';
-import generateMap from './map/mapgen';
+import generateMap from './map/generator';
 
 const w = 50;
 const h = 25;
