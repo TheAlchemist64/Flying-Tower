@@ -1,7 +1,7 @@
-import ROT from '../vendor/rot';
-import PriorityQueue from '../vendor/priority-queue.min';
+import ROT from '../../vendor/rot';
+import PriorityQueue from '../../vendor/priority-queue.min';
 
-import { randFloor, distance } from './game';
+import { randFloor, distance } from '../game';
 import TileMap from './map';
 import Tile from './tile';
 import TileTypes from './tiletypes';

@@ -1,4 +1,4 @@
-import Glyph from './glyph';
+import Glyph from '../glyph';
 
 export default {
 	WALL: {
