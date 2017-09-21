@@ -1,4 +1,5 @@
-import { Tile, TileTypes } from './tile';
+import Tile from './tile';
+import TileTypes from './tiletypes';
 
 export default class TileMap {
 	constructor(width, height){

@@ -3,7 +3,8 @@ import PriorityQueue from '../../vendor/priority-queue.min';
 
 import { randFloor, distance } from './game';
 import TileMap from './map';
-import { Tile, TileTypes } from './tile';
+import Tile from './tile';
+import TileTypes from './tiletypes';
 
 const distFromExit = 25;
 
