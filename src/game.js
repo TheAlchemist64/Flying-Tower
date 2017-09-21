@@ -3,7 +3,7 @@ import bus from '../vendor/eventbus.min';
 
 import Player from './actors/player';
 import Collapser from './actors/collapser';
-import Glyph from './glyph';
+import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
 
 const w = 50;
@@ -54,7 +54,7 @@ export default {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',this.map.start.x,this.map.start.y,new Glyph('@','#fff'));
+		this.player = new Player('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph);
 		this.player.draw();
 		//Create test monster
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());

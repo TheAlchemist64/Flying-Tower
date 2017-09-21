@@ -1,6 +1,10 @@
 import Glyph from '../glyph';
 
 export default {
+	PLAYER: {
+		name: 'player',
+		glyph: new Glyph('@','#fff')
+	},
 	WALL: {
 		name: 'wall',
 		glyph: new Glyph('#')

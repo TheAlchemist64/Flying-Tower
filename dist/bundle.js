@@ -5555,6 +5555,10 @@ class Glyph {
 }
 
 var TileTypes = {
+	PLAYER: {
+		name: 'player',
+		glyph: new Glyph('@','#fff')
+	},
 	WALL: {
 		name: 'wall',
 		glyph: new Glyph('#')
@@ -5765,7 +5769,7 @@ var Game = {
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',this.map.start.x,this.map.start.y,new Glyph('@','#fff'));
+		this.player = new Player('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph);
 		this.player.draw();
 		//Create test monster
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
