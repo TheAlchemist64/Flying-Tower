@@ -1,5 +1,5 @@
-import ROT from '../../vendor/rot';
-import bus from '../../vendor/eventbus.min';
+import ROT from '../vendor/rot';
+import bus from '../vendor/eventbus.min';
 
 import Player from './actors/player';
 import Collapser from './actors/collapser';

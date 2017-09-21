@@ -59,3 +59,6 @@ typings/
 
 # Folder for GIFs
 screenshots
+
+#For Mac
+*.DS_Store

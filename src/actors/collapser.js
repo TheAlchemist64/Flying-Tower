@@ -1,5 +1,5 @@
-import ROT from '../../../vendor/rot';
-import bus from '../../../vendor/eventbus.min';
+import ROT from '../../vendor/rot';
+import bus from '../../vendor/eventbus.min';
 
 import Game, { randTile, randFloor } from "../game";
 import Tile from "../tile";
