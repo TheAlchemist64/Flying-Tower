@@ -1,11 +1,12 @@
 import Game from './game';
 
 export default class Actor {
-	constructor(name, x, y, glyph){
+	constructor(name, x, y, glyph, controller){
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		this.controller = controller || null;
 		this.state = "active";
 		this.stunned = 0;
 		this.immune = 0;
@@ -13,28 +14,8 @@ export default class Actor {
 		Game.scheduler.add(this,true);
 	}
 	act(){
-		if(this.state=="stunned"){
-			this.stunned--;
-			if(this.stunned > 0){
-				this.glyph.chr = this.stunned;
-			}
-			else{
-				this.state = "immune";
-				this.immune = 1;
-				this.glyph.chr = "*";
-			}
-			this.draw();
-		}
-		else if(this.state=="immune"){
-			this.immune--;
-			if(!this.immune){
-				this.state = "active";
-				this.glyph.chr = this._chr;
-				delete this._chr;
-				this.glyph.fg = this._fg;
-				delete this._fg;
-				this.draw();
-			}
+		if(this.controller){
+			this.controller.run(this);
 		}
 	}
 	draw(){

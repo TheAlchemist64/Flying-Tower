@@ -1,31 +1,32 @@
 import ROT from '../../vendor/rot';
 
-import Game from './../game';
-import Actor from '../actor';
+import Game from '../game';
+import Controller from '../controller';
 
-export default class Player extends Actor{
-	act(){
-		super.act();
+export default class PlayerController extends Controller {
+	run(actor){
+		super.run(actor);
+		this.actor = actor;
 		Game.engine.lock();
 		window.addEventListener('keydown',this);
 	}
 	handleEvent(e){
 		let code = e.keyCode;
-		let x = this.x;
-		let y = this.y;
+		let x = this.actor.x;
+		let y = this.actor.y;
 		let endTurn = 0;
 		switch(code){
 			case ROT.VK_UP:
-				endTurn = super.move(x,y-1);
+				endTurn = this.actor.move(x,y-1);
 				break;
 			case ROT.VK_RIGHT:
-				endTurn = super.move(x+1,y);
+				endTurn = this.actor.move(x+1,y);
 				break;
 			case ROT.VK_DOWN:
-				endTurn = super.move(x,y+1);
+				endTurn = this.actor.move(x,y+1);
 				break;
 			case ROT.VK_LEFT:
-				endTurn = super.move(x-1,y);
+				endTurn = this.actor.move(x-1,y);
 				break;
 			case ROT.VK_PERIOD:
 				endTurn = true;
@@ -35,6 +36,7 @@ export default class Player extends Actor{
 				return; //Keyboard input not recognized.
 		}
 		if(endTurn){
+			this.actor = null;
 			window.removeEventListener('keydown',this);
 			Game.engine.unlock();
 		}

@@ -1,7 +1,8 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
 
-import Player from './actors/player';
+import Actor from './actor';
+import PlayerController from './controllers/player';
 import Collapser from './actors/collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
@@ -54,7 +55,7 @@ export default {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph);
+		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
 		//Create test monster
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());

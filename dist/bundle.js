@@ -5362,11 +5362,12 @@ var eventbus_min = createCommonjsModule(function (module, exports) {
 });
 
 class Actor {
-	constructor(name, x, y, glyph){
+	constructor(name, x, y, glyph, controller){
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.glyph = glyph;
+		this.controller = controller || null;
 		this.state = "active";
 		this.stunned = 0;
 		this.immune = 0;
@@ -5374,28 +5375,8 @@ class Actor {
 		Game.scheduler.add(this,true);
 	}
 	act(){
-		if(this.state=="stunned"){
-			this.stunned--;
-			if(this.stunned > 0){
-				this.glyph.chr = this.stunned;
-			}
-			else{
-				this.state = "immune";
-				this.immune = 1;
-				this.glyph.chr = "*";
-			}
-			this.draw();
-		}
-		else if(this.state=="immune"){
-			this.immune--;
-			if(!this.immune){
-				this.state = "active";
-				this.glyph.chr = this._chr;
-				delete this._chr;
-				this.glyph.fg = this._fg;
-				delete this._fg;
-				this.draw();
-			}
+		if(this.controller){
+			this.controller.run(this);
 		}
 	}
 	draw(){
@@ -5475,29 +5456,58 @@ class Actor {
 	}
 }
 
-class Player extends Actor{
-	act(){
-		super.act();
+class Controller {
+	run(actor){
+		if(this.state=="stunned"){
+			this.stunned--;
+			if(this.stunned > 0){
+				this.glyph.chr = this.stunned;
+			}
+			else{
+				this.state = "immune";
+				this.immune = 1;
+				this.glyph.chr = "*";
+			}
+			this.draw();
+		}
+		else if(this.state=="immune"){
+			this.immune--;
+			if(!this.immune){
+				this.state = "active";
+				this.glyph.chr = this._chr;
+				delete this._chr;
+				this.glyph.fg = this._fg;
+				delete this._fg;
+				this.draw();
+			}
+		}
+	}
+}
+
+class PlayerController extends Controller {
+	run(actor){
+		super.run(actor);
+		this.actor = actor;
 		Game.engine.lock();
 		window.addEventListener('keydown',this);
 	}
 	handleEvent(e){
 		let code = e.keyCode;
-		let x = this.x;
-		let y = this.y;
+		let x = this.actor.x;
+		let y = this.actor.y;
 		let endTurn = 0;
 		switch(code){
 			case rot.VK_UP:
-				endTurn = super.move(x,y-1);
+				endTurn = this.actor.move(x,y-1);
 				break;
 			case rot.VK_RIGHT:
-				endTurn = super.move(x+1,y);
+				endTurn = this.actor.move(x+1,y);
 				break;
 			case rot.VK_DOWN:
-				endTurn = super.move(x,y+1);
+				endTurn = this.actor.move(x,y+1);
 				break;
 			case rot.VK_LEFT:
-				endTurn = super.move(x-1,y);
+				endTurn = this.actor.move(x-1,y);
 				break;
 			case rot.VK_PERIOD:
 				endTurn = true;
@@ -5507,6 +5517,7 @@ class Player extends Actor{
 				return; //Keyboard input not recognized.
 		}
 		if(endTurn){
+			this.actor = null;
 			window.removeEventListener('keydown',this);
 			Game.engine.unlock();
 		}
@@ -5769,7 +5780,7 @@ var Game = {
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
 		//Create Player
-		this.player = new Player('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph);
+		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
 		//Create test monster
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
