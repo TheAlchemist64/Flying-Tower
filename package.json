@@ -27,6 +27,7 @@
   "devDependencies": {
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-local-resolve": "^1.0.7",
     "rollup-watch": "^4.3.1"
   }
 }
