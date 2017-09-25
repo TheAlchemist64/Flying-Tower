@@ -5487,7 +5487,9 @@ class Controller {
 class PlayerController extends Controller {
 	run(actor){
 		super.run(actor);
-		this.actor = actor;
+		if(!this.actor){
+			this.actor = actor;
+		}
 		Game.engine.lock();
 		window.addEventListener('keydown',this);
 	}
