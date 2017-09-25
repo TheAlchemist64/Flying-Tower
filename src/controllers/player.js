@@ -30,7 +30,7 @@ export default class PlayerController extends Controller {
 				break;
 			case ROT.VK_PERIOD:
 				endTurn = true;
-				this.draw();
+				this.actor.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.

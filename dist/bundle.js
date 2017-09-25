@@ -5511,7 +5511,7 @@ class PlayerController extends Controller {
 				break;
 			case rot.VK_PERIOD:
 				endTurn = true;
-				this.draw();
+				this.actor.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
