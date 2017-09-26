@@ -5816,7 +5816,7 @@ class Item {
 			this.draw();
 		}
 		else{
-			Game.map.get(x, this.y).draw();
+			eventbus_min.dispatch('resetTile', this, x, this.y);
 		}
 	}
 	set y(y){ 
@@ -5825,7 +5825,7 @@ class Item {
 			this.draw();
 		}
 		else{
-			Game.map.get(this.x, y).draw();
+			eventbus_min.dispatch('resetTile', this, this.x, y);
 		}
 	}
 }
@@ -5870,6 +5870,10 @@ var Game = {
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
+		//Tell map to listen for reset tile events
+		eventbus_min.addEventListener('resetTile', (x, y) => {
+			this.map.get(x, y).draw();
+		});
 		//Initialize Turn Engine
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);
@@ -5892,8 +5896,8 @@ var Game = {
 			}
 			this.display.drawText(x, 0, timerText);
 		});
-		
 		eventbus_min.dispatch('tickCollapseTimer', this, c.delay);
+		
 		//Create Test item
 		let pick = randFloor(this.map);
 		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
