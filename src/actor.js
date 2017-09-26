@@ -1,3 +1,5 @@
+import bus from '../vendor/eventbus.min';
+
 import Game from './game';
 
 export default class Actor {
@@ -90,6 +92,7 @@ export default class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
+		bus.dispatch('moveout', this, cx, cy);
 		this.draw();
 		return 1;
 	}
