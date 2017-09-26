@@ -1,7 +1,5 @@
 import bus from '../vendor/eventbus.min';
 
-import Game from './game';
-
 export default class Item {
 	constructor(name, glyph, x, y){
 		this.name = name;
@@ -25,7 +23,7 @@ export default class Item {
 			this.draw();
 		}
 		else{
-			Game.map.get(x, this.y).draw();
+			bus.dispatch('resetTile', this, x, this.y);
 		}
 	}
 	set y(y){ 
@@ -34,7 +32,7 @@ export default class Item {
 			this.draw();
 		}
 		else{
-			Game.map.get(this.x, y).draw();
+			bus.dispatch('resetTile', this, this.x, y);
 		}
 	}
 }

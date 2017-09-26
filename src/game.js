@@ -53,6 +53,10 @@ export default {
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
+		//Tell map to listen for reset tile events
+		bus.addEventListener('resetTile', (x, y) => {
+			this.map.get(x, y).draw();
+		});
 		//Initialize Turn Engine
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
@@ -75,8 +79,8 @@ export default {
 			}
 			this.display.drawText(x, 0, timerText);
 		});
-		
 		bus.dispatch('tickCollapseTimer', this, c.delay);
+		
 		//Create Test item
 		let pick = randFloor(this.map);
 		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
