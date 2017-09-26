@@ -6,6 +6,8 @@ import PlayerController from './controllers/player';
 import Collapser from './collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
+import Glyph from './glyph';
+import Item from './item';
 
 const w = 50;
 const h = 25;
@@ -75,6 +77,12 @@ export default {
 		});
 		
 		bus.dispatch('tickCollapseTimer', this, c.delay);
+		//Create Test item
+		let pick = randFloor(this.map);
+		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
+		delete this.map.floors[pick[0]+','+pick[1]];
+		i.draw();
+		
 		this.engine.start();
 	},
 	nextLevel(){

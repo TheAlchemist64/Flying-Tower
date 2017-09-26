@@ -5451,6 +5451,7 @@ class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
+		eventbus_min.dispatch('moveout', this, cx, cy);
 		this.draw();
 		return 1;
 	}
@@ -5792,6 +5793,43 @@ function generateMap(w,h){
 	return map;
 }
 
+class Item {
+	constructor(name, glyph, x, y){
+		this.name = name;
+		this.glyph = glyph;
+		this._x = x || -1;
+		this._y = y || -1;
+		eventbus_min.addEventListener('moveout', (e, x, y) => {
+			if(x==this._x && y==this._y){
+				this.draw();
+			}
+		});
+	}
+	draw(){
+		this.glyph.draw(this._x, this._y);
+	}
+	get x(){ return this._x; }
+	get y(){ return this._y; }
+	set x(x){ 
+		this._x = x; 
+		if(x >= 0 && this._y > 0){
+			this.draw();
+		}
+		else{
+			Game.map.get(x, this.y).draw();
+		}
+	}
+	set y(y){ 
+		this._y = y; 
+		if(y >= 0 && this._y > 0){
+			this.draw();
+		}
+		else{
+			Game.map.get(this.x, y).draw();
+		}
+	}
+}
+
 const w = 50;
 const h = 25;
 var randInt = function(a, b){
@@ -5856,6 +5894,12 @@ var Game = {
 		});
 		
 		eventbus_min.dispatch('tickCollapseTimer', this, c.delay);
+		//Create Test item
+		let pick = randFloor(this.map);
+		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
+		delete this.map.floors[pick[0]+','+pick[1]];
+		i.draw();
+		
 		this.engine.start();
 	},
 	nextLevel(){
