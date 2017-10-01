@@ -5635,17 +5635,20 @@ class Collapser{
 		let innerProduct = (x - Game.player.x) * dx + (y - Game.player.y) * dy;
 		return 0 <= innerProduct && innerProduct <= dx*dx + dy*dy;
 	}
-	collapseSection(){
-		Object.keys(this.map.floors).forEach(floor => {
-			let [x,y] = floor.split(',');
-			if(!this.map.get(x, y).connected){
-				this.collapseTile(x, y);
-				this.map.get(x, y).draw();
+	collapseUnconnected(){
+		this.map.tiles.forEach((tile, k)=>{
+			tile.connected = false;
+		});
+		this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+		this.map.tiles.forEach(tile => {
+			if(tile.type=='floor' && !tile.connected){
+				this.collapseTile(tile.x, tile.y);
+				tile.draw();
 			}
 		});
 	}
 	collapseSectionNotOnPath(){
-		while(Object.keys(this.map.floors).length > this.getPathToExit().length){
+		/*while(Object.keys(this.map.floors).length > this.getPathToExit().length){
 			let pick = randFloor(this.map);
 			if(pick!=null){
 				let tmp = this.map.get(...pick);
@@ -5667,6 +5670,19 @@ class Collapser{
 			else if(Object.keys(this.map.floors).length == 0){
 				break;
 			}
+		}*/
+		while(this.map.floors.length > 0 && this.map.floors.length > this.getPathToExit().length){
+			let [x, y] = this.map.floors.dequeue();
+			let tmp = this.map.get(x, y);
+			this.collapseTile(x, y);
+			if(this.getPathToExit().length  > 0){
+				this.map.get(x, y).draw();
+				this.collapseUnconnected();
+				break;
+			}
+			else{
+				this.map.set(tmp);
+			}
 		}
 	}
 	act(){
@@ -5676,10 +5692,42 @@ class Collapser{
 		}
 		else{
 			this.steps++;
-			if(this.steps % canBeFatal == 0){
-				//any tile can be collapsed, which can be fatal to the player
-				let pick = randFloor(this.map);
-				if(pick!=null){
+			if(this.map.floors.length > 0){
+				if(this.steps % canBeFatal == 0){
+					//any tile can be collapsed, which can be fatal to the player
+					/*let pick = randFloor(this.map);
+					if(pick!=null){
+						this.collapseTile(...pick);
+						delete this.map.floors[pick];
+						this.map.get(...pick).draw();
+						this.map.tiles.forEach((tile,k)=>{
+							tile.connected = false;
+						});
+						this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+						this.collapseSection();
+						if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
+							Game.over(false);
+						}
+					}*/
+					let [x, y] = this.map.floors.dequeue();
+					this.collapseTile(x, y);
+					this.map.get(x, y).draw();
+					this.collapseUnconnected();
+					if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
+						Game.over(false);
+					}
+				}
+				else if(this.steps % notOnPath == 0){
+					//the tile collapsed cannot be on the shortest path to the exit
+					this.collapseSectionNotOnPath();
+				}
+				else if(this.steps % notBetweenPnE == 0){
+					//The tile cannot be between the player and the exit at all.
+					/*let pick = null;
+					while(pick==null || this.betweenPlayerAndExit(...pick)){
+						pick = randFloor(this.map);
+					
+					}
 					this.collapseTile(...pick);
 					delete this.map.floors[pick];
 					this.map.get(...pick).draw();
@@ -5687,31 +5735,20 @@ class Collapser{
 						tile.connected = false;
 					});
 					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-					this.collapseSection();
-					if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
-						Game.over(false);
+					this.collapseSection();*/
+					let [x, y] = [null, null];
+					let valid = false;
+					let n = 0;
+					while(!valid && n != this.map.floors.length){
+						[x, y] = this.map.floors.dequeue();
+						if(this.betweenPlayerAndExit(x, y)){
+							this.map.floors.queue([x, y]);
+							n++;
+						}
 					}
+					this.collapseTile(x, y);
+					this.collapseUnconnected();
 				}
-			}
-			else if(this.steps % notOnPath == 0){
-				//the tile collapsed cannot be on the shortest path to the exit
-				this.collapseSectionNotOnPath();
-			}
-			else if(this.steps % notBetweenPnE == 0){
-				//The tile cannot be between the player and the exit at all.
-				let pick = null;
-				while(pick==null || this.betweenPlayerAndExit(...pick)){
-					pick = randFloor(this.map);
-					
-				}
-				this.collapseTile(...pick);
-				delete this.map.floors[pick];
-				this.map.get(...pick).draw();
-				this.map.tiles.forEach((tile,k)=>{
-					tile.connected = false;
-				});
-				this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-				this.collapseSection();
 			}
 		}
 	}
@@ -5726,9 +5763,11 @@ class TileMap {
 		this.width = width;
 		this.height = height;
 		this.tiles = new Map();
-		this.floors = {};
+		this.floors = new priorityQueue_min({
+			comparator: (a,b) => rot.RNG.getUniform() * 2 - 1
+		});
 		this.start = {};
-		this.exit = [];
+		this.exit = null;
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
@@ -5740,10 +5779,7 @@ class TileMap {
 	}
 	set(tile){
 		if(tile.type=="floor"){
-			this.floors[tile.x+','+tile.y] = true;
-		}
-		else if(tile.type!="floor" && this.floors[tile.x+','+tile.y]){
-			delete this.floors[tile.x+','+tile.y];
+			this.floors.queue([tile.x,tile.y]);
 		}
 		this.tiles.set(tile.x+','+tile.y,tile);
 	}
@@ -5769,18 +5805,12 @@ function generateMap(w,h){
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
 	//Create exit
-	map.exit = randFloor(map);
-	delete map.floors[map.exit.join(',')];
+	map.exit = map.floors.dequeue();
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
-	let queue = new priorityQueue_min({ 
-		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
-		initialValues: Object.keys(map.floors)
-	});
 	let [rX, rY] = [null, null];
-	while(queue.length > 0){
-		let f = queue.dequeue();
-		[rX, rY] = f.split(',').map(x => Number(x));
+	while(map.floors.length > 0){
+		[rX, rY] = map.floors.dequeue();
 		let dist = distance(...map.exit, rX, rY);
 		if(dist >= distFromExit$1){
 			console.log(dist);
@@ -5794,23 +5824,11 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
-var randInt = function(a, b){
-	return a + Math.floor((b-a) * rot.RNG.getUniform());
-};
 
 
 
-function randFloor(map){
-	let floors = Object.keys(map.floors);
-	if(floors.length > 0){
-		let floor = floors[randInt(0, floors.length)];
-		let [x, y] = floor.split(',');
-		return [Number(x), Number(y)];
-	}
-	else{
-		return null;
-	}
-}
+
+
 
 function distance(x1, y1, x2, y2){ 
 	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2)); 
