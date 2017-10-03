@@ -5556,7 +5556,7 @@ class Tile {
 	}
 }
 
-class Glyph {
+class Glyph$1 {
 	constructor(chr, fg, bg){
 		this.chr = chr || ' ';
 		this.fg = fg || '#fff';
@@ -5570,23 +5570,23 @@ class Glyph {
 var TileTypes = {
 	PLAYER: {
 		name: 'player',
-		glyph: new Glyph('@','#fff')
+		glyph: new Glyph$1('@','#fff')
 	},
 	WALL: {
 		name: 'wall',
-		glyph: new Glyph('#')
+		glyph: new Glyph$1('#')
 	},
 	FLOOR: {
 		name: 'floor',
-		glyph: new Glyph(' ')
+		glyph: new Glyph$1(' ')
 	},
 	SKY: {
 		name: 'sky',
-		glyph: new Glyph(' ',null,'skyblue')
+		glyph: new Glyph$1(' ',null,'skyblue')
 	},
 	EXIT: {
 		name: 'exit',
-		glyph: new Glyph('^', 'gold')
+		glyph: new Glyph$1('^', 'gold')
 	}
 };
 
@@ -5856,6 +5856,12 @@ var Game = {
 		});
 		
 		eventbus_min.dispatch('tickCollapseTimer', this, c.delay);
+		//Create Test item
+		let pick = randFloor(this.map);
+		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
+		delete this.map.floors[pick[0]+','+pick[1]];
+		i.draw();
+		
 		this.engine.start();
 	},
 	nextLevel(){

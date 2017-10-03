@@ -75,6 +75,12 @@ export default {
 		});
 		
 		bus.dispatch('tickCollapseTimer', this, c.delay);
+		//Create Test item
+		let pick = randFloor(this.map);
+		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
+		delete this.map.floors[pick[0]+','+pick[1]];
+		i.draw();
+		
 		this.engine.start();
 	},
 	nextLevel(){
