@@ -6,6 +6,8 @@ import PlayerController from './controllers/player';
 import Collapser from './collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
+import Item from './item';
+import Glyph from './glyph';
 
 const w = 50;
 const h = 25;
@@ -78,7 +80,6 @@ export default {
 		//Create Test item
 		let pick = randFloor(this.map);
 		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
-		delete this.map.floors[pick[0]+','+pick[1]];
 		i.draw();
 		
 		this.engine.start();
