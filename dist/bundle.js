@@ -5783,12 +5783,10 @@ function generateMap(w,h){
 		[rX, rY] = f.split(',').map(x => Number(x));
 		let dist = distance(...map.exit, rX, rY);
 		if(dist >= distFromExit$1){
-			console.log(dist);
 			break;
 		}
 	}
 	map.start = { x: rX, y: rY };
-	console.log(map.start);
 	return map;
 }
 
