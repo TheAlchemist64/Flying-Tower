@@ -9,6 +9,7 @@ export default class Actor {
 		this.y = y;
 		this.glyph = glyph;
 		this.controller = controller || null;
+		this.inventory = [];
 		this.state = "active";
 		this.stunned = 0;
 		this.immune = 0;
@@ -93,6 +94,7 @@ export default class Actor {
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
 		bus.dispatch('moveout', this, cx, cy);
+		bus.dispatch('movein', this, x, y);
 		this.draw();
 		return 1;
 	}

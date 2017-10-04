@@ -54,7 +54,7 @@ export default {
 		//Draw map
 		this.map.draw();
 		//Tell map to listen for reset tile events
-		bus.addEventListener('resetTile', (x, y) => {
+		bus.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
 		});
 		//Initialize Turn Engine

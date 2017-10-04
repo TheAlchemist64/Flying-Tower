@@ -11,28 +11,45 @@ export default class Item {
 				this.draw();
 			}
 		});
+		bus.addEventListener('movein', (e, x, y) => {
+			if(x==this.x && y==this.y){
+				this.x = -1;
+				this.y = -1;
+				if(e.target.inventory){
+					e.target.inventory.push(this);
+					console.log(e.target.inventory);
+				}
+			}
+		});
 	}
 	draw(){
 		this.glyph.draw(this._x, this._y);
 	}
 	get x(){ return this._x; }
 	get y(){ return this._y; }
-	set x(x){ 
-		this._x = x; 
+	set x(x){  
 		if(x >= 0 && this._y > 0){
+			this._x = x;
 			this.draw();
 		}
+		else if(this._x > 0 && this._y > 0){
+			bus.dispatch('resetTile', this, this._x, this._y);
+			this._x = x;
+		}
 		else{
-			bus.dispatch('resetTile', this, x, this.y);
+			this._x = x;
 		}
 	}
 	set y(y){ 
-		this._y = y; 
 		if(y >= 0 && this._y > 0){
+			this._y = y; 
 			this.draw();
 		}
+		else if(this._x > 0 && this._y > 0){
+			bus.dispatch('resetTile', this, this._x, y);
+		}
 		else{
-			bus.dispatch('resetTile', this, this.x, y);
+			this._y = y; 
 		}
 	}
 }

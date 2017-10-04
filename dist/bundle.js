@@ -5368,6 +5368,7 @@ class Actor {
 		this.y = y;
 		this.glyph = glyph;
 		this.controller = controller || null;
+		this.inventory = [];
 		this.state = "active";
 		this.stunned = 0;
 		this.immune = 0;
@@ -5452,6 +5453,7 @@ class Actor {
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
 		eventbus_min.dispatch('moveout', this, cx, cy);
+		eventbus_min.dispatch('movein', this, x, y);
 		this.draw();
 		return 1;
 	}
@@ -5802,28 +5804,45 @@ class Item {
 				this.draw();
 			}
 		});
+		eventbus_min.addEventListener('movein', (e, x, y) => {
+			if(x==this.x && y==this.y){
+				this.x = -1;
+				this.y = -1;
+				if(e.target.inventory){
+					e.target.inventory.push(this);
+					console.log(e.target.inventory);
+				}
+			}
+		});
 	}
 	draw(){
 		this.glyph.draw(this._x, this._y);
 	}
 	get x(){ return this._x; }
 	get y(){ return this._y; }
-	set x(x){ 
-		this._x = x; 
+	set x(x){  
 		if(x >= 0 && this._y > 0){
+			this._x = x;
 			this.draw();
 		}
+		else if(this._x > 0 && this._y > 0){
+			eventbus_min.dispatch('resetTile', this, this._x, this._y);
+			this._x = x;
+		}
 		else{
-			eventbus_min.dispatch('resetTile', this, x, this.y);
+			this._x = x;
 		}
 	}
 	set y(y){ 
-		this._y = y; 
 		if(y >= 0 && this._y > 0){
+			this._y = y; 
 			this.draw();
 		}
+		else if(this._x > 0 && this._y > 0){
+			eventbus_min.dispatch('resetTile', this, this._x, y);
+		}
 		else{
-			eventbus_min.dispatch('resetTile', this, this.x, y);
+			this._y = y; 
 		}
 	}
 }
@@ -5869,7 +5888,7 @@ var Game = {
 		//Draw map
 		this.map.draw();
 		//Tell map to listen for reset tile events
-		eventbus_min.addEventListener('resetTile', (x, y) => {
+		eventbus_min.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
 		});
 		//Initialize Turn Engine
