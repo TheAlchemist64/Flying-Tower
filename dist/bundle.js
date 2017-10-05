@@ -5810,6 +5810,7 @@ class Item {
 				this.y = -1;
 				if(e.target.inventory){
 					e.target.inventory.push(this);
+					eventbus_min.dispatch('pickup',this, e.target);
 					console.log(e.target.inventory);
 				}
 			}
@@ -5881,7 +5882,7 @@ var Game = {
 	
 	init(){
 		//Initialize Display
-		this.display = new rot.Display({width: w, height: h});
+		this.display = new rot.Display({width: w, height: h + 4});
 		document.body.appendChild(this.display.getContainer());
 		//Generate map with dimensions (w, h)
 		this.map = generateMap(w, h);
@@ -5919,6 +5920,15 @@ var Game = {
 		let pick = randFloor(this.map);
 		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
 		i.draw();
+		
+		//Create UI
+		for(let i = 0; i < 4; i++){
+			this.display.drawText(0, h+i, (i+1)+": "+(this.player.inventory[i] || ""));
+		}
+		eventbus_min.addEventListener('pickup', (e, actor) => {
+			let item = e.target;
+			this.display.drawText(3, h + actor.inventory.length-1, item.name);
+		});
 		
 		this.engine.start();
 	},

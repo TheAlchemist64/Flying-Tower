@@ -17,6 +17,7 @@ export default class Item {
 				this.y = -1;
 				if(e.target.inventory){
 					e.target.inventory.push(this);
+					bus.dispatch('pickup',this, e.target);
 					console.log(e.target.inventory);
 				}
 			}
