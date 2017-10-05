@@ -83,7 +83,7 @@ export default {
 		
 		//Create Test item
 		let pick = randFloor(this.map);
-		let i = new Item('sword', new Glyph('!','skyblue'), pick[0], pick[1]);
+		let i = new Item('sword', new Glyph('/','skyblue'), pick[0], pick[1]);
 		i.draw();
 		
 		//Create UI
