@@ -5622,14 +5622,17 @@ class Collapser{
 			comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
 			initialValues: Object.keys(this.map.floors)
 		});
-		this.state = "notInTheWay";
-		this.timer = new Timer(s1,()=>{
-			this.state = "notOnPath";
-			this.timer = new Timer(s2, ()=>{
-				this.state = "canBeFatal";
+		this.state = "delay";
+		this.timer = new Timer(delay,()=>{
+			this.state = "notInTheWay";
+			this.timer = new Timer(s1,()=>{
+				this.state = "notOnPath";
+				this.timer = new Timer(s2, ()=>{
+					this.state = "canBeFatal";
+				});
 			});
 		});
-		this.steps = 0;
+		//this.steps = 0;
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){
@@ -6008,18 +6011,19 @@ var Game = {
 		//m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser(this.map, 5, 10, 15);
-		eventbus_min.addEventListener('tickCollapseTimer', (e, delay) => {
+		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let timerText = '%c{black}%b{skyblue}';
-			if(delay < 10){
-				timerText += '0'+delay;
+			let count = e.target.count;
+			if(count < 10){
+				timerText += '0'+count;
 			}
 			else{
-				timerText += delay;
+				timerText += count;
 			}
 			this.display.drawText(x, 0, timerText);
 		});
-		eventbus_min.dispatch('tickCollapseTimer', this, c.delay);
+		eventbus_min.dispatch('tickTimer', c.timer);
 
 		//Create Test item
 		let pick = randFloor(this.map);

@@ -68,18 +68,19 @@ export default {
 		//m.draw();
 		//Add Tile Collapser to map
 		let c = new Collapser(this.map, 5, 10, 15);
-		bus.addEventListener('tickCollapseTimer', (e, delay) => {
+		bus.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let timerText = '%c{black}%b{skyblue}';
-			if(delay < 10){
-				timerText += '0'+delay;
+			let count = e.target.count;
+			if(count < 10){
+				timerText += '0'+count;
 			}
 			else{
-				timerText += delay;
+				timerText += count;
 			}
 			this.display.drawText(x, 0, timerText);
 		});
-		bus.dispatch('tickCollapseTimer', this, c.delay);
+		bus.dispatch('tickTimer', c.timer);
 
 		//Create Test item
 		let pick = randFloor(this.map);

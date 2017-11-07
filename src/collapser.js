@@ -14,14 +14,17 @@ export default class Collapser{
 			comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
 			initialValues: Object.keys(this.map.floors)
 		});
-		this.state = "notInTheWay";
-		this.timer = new Timer(s1,()=>{
-			this.state = "notOnPath";
-			this.timer = new Timer(s2, ()=>{
-				this.state = "canBeFatal";
-			})
-		});
-		this.steps = 0;
+		this.state = "delay";
+		this.timer = new Timer(delay,()=>{
+			this.state = "notInTheWay";
+			this.timer = new Timer(s1,()=>{
+				this.state = "notOnPath";
+				this.timer = new Timer(s2, ()=>{
+					this.state = "canBeFatal";
+				})
+			});
+		})
+		//this.steps = 0;
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){
