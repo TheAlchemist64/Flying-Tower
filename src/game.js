@@ -67,7 +67,7 @@ export default {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 5, 10, 15, 20);
+		let c = new Collapser(this.map, 5, 10, 15);
 		bus.addEventListener('tickCollapseTimer', (e, delay) => {
 			let x = w - 2;
 			let timerText = '%c{black}%b{skyblue}';

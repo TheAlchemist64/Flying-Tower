@@ -5616,7 +5616,7 @@ class Timer {
 }
 
 class Collapser{
-	constructor(map, delay, s1, s2, s3){
+	constructor(map, delay, s1, s2){
 		this.map = map;
 		this.floors = new priorityQueue_min({
 			comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
@@ -5759,8 +5759,27 @@ class Collapser{
 				}
 				break;
 			case "canBeFatal":
-				console.log("canBeFatal");
+				while(this.floors.length > 0){
+					pick = this.floors.dequeue();
+					pick = pick.split(',').map(x => Number(x));
+					if(this.map.get(...pick).type!="sky"){
+						break;
+					}
+				}
+				if(this.floors.length > 0){
+					this.collapseTile(...pick);
+					delete this.map.floors[pick];
+					this.map.get(...pick).draw();
+					this.map.tiles.forEach((tile,k)=>{
+						tile.connected = false;
+					});
+					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+					this.collapseSection();
+				}
 				break;
+		}
+		if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
+			Game.over(false);
 		}
 		done.forEach(pick => this.floors.queue(pick.join(',')));
 		/*if(this.delay > 0){
@@ -5988,7 +6007,7 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 5, 10, 15, 20);
+		let c = new Collapser(this.map, 5, 10, 15);
 		eventbus_min.addEventListener('tickCollapseTimer', (e, delay) => {
 			let x = w - 2;
 			let timerText = '%c{black}%b{skyblue}';
