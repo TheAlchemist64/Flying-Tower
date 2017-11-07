@@ -5625,6 +5625,9 @@ class Collapser{
 		this.state = "notInTheWay";
 		this.timer = new Timer(s1,()=>{
 			this.state = "notOnPath";
+			this.timer = new Timer(s2, ()=>{
+				this.state = "canBeFatal";
+			});
 		});
 		this.steps = 0;
 		Game.scheduler.add(this,true);
@@ -5731,7 +5734,32 @@ class Collapser{
 				}
 				break;
 			case "notOnPath":
-				console.log("notOnPath");
+				while(this.floors.length > 0){
+					pick = this.floors.dequeue();
+					pick = pick.split(',').map(x => Number(x));
+					if(this.map.get(...pick).type=="sky"){
+						continue;
+					}
+					else if(this.getPathToExit().length > 0){
+						break;
+					}
+					else{
+						done.push(pick);
+					}
+				}
+				if(this.floors.length > 0){
+					this.collapseTile(...pick);
+					delete this.map.floors[pick];
+					this.map.get(...pick).draw();
+					this.map.tiles.forEach((tile,k)=>{
+						tile.connected = false;
+					});
+					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+					this.collapseSection();
+				}
+				break;
+			case "canBeFatal":
+				console.log("canBeFatal");
 				break;
 		}
 		done.forEach(pick => this.floors.queue(pick.join(',')));
@@ -5960,7 +5988,7 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 10, 10);
+		let c = new Collapser(this.map, 5, 10, 15, 20);
 		eventbus_min.addEventListener('tickCollapseTimer', (e, delay) => {
 			let x = w - 2;
 			let timerText = '%c{black}%b{skyblue}';
