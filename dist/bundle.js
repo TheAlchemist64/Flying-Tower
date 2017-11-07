@@ -5632,7 +5632,6 @@ class Collapser{
 				});
 			});
 		});
-		//this.steps = 0;
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){
@@ -5683,33 +5682,6 @@ class Collapser{
 
 		}
 	}
-	/*
-	collapseSectionNotOnPath(){
-		while(Object.keys(this.map.floors).length > this.getPathToExit().length){
-			let pick = randFloor(this.map);
-			if(pick!=null){
-				let tmp = this.map.get(...pick);
-				this.collapseTile(...pick);
-				if(this.getPathToExit().length > 0){
-					delete this.map.floors[pick];
-					this.map.get(...pick).draw();
-					this.map.tiles.forEach((tile,k)=>{
-						tile.connected = false;
-					});
-					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-					this.collapseSection();
-					break;
-				}
-				else{
-					this.map.set(tmp);
-				}
-			}
-			else if(Object.keys(this.map.floors).length == 0){
-				break;
-			}
-		}
-	}
-	*/
 	act(){
 		let pick = null;
 		let done = [];
@@ -5785,50 +5757,6 @@ class Collapser{
 			Game.over(false);
 		}
 		done.forEach(pick => this.floors.queue(pick.join(',')));
-		/*if(this.delay > 0){
-			this.delay--;
-			bus.dispatch('tickCollapseTimer', this, this.delay);
-		}
-		else{
-			this.steps++;
-			if(this.steps % canBeFatal == 0){
-				//any tile can be collapsed, which can be fatal to the player
-				let pick = randFloor(this.map);
-				if(pick!=null){
-					this.collapseTile(...pick);
-					delete this.map.floors[pick];
-					this.map.get(...pick).draw();
-					this.map.tiles.forEach((tile,k)=>{
-						tile.connected = false;
-					});
-					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-					this.collapseSection();
-					if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
-						Game.over(false);
-					}
-				}
-			}
-			else if(this.steps % notOnPath == 0){
-				//the tile collapsed cannot be on the shortest path to the exit
-				this.collapseSectionNotOnPath();
-			}
-			else if(this.steps % notBetweenPnE == 0){
-				//The tile cannot be between the player and the exit at all.
-				let pick = null;
-				while(pick==null || this.betweenPlayerAndExit(...pick)){
-					pick = randFloor(this.map);
-
-				}
-				this.collapseTile(...pick);
-				delete this.map.floors[pick];
-				this.map.get(...pick).draw();
-				this.map.tiles.forEach((tile,k)=>{
-					tile.connected = false;
-				});
-				this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-				this.collapseSection();
-			}
-		}*/
 	}
 }
 
