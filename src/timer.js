@@ -3,7 +3,8 @@ import bus from '../vendor/eventbus.min';
 import Game from './game';
 
 export default class Timer {
-  constructor(count, f) {
+  constructor(name, count, f) {
+    this.name = name;
     this.count = count;
     this.f = f;
     Game.scheduler.add(this, true);

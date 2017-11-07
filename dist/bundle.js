@@ -5598,7 +5598,8 @@ var TileTypes = {
 };
 
 class Timer {
-  constructor(count, f) {
+  constructor(name, count, f) {
+    this.name = name;
     this.count = count;
     this.f = f;
     Game.scheduler.add(this, true);
@@ -5623,11 +5624,11 @@ class Collapser{
 			initialValues: Object.keys(this.map.floors)
 		});
 		this.state = "delay";
-		this.timer = new Timer(delay,()=>{
+		this.timer = new Timer('Delay', delay,()=>{
 			this.state = "notInTheWay";
-			this.timer = new Timer(s1,()=>{
+			this.timer = new Timer('Stage 1', s1,()=>{
 				this.state = "notOnPath";
-				this.timer = new Timer(s2, ()=>{
+				this.timer = new Timer('Stage 2', s2, ()=>{
 					this.state = "canBeFatal";
 				});
 			});
@@ -5938,11 +5939,17 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 5, 10, 15);
+		let c = new Collapser(this.map, 20, 15, 10);
 		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
-			let timerText = '%c{black}%b{skyblue}';
 			let count = e.target.count;
+			let timerText = '';
+			if(count==0 && e.target.name=='Stage 2'){
+				timerText = '%c{red}%b{skyblue}';
+			}
+			else{
+				timerText = '%c{black}%b{skyblue}';
+			}
 			if(count < 10){
 				timerText += '0'+count;
 			}

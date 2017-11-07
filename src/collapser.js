@@ -15,11 +15,11 @@ export default class Collapser{
 			initialValues: Object.keys(this.map.floors)
 		});
 		this.state = "delay";
-		this.timer = new Timer(delay,()=>{
+		this.timer = new Timer('Delay', delay,()=>{
 			this.state = "notInTheWay";
-			this.timer = new Timer(s1,()=>{
+			this.timer = new Timer('Stage 1', s1,()=>{
 				this.state = "notOnPath";
-				this.timer = new Timer(s2, ()=>{
+				this.timer = new Timer('Stage 2', s2, ()=>{
 					this.state = "canBeFatal";
 				})
 			});
