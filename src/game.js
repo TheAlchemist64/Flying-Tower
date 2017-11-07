@@ -73,11 +73,18 @@ export default {
 			let count = e.target.count;
 			let timerText = '';
 			if(count==0 && e.target.name=='Stage 2'){
-				timerText = '%c{red}%b{skyblue}';
+				timerText = '%c{red}';
+			}
+			else if(e.target.name=='Stage 2'){
+				timerText = '%c{yellow}';
+			}
+			else if(e.target.name=='Stage 1'){
+				timerText = '%c{green}';
 			}
 			else{
-				timerText = '%c{black}%b{skyblue}';
+				timerText = '%c{black}';
 			}
+			timerText+='%b{skyblue}';
 			if(count < 10){
 				timerText += '0'+count;
 			}

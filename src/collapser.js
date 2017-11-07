@@ -21,8 +21,10 @@ export default class Collapser{
 				this.state = "notOnPath";
 				this.timer = new Timer('Stage 2', s2, ()=>{
 					this.state = "canBeFatal";
-				})
+				});
+				bus.dispatch('tickTimer',this.timer);
 			});
+			bus.dispatch('tickTimer',this.timer);
 		})
 		Game.scheduler.add(this,true);
 	}
