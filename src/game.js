@@ -95,11 +95,6 @@ export default {
 		});
 		bus.dispatch('tickTimer', c.timer);
 
-		//Create Test item
-		let pick = randFloor(this.map);
-		let i = new Item('sword', new Glyph('/','skyblue'), pick[0], pick[1]);
-		i.draw();
-
 		//Create UI
 		for(let i = 0; i < 4; i++){
 			this.display.drawText(0, h+i, (i+1)+": "+(this.player.inventory[i] || ""));

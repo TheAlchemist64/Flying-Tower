@@ -5,6 +5,7 @@ import { randFloor, distance } from '../game';
 import TileMap from './map';
 import Tile from './tile';
 import TileTypes from './tiletypes';
+import Item from '../item';
 
 const distFromExit = 25;
 
@@ -17,12 +18,19 @@ export default function generateMap(w,h){
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
+	//Create Treasure Rooms;
+	let rooms = generator.getRooms();
+	let numTreasureRooms = Math.floor(rooms.length/2);
+	for(let i = 0; i < numTreasureRooms; i++){
+		let center = rooms[i].getCenter();
+		map.dropItem(new Item(TileTypes.GOLD.name, TileTypes.GOLD.glyph, ...center));
+	}
 	//Create exit
 	map.exit = randFloor(map);
 	delete map.floors[map.exit.join(',')];
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
-	let queue = new PriorityQueue({ 
+	let queue = new PriorityQueue({
 		comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
 		initialValues: Object.keys(map.floors)
 	});

@@ -5594,6 +5594,10 @@ var TileTypes = {
 	EXIT: {
 		name: 'exit',
 		glyph: new Glyph('^', 'gold')
+	},
+	GOLD: {
+		name: 'gold',
+		glyph: new Glyph('$', 'gold')
 	}
 };
 
@@ -5770,6 +5774,7 @@ class TileMap {
 		this.tiles = new Map();
 		this.floors = {};
 		this.start = {};
+		this.items = [];
 		this.exit = [];
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
@@ -5792,44 +5797,15 @@ class TileMap {
 	inBounds(x, y){
 		return x > 0 && x < this.width && y> 0 && y < this.height;
 	}
+	dropItem(item){
+		this.items.push(item);
+	}
 	draw(){
 		for(var tile of this.tiles.values()){
 			tile.draw();
 		}
+		this.items.forEach(item => item.draw());
 	}
-}
-
-const distFromExit$1 = 25;
-
-function generateMap(w,h){
-	let map = new TileMap(w, h);
-	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
-	//Create Floor and Sky tiles
-	generator.create((x, y, wall)=>{
-		let SKY = TileTypes.SKY;
-		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
-	});
-	//Create exit
-	map.exit = randFloor(map);
-	delete map.floors[map.exit.join(',')];
-	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
-	//Create start location
-	let queue = new priorityQueue_min({ 
-		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
-		initialValues: Object.keys(map.floors)
-	});
-	let [rX, rY] = [null, null];
-	while(queue.length > 0){
-		let f = queue.dequeue();
-		[rX, rY] = f.split(',').map(x => Number(x));
-		let dist = distance(...map.exit, rX, rY);
-		if(dist >= distFromExit$1){
-			break;
-		}
-	}
-	map.start = { x: rX, y: rY };
-	return map;
 }
 
 class Item {
@@ -5885,6 +5861,46 @@ class Item {
 			this._y = y; 
 		}
 	}
+}
+
+const distFromExit$1 = 25;
+
+function generateMap(w,h){
+	let map = new TileMap(w, h);
+	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
+	//Create Floor and Sky tiles
+	generator.create((x, y, wall)=>{
+		let SKY = TileTypes.SKY;
+		let FLOOR = TileTypes.FLOOR;
+		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
+	});
+	//Create Treasure Rooms;
+	let rooms = generator.getRooms();
+	let numTreasureRooms = Math.floor(rooms.length/2);
+	for(let i = 0; i < numTreasureRooms; i++){
+		let center = rooms[i].getCenter();
+		map.dropItem(new Item(TileTypes.GOLD.name, TileTypes.GOLD.glyph, ...center));
+	}
+	//Create exit
+	map.exit = randFloor(map);
+	delete map.floors[map.exit.join(',')];
+	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
+	//Create start location
+	let queue = new priorityQueue_min({
+		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
+		initialValues: Object.keys(map.floors)
+	});
+	let [rX, rY] = [null, null];
+	while(queue.length > 0){
+		let f = queue.dequeue();
+		[rX, rY] = f.split(',').map(x => Number(x));
+		let dist = distance(...map.exit, rX, rY);
+		if(dist >= distFromExit$1){
+			break;
+		}
+	}
+	map.start = { x: rX, y: rY };
+	return map;
 }
 
 const w = 50;
@@ -5968,11 +5984,6 @@ var Game = {
 			this.display.drawText(x, 0, timerText);
 		});
 		eventbus_min.dispatch('tickTimer', c.timer);
-
-		//Create Test item
-		let pick = randFloor(this.map);
-		let i = new Item('sword', new Glyph('/','skyblue'), pick[0], pick[1]);
-		i.draw();
 
 		//Create UI
 		for(let i = 0; i < 4; i++){

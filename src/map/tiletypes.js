@@ -20,5 +20,9 @@ export default {
 	EXIT: {
 		name: 'exit',
 		glyph: new Glyph('^', 'gold')
+	},
+	GOLD: {
+		name: 'gold',
+		glyph: new Glyph('$', 'gold')
 	}
 }

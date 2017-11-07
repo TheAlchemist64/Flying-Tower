@@ -8,6 +8,7 @@ export default class TileMap {
 		this.tiles = new Map();
 		this.floors = {};
 		this.start = {};
+		this.items = [];
 		this.exit = [];
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
@@ -30,9 +31,13 @@ export default class TileMap {
 	inBounds(x, y){
 		return x > 0 && x < this.width && y> 0 && y < this.height;
 	}
+	dropItem(item){
+		this.items.push(item);
+	}
 	draw(){
 		for(var tile of this.tiles.values()){
 			tile.draw();
 		}
+		this.items.forEach(item => item.draw());
 	}
 }
