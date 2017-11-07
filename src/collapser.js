@@ -1,18 +1,23 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
+import PriorityQueue from '../vendor/priority-queue.min';
 
-import Game, { randTile, randFloor } from "./game";
+import Game from './game';
 import Tile from "./map/tile";
 import TileTypes from './map/tiletypes';
-
-const notBetweenPnE = 2;
-const notOnPath = 3;
-const canBeFatal = 4;
+import Timer from './timer';
 
 export default class Collapser{
-	constructor(map, delay){
+	constructor(map, delay, s1, s2, s3){
 		this.map = map;
-		this.delay = delay || 0; // # of turns to wait before collapsing tiles
+		this.floors = new PriorityQueue({
+			comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
+			initialValues: Object.keys(this.map.floors)
+		});
+		this.state = "notInTheWay";
+		this.timer = new Timer(s1,()=>{
+			this.state = "notOnPath";
+		});
 		this.steps = 0;
 		Game.scheduler.add(this,true);
 	}
@@ -61,6 +66,12 @@ export default class Collapser{
 	}
 	collapseSectionNotOnPath(){
 		while(Object.keys(this.map.floors).length > this.getPathToExit().length){
+
+		}
+	}
+	/*
+	collapseSectionNotOnPath(){
+		while(Object.keys(this.map.floors).length > this.getPathToExit().length){
 			let pick = randFloor(this.map);
 			if(pick!=null){
 				let tmp = this.map.get(...pick);
@@ -84,8 +95,39 @@ export default class Collapser{
 			}
 		}
 	}
+	*/
 	act(){
-		if(this.delay > 0){
+		let pick = null;
+		let done = [];
+		switch(this.state){
+			case "notInTheWay":
+				while (this.floors.length > 0) {
+					pick = this.floors.dequeue();
+					pick = pick.split(',').map(x => Number(x));
+					if(this.betweenPlayerAndExit(...pick)){
+						done.push(pick);
+					}
+					else if(this.map.get(...pick).type =="floor"){
+						break;
+					}
+				}
+				if(this.floors.length > 0){
+					this.collapseTile(...pick);
+					delete this.map.floors[pick];
+					this.map.get(...pick).draw();
+					this.map.tiles.forEach((tile,k)=>{
+						tile.connected = false;
+					});
+					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+					this.collapseSection();
+				}
+				break;
+			case "notOnPath":
+				console.log("notOnPath");
+				break;
+		}
+		done.forEach(pick => this.floors.queue(pick.join(',')));
+		/*if(this.delay > 0){
 			this.delay--;
 			bus.dispatch('tickCollapseTimer', this, this.delay);
 		}
@@ -117,7 +159,7 @@ export default class Collapser{
 				let pick = null;
 				while(pick==null || this.betweenPlayerAndExit(...pick)){
 					pick = randFloor(this.map);
-					
+
 				}
 				this.collapseTile(...pick);
 				delete this.map.floors[pick];
@@ -128,6 +170,6 @@ export default class Collapser{
 				this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
 				this.collapseSection();
 			}
-		}
+		}*/
 	}
 }

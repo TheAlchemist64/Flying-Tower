@@ -33,8 +33,8 @@ export function randFloor(map){
 	}
 }
 
-export function distance(x1, y1, x2, y2){ 
-	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2)); 
+export function distance(x1, y1, x2, y2){
+	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }
 
 export default {
@@ -44,7 +44,7 @@ export default {
 	player: null,
 	scheduler: null,
 	engine: null,
-	
+
 	init(){
 		//Initialize Display
 		this.display = new ROT.Display({width: w, height: h + 4});
@@ -67,7 +67,7 @@ export default {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 10);
+		let c = new Collapser(this.map, 10, 10);
 		bus.addEventListener('tickCollapseTimer', (e, delay) => {
 			let x = w - 2;
 			let timerText = '%c{black}%b{skyblue}';
@@ -80,12 +80,12 @@ export default {
 			this.display.drawText(x, 0, timerText);
 		});
 		bus.dispatch('tickCollapseTimer', this, c.delay);
-		
+
 		//Create Test item
 		let pick = randFloor(this.map);
 		let i = new Item('sword', new Glyph('/','skyblue'), pick[0], pick[1]);
 		i.draw();
-		
+
 		//Create UI
 		for(let i = 0; i < 4; i++){
 			this.display.drawText(0, h+i, (i+1)+": "+(this.player.inventory[i] || ""));
@@ -94,7 +94,7 @@ export default {
 			let item = e.target;
 			this.display.drawText(3, h + actor.inventory.length-1, item.name);
 		});
-		
+
 		this.engine.start();
 	},
 	nextLevel(){
