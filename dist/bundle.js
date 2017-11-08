@@ -5894,7 +5894,7 @@ var Items = {
   }
 };
 
-const distFromExit$1 = 25;
+//const distFromExit = 25;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -5936,15 +5936,8 @@ function generateMap(w,h){
 		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
 		initialValues: Object.keys(map.floors)
 	});
-	let [rX, rY] = [null, null];
-	while(queue.length > 0){
-		let f = queue.dequeue();
-		[rX, rY] = f.split(',').map(x => Number(x));
-		let dist = distance(...map.exit, rX, rY);
-		if(dist >= distFromExit$1){
-			break;
-		}
-	}
+	let f = queue.dequeue();
+	let [rX, rY] = f.split(',').map(x => Number(x));
 	map.start = { x: rX, y: rY };
 	return map;
 }
@@ -5969,9 +5962,7 @@ function randFloor(map){
 	}
 }
 
-function distance(x1, y1, x2, y2){
-	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
-}
+
 
 var Game = {
 	display: null,

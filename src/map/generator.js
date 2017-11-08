@@ -8,7 +8,7 @@ import TileTypes from './tiletypes';
 import Item from '../item';
 import Items from '../items';
 
-const distFromExit = 25;
+//const distFromExit = 25;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -50,15 +50,8 @@ export default function generateMap(w,h){
 		comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
 		initialValues: Object.keys(map.floors)
 	});
-	let [rX, rY] = [null, null];
-	while(queue.length > 0){
-		let f = queue.dequeue();
-		[rX, rY] = f.split(',').map(x => Number(x));
-		let dist = distance(...map.exit, rX, rY);
-		if(dist >= distFromExit){
-			break;
-		}
-	}
+	let f = queue.dequeue();
+	let [rX, rY] = f.split(',').map(x => Number(x));
 	map.start = { x: rX, y: rY };
 	return map;
 }
