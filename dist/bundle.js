@@ -5887,14 +5887,13 @@ class Item {
 
 var Items = {
   EXIT_KEY: {
-    name: 'Exit Key',
+    name: 'Golden Idol',
+    type: 'exit_key',
     glyph: new Glyph('X', 'gold'),
     event: 'revealExit',
     slot: false
   }
 };
-
-//const distFromExit = 25;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6031,7 +6030,7 @@ var Game = {
 			if(item.slot){
 				this.display.drawText(3, h + actor.inventory.length-1, item.name);
 			}
-			else if(item.name=="Exit Key"){
+			else if(item.type='exit_key'){
 				this.display.drawText(Math.floor(w/2),h,item.name);
 			}
 		});
