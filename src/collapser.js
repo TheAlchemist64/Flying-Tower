@@ -8,24 +8,22 @@ import TileTypes from './map/tiletypes';
 import Timer from './timer';
 
 export default class Collapser{
-	constructor(map, delay, s1, s2){
+	constructor(map, s1, s2){
 		this.map = map;
 		this.floors = new PriorityQueue({
 			comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
 			initialValues: Object.keys(this.map.floors)
 		});
-		this.state = "delay";
-		this.timer = new Timer('Delay', delay,()=>{
-			this.state = "notInTheWay";
-			this.timer = new Timer('Stage 1', s1,()=>{
-				this.state = "notOnPath";
-				this.timer = new Timer('Stage 2', s2, ()=>{
-					this.state = "canBeFatal";
-				});
+		this.state = "idle";
+		this.timer = new Timer('Stage 1', s1,()=>{
+			this.state = "notOnPath";
+			this.timer = new Timer('Stage 2', s2, ()=>{
+				this.state = "canBeFatal";
 				bus.dispatch('tickTimer',this.timer);
 			});
+			this.timer.activate();
 			bus.dispatch('tickTimer',this.timer);
-		})
+		});
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){

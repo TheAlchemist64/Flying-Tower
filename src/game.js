@@ -67,29 +67,56 @@ export default {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 40, 35, 30);
+		/*let distKeyToExit = distance(
+			this.map.exitKey[0],
+			this.map.exitKey[1],
+			this.map.exit[0],
+			this.map.exit[1]
+		);*/
+		let passable = (x, y) => this.map.get(x, y).type != "sky";
+		let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
+		let totalTime = 0;
+		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
+			totalTime++;
+		})
+		console.log(totalTime);
+		let c = new Collapser(
+			this.map,
+			Math.floor(totalTime / 3) * 2 + 1,
+			Math.floor(totalTime / 3)
+		);
+		bus.addEventListener('revealExit',(e,x,y) => {
+			c.timer.activate();
+			c.state = "notInTheWay";
+		});
+		//Add Timer Listener
 		bus.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
-			let count = e.target.count;
 			let timerText = '';
-			if(count==0 && e.target.name=='Stage 2'){
-				timerText = '%c{red}';
-			}
-			else if(e.target.name=='Stage 2'){
-				timerText = '%c{yellow}';
-			}
-			else if(e.target.name=='Stage 1'){
-				timerText = '%c{green}';
+			if(c.timer.activated){
+				let count = e.target.count;
+				if(count==0 && e.target.name=='Stage 2'){
+					timerText = '%c{red}';
+				}
+				else if(e.target.name=='Stage 2'){
+					timerText = '%c{yellow}';
+				}
+				else if(e.target.name=='Stage 1'){
+					timerText = '%c{green}';
+				}
+				else{
+					timerText = '%c{black}';
+				}
+				timerText+='%b{skyblue}';
+				if(count < 10){
+					timerText += '0'+count;
+				}
+				else{
+					timerText += count;
+				}
 			}
 			else{
-				timerText = '%c{black}';
-			}
-			timerText+='%b{skyblue}';
-			if(count < 10){
-				timerText += '0'+count;
-			}
-			else{
-				timerText += count;
+				timerText = '%c{black}%b{skyblue}--';
 			}
 			this.display.drawText(x, 0, timerText);
 		});

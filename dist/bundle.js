@@ -5612,7 +5612,13 @@ class Timer {
     this.name = name;
     this.count = count;
     this.f = f;
-    Game.scheduler.add(this, true);
+    this.activated = false;
+  }
+  activate(){
+    if(!this.activated){
+      this.activated = true;
+      Game.scheduler.add(this, true);
+    }
   }
   act(){
     if (this.count > 0) {
@@ -5627,22 +5633,20 @@ class Timer {
 }
 
 class Collapser{
-	constructor(map, delay, s1, s2){
+	constructor(map, s1, s2){
 		this.map = map;
 		this.floors = new priorityQueue_min({
 			comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
 			initialValues: Object.keys(this.map.floors)
 		});
-		this.state = "delay";
-		this.timer = new Timer('Delay', delay,()=>{
-			this.state = "notInTheWay";
-			this.timer = new Timer('Stage 1', s1,()=>{
-				this.state = "notOnPath";
-				this.timer = new Timer('Stage 2', s2, ()=>{
-					this.state = "canBeFatal";
-				});
+		this.state = "idle";
+		this.timer = new Timer('Stage 1', s1,()=>{
+			this.state = "notOnPath";
+			this.timer = new Timer('Stage 2', s2, ()=>{
+				this.state = "canBeFatal";
 				eventbus_min.dispatch('tickTimer',this.timer);
 			});
+			this.timer.activate();
 			eventbus_min.dispatch('tickTimer',this.timer);
 		});
 		Game.scheduler.add(this,true);
@@ -5994,29 +5998,56 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 40, 35, 30);
+		/*let distKeyToExit = distance(
+			this.map.exitKey[0],
+			this.map.exitKey[1],
+			this.map.exit[0],
+			this.map.exit[1]
+		);*/
+		let passable = (x, y) => this.map.get(x, y).type != "sky";
+		let astar = new rot.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
+		let totalTime = 0;
+		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
+			totalTime++;
+		});
+		console.log(totalTime);
+		let c = new Collapser(
+			this.map,
+			Math.floor(totalTime / 3) * 2 + 1,
+			Math.floor(totalTime / 3)
+		);
+		eventbus_min.addEventListener('revealExit',(e,x,y) => {
+			c.timer.activate();
+			c.state = "notInTheWay";
+		});
+		//Add Timer Listener
 		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
-			let count = e.target.count;
 			let timerText = '';
-			if(count==0 && e.target.name=='Stage 2'){
-				timerText = '%c{red}';
-			}
-			else if(e.target.name=='Stage 2'){
-				timerText = '%c{yellow}';
-			}
-			else if(e.target.name=='Stage 1'){
-				timerText = '%c{green}';
+			if(c.timer.activated){
+				let count = e.target.count;
+				if(count==0 && e.target.name=='Stage 2'){
+					timerText = '%c{red}';
+				}
+				else if(e.target.name=='Stage 2'){
+					timerText = '%c{yellow}';
+				}
+				else if(e.target.name=='Stage 1'){
+					timerText = '%c{green}';
+				}
+				else{
+					timerText = '%c{black}';
+				}
+				timerText+='%b{skyblue}';
+				if(count < 10){
+					timerText += '0'+count;
+				}
+				else{
+					timerText += count;
+				}
 			}
 			else{
-				timerText = '%c{black}';
-			}
-			timerText+='%b{skyblue}';
-			if(count < 10){
-				timerText += '0'+count;
-			}
-			else{
-				timerText += count;
+				timerText = '%c{black}%b{skyblue}--';
 			}
 			this.display.drawText(x, 0, timerText);
 		});

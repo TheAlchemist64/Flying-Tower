@@ -7,7 +7,13 @@ export default class Timer {
     this.name = name;
     this.count = count;
     this.f = f;
-    Game.scheduler.add(this, true);
+    this.activated = false;
+  }
+  activate(){
+    if(!this.activated){
+      this.activated = true;
+      Game.scheduler.add(this, true);
+    }
   }
   act(){
     if (this.count > 0) {
