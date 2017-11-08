@@ -23,7 +23,7 @@ export default {
 	},
 	EXIT: {
 		name: 'exit',
-		glyph: new Glyph('^', 'red')
+		glyph: new Glyph('^', 'white')
 	},
 	GOLD: {
 		name: 'gold',

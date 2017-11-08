@@ -5599,7 +5599,7 @@ var TileTypes = {
 	},
 	EXIT: {
 		name: 'exit',
-		glyph: new Glyph('^', 'red')
+		glyph: new Glyph('^', 'white')
 	},
 	GOLD: {
 		name: 'gold',
@@ -6039,6 +6039,9 @@ var Game = {
 			let item = e.target;
 			if(item.slot){
 				this.display.drawText(3, h + actor.inventory.length-1, item.name);
+			}
+			else if(item.name=="Exit Key"){
+				this.display.drawText(Math.floor(w/2),h,item.name);
 			}
 		});
 
