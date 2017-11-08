@@ -6082,7 +6082,7 @@ var Game = {
 				this.display.drawText(3, h + actor.inventory.length-1, item.name);
 			}
 			else if(item.type='exit_key'){
-				this.display.drawText(Math.floor(w/2),h,item.name);
+				this.display.drawText(Math.floor(w/2)+1,h,item.name);
 			}
 		});
 
