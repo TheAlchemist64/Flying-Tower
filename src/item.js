@@ -20,13 +20,13 @@ export default class Item {
 				if(slot && e.target.inventory){
 					e.target.inventory.push(this);
 				}
-				bus.dispatch('pickup',this, e.target);
+				bus.dispatch('pickup',this, e.target, x, y);
 			}
 		});
 		if(evt){
 			bus.addEventListener(evt, Events[evt]);
-			bus.addEventListener('pickup', (e, actor)=>{
-				bus.dispatch(evt, this);
+			bus.addEventListener('pickup', (e, actor, x, y)=>{
+				bus.dispatch(evt, this, x, y);
 			})
 		}
 	}

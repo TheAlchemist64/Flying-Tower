@@ -5816,11 +5816,11 @@ class TileMap {
 }
 
 var Events = {
-  revealExit(e){
-    //console.log('revealItem');
+  revealExit(e, x, y){
     Game.map.exitRevealed = true;
     Game.map.set(new Tile(Game.map.exit[0], Game.map.exit[1], TileTypes.EXIT));
     Game.map.draw();
+    Game.map.floors[x+','+y] = true;
   }
 };
 
@@ -5843,13 +5843,13 @@ class Item {
 				if(slot && e.target.inventory){
 					e.target.inventory.push(this);
 				}
-				eventbus_min.dispatch('pickup',this, e.target);
+				eventbus_min.dispatch('pickup',this, e.target, x, y);
 			}
 		});
 		if(evt){
 			eventbus_min.addEventListener(evt, Events[evt]);
-			eventbus_min.addEventListener('pickup', (e, actor)=>{
-				eventbus_min.dispatch(evt, this);
+			eventbus_min.addEventListener('pickup', (e, actor, x, y)=>{
+				eventbus_min.dispatch(evt, this, x, y);
 			});
 		}
 	}
