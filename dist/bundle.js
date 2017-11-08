@@ -6003,7 +6003,7 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 30, 25, 20);
+		let c = new Collapser(this.map, 40, 35, 30);
 		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let count = e.target.count;
