@@ -13,13 +13,17 @@ export default {
 		name: 'floor',
 		glyph: new Glyph(' ')
 	},
+	DOOR: {
+		name: 'door',
+		glyph: new Glyph('+')
+	},
 	SKY: {
 		name: 'sky',
 		glyph: new Glyph(' ',null,'skyblue')
 	},
 	EXIT: {
 		name: 'exit',
-		glyph: new Glyph('^', 'gold')
+		glyph: new Glyph('^', 'red')
 	},
 	GOLD: {
 		name: 'gold',

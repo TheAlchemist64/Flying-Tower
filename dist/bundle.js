@@ -5431,7 +5431,9 @@ class Actor {
 				return 0;
 				break;
 			case 'exit':
-				Game.nextLevel();
+				if(this == Game.player && Game.map.exitRevealed){
+					Game.nextLevel();
+				}
 				break;
 		}
 		let [collides, other] = this.collides(x, y);
@@ -5587,13 +5589,17 @@ var TileTypes = {
 		name: 'floor',
 		glyph: new Glyph(' ')
 	},
+	DOOR: {
+		name: 'door',
+		glyph: new Glyph('+')
+	},
 	SKY: {
 		name: 'sky',
 		glyph: new Glyph(' ',null,'skyblue')
 	},
 	EXIT: {
 		name: 'exit',
-		glyph: new Glyph('^', 'gold')
+		glyph: new Glyph('^', 'red')
 	},
 	GOLD: {
 		name: 'gold',
@@ -5776,6 +5782,7 @@ class TileMap {
 		this.start = {};
 		this.items = [];
 		this.exit = [];
+		this.exitRevealed = false;
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
@@ -5808,12 +5815,22 @@ class TileMap {
 	}
 }
 
+var Events = {
+  revealExit(e){
+    //console.log('revealItem');
+    Game.map.exitRevealed = true;
+    Game.map.set(new Tile(Game.map.exit[0], Game.map.exit[1], TileTypes.EXIT));
+    Game.map.draw();
+  }
+};
+
 class Item {
-	constructor(name, glyph, x, y){
+	constructor(name, glyph, evt, slot, x, y){
 		this.name = name;
 		this.glyph = glyph;
 		this._x = x || -1;
 		this._y = y || -1;
+		this.slot = slot;
 		eventbus_min.addEventListener('moveout', (e, x, y) => {
 			if(x==this._x && y==this._y){
 				this.draw();
@@ -5823,20 +5840,25 @@ class Item {
 			if(x==this.x && y==this.y){
 				this.x = -1;
 				this.y = -1;
-				if(e.target.inventory){
+				if(slot && e.target.inventory){
 					e.target.inventory.push(this);
-					eventbus_min.dispatch('pickup',this, e.target);
-					console.log(e.target.inventory);
 				}
+				eventbus_min.dispatch('pickup',this, e.target);
 			}
 		});
+		if(evt){
+			eventbus_min.addEventListener(evt, Events[evt]);
+			eventbus_min.addEventListener('pickup', (e, actor)=>{
+				eventbus_min.dispatch(evt, this);
+			});
+		}
 	}
 	draw(){
 		this.glyph.draw(this._x, this._y);
 	}
 	get x(){ return this._x; }
 	get y(){ return this._y; }
-	set x(x){  
+	set x(x){
 		if(x >= 0 && this._y > 0){
 			this._x = x;
 			this.draw();
@@ -5849,19 +5871,28 @@ class Item {
 			this._x = x;
 		}
 	}
-	set y(y){ 
+	set y(y){
 		if(y >= 0 && this._y > 0){
-			this._y = y; 
+			this._y = y;
 			this.draw();
 		}
 		else if(this._x > 0 && this._y > 0){
 			eventbus_min.dispatch('resetTile', this, this._x, y);
 		}
 		else{
-			this._y = y; 
+			this._y = y;
 		}
 	}
 }
+
+var Items = {
+  EXIT_KEY: {
+    name: 'Exit Key',
+    glyph: new Glyph('X', 'gold'),
+    event: 'revealExit',
+    slot: false
+  }
+};
 
 const distFromExit$1 = 25;
 
@@ -5872,19 +5903,34 @@ function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
+		//let WALL = TileTypes.WALL;
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
-	//Create Treasure Rooms;
+	//Create Exit Key
 	let rooms = generator.getRooms();
-	let numTreasureRooms = Math.floor(rooms.length/2);
+	let exitKey = rooms[Math.floor(rot.RNG.getUniform() * rooms.length)].getCenter();
+	delete map.floors[exitKey.join(',')];
+	map.dropItem(new Item(
+		Items.EXIT_KEY.name,
+		Items.EXIT_KEY.glyph,
+		Items.EXIT_KEY.event,
+		Items.EXIT_KEY.slot,
+		...exitKey));
+	//Create Treasure Rooms;
+	/*let numTreasureRooms = Math.floor(rooms.length/2);
 	for(let i = 0; i < numTreasureRooms; i++){
+		//Place Treasure
 		let center = rooms[i].getCenter();
 		map.dropItem(new Item(TileTypes.GOLD.name, TileTypes.GOLD.glyph, ...center));
-	}
+		//Place Door
+		rooms[i].getDoors((x, y)=>{
+			map.set(new Tile(x, y+1, TileTypes.DOOR));
+		});
+	}*/
 	//Create exit
 	map.exit = randFloor(map);
 	delete map.floors[map.exit.join(',')];
-	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
+	//map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let queue = new priorityQueue_min({
 		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
@@ -5957,7 +6003,7 @@ var Game = {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 20, 15, 10);
+		let c = new Collapser(this.map, 30, 25, 20);
 		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let count = e.target.count;
@@ -5991,7 +6037,9 @@ var Game = {
 		}
 		eventbus_min.addEventListener('pickup', (e, actor) => {
 			let item = e.target;
-			this.display.drawText(3, h + actor.inventory.length-1, item.name);
+			if(item.slot){
+				this.display.drawText(3, h + actor.inventory.length-1, item.name);
+			}
 		});
 
 		this.engine.start();

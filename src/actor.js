@@ -72,7 +72,9 @@ export default class Actor {
 				return 0;
 				break;
 			case 'exit':
-				Game.nextLevel();
+				if(this == Game.player && Game.map.exitRevealed){
+					Game.nextLevel();
+				}
 				break;
 		}
 		let [collides, other] = this.collides(x, y);

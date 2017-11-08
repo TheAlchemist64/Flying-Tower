@@ -67,7 +67,7 @@ export default {
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
-		let c = new Collapser(this.map, 20, 15, 10);
+		let c = new Collapser(this.map, 30, 25, 20);
 		bus.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let count = e.target.count;
@@ -101,7 +101,9 @@ export default {
 		}
 		bus.addEventListener('pickup', (e, actor) => {
 			let item = e.target;
-			this.display.drawText(3, h + actor.inventory.length-1, item.name);
+			if(item.slot){
+				this.display.drawText(3, h + actor.inventory.length-1, item.name);
+			}
 		});
 
 		this.engine.start();
