@@ -5900,6 +5900,8 @@ var Items = {
   }
 };
 
+//const distFromExit = 25;
+
 function generateMap(w,h){
 	let map = new TileMap(w, h);
 	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
