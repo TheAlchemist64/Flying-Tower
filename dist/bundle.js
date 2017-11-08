@@ -5915,9 +5915,8 @@ var Items = {
   EXIT_KEY: {
     name: 'Golden Idol',
     type: 'exit_key',
-    glyph: new Glyph('X', 'gold'),
+    glyph: new Glyph('i', 'gold'),
     event: 'revealExit',
-    //slot: false
   }
 };
 
