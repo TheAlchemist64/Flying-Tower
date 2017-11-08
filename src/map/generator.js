@@ -22,14 +22,14 @@ export default function generateMap(w,h){
 	});
 	//Create Exit Key
 	let rooms = generator.getRooms();
-	let exitKey = rooms[Math.floor(ROT.RNG.getUniform() * rooms.length)].getCenter();
-	delete map.floors[exitKey.join(',')];
+	map.exitKey = rooms[Math.floor(ROT.RNG.getUniform() * rooms.length)].getCenter();
+	delete map.floors[map.exitKey.join(',')];
 	map.dropItem(new Item(
 		Items.EXIT_KEY.name,
 		Items.EXIT_KEY.glyph,
 		Items.EXIT_KEY.event,
 		Items.EXIT_KEY.slot,
-		...exitKey));
+		...map.exitKey));
 	//Create Treasure Rooms;
 	/*let numTreasureRooms = Math.floor(rooms.length/2);
 	for(let i = 0; i < numTreasureRooms; i++){

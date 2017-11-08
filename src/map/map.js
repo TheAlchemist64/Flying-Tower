@@ -7,9 +7,10 @@ export default class TileMap {
 		this.height = height;
 		this.tiles = new Map();
 		this.floors = {};
-		this.start = {};
 		this.items = [];
+		this.start = {};
 		this.exit = [];
+		this.exitKey = null;
 		this.exitRevealed = false;
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
