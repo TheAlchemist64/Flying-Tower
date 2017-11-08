@@ -123,12 +123,10 @@ export default {
 		bus.dispatch('tickTimer', c.timer);
 
 		//Create UI
-		for(let i = 0; i < 4; i++){
-			this.display.drawText(0, h+i, (i+1)+": "+(this.player.inventory[i] || ""));
-		}
+		this.resetItemsUI();
 		bus.addEventListener('pickup', (e, actor) => {
 			let item = e.target;
-			if(item.slot){
+			if(typeof item.slot == "undefined" || item.slot){
 				this.display.drawText(3, h + actor.inventory.length-1, item.name);
 			}
 			else if(item.type='exit_key'){
@@ -138,7 +136,20 @@ export default {
 
 		this.engine.start();
 	},
+	resetItemsUI(){
+		let blanks = " ".repeat(Math.floor(w / 2) - 3);
+		for(let i = 0; i < 4; i++){
+			let text = (i+1)+": "+(this.player.inventory[i] || blanks+"|");
+			this.display.drawText(0, h+i, text);
+		}
+	},
 	nextLevel(){
+
+		//this.resetItemsUI();
+		/*let blanks = " ".repeat(w);
+		for(let i = 0; i < 4; i++){
+			this.display.drawText(0, h+i, blanks);
+		}*/
 		this.scheduler.clear();
 		let text = 'Multiple levels not implemented yet.'
 		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);

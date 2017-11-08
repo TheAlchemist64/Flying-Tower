@@ -17,7 +17,7 @@ export default class Item {
 			if(x==this.x && y==this.y){
 				this.x = -1;
 				this.y = -1;
-				if(slot && e.target.inventory){
+				if((typeof slot=="undefined" || slot) && e.target.inventory){
 					e.target.inventory.push(this);
 				}
 				bus.dispatch('pickup',this, e.target, x, y);

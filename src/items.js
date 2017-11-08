@@ -6,6 +6,6 @@ export default {
     type: 'exit_key',
     glyph: new Glyph('X', 'gold'),
     event: 'revealExit',
-    slot: false
+    //slot: false
   }
 }

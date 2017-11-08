@@ -5375,6 +5375,18 @@ class Actor {
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
+	addItem(item){
+		this.inventory.push(item);
+	}
+	removeItem(item){
+		let index = this.inventory.indexOf(item);
+		if(index > -1){
+			this.inventory.splice(index, 1);
+		}
+		else{
+			throw new Error(`'${item.name}' not in ${this.name}'s inventory`)
+		}
+	}
 	act(){
 		if(this.controller){
 			this.controller.run(this);
@@ -5432,6 +5444,15 @@ class Actor {
 				break;
 			case 'exit':
 				if(this == Game.player && Game.map.exitRevealed){
+					let key = null;
+					for(let item of this.inventory){
+						if(item.type='exit_key'){
+							key = item;
+							break;
+						}
+					}
+					this.removeItem(key);
+					Game.resetItemsUI();
 					Game.nextLevel();
 				}
 				break;
@@ -5845,7 +5866,7 @@ class Item {
 			if(x==this.x && y==this.y){
 				this.x = -1;
 				this.y = -1;
-				if(slot && e.target.inventory){
+				if((typeof slot=="undefined" || slot) && e.target.inventory){
 					e.target.inventory.push(this);
 				}
 				eventbus_min.dispatch('pickup',this, e.target, x, y);
@@ -5896,11 +5917,9 @@ var Items = {
     type: 'exit_key',
     glyph: new Glyph('X', 'gold'),
     event: 'revealExit',
-    slot: false
+    //slot: false
   }
 };
-
-//const distFromExit = 25;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6056,12 +6075,10 @@ var Game = {
 		eventbus_min.dispatch('tickTimer', c.timer);
 
 		//Create UI
-		for(let i = 0; i < 4; i++){
-			this.display.drawText(0, h+i, (i+1)+": "+(this.player.inventory[i] || ""));
-		}
+		this.resetItemsUI();
 		eventbus_min.addEventListener('pickup', (e, actor) => {
 			let item = e.target;
-			if(item.slot){
+			if(typeof item.slot == "undefined" || item.slot){
 				this.display.drawText(3, h + actor.inventory.length-1, item.name);
 			}
 			else if(item.type='exit_key'){
@@ -6071,7 +6088,20 @@ var Game = {
 
 		this.engine.start();
 	},
+	resetItemsUI(){
+		let blanks = " ".repeat(Math.floor(w / 2) - 3);
+		for(let i = 0; i < 4; i++){
+			let text = (i+1)+": "+(this.player.inventory[i] || blanks+"|");
+			this.display.drawText(0, h+i, text);
+		}
+	},
 	nextLevel(){
+
+		//this.resetItemsUI();
+		/*let blanks = " ".repeat(w);
+		for(let i = 0; i < 4; i++){
+			this.display.drawText(0, h+i, blanks);
+		}*/
 		this.scheduler.clear();
 		let text = 'Multiple levels not implemented yet.';
 		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);

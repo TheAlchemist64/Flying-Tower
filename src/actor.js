@@ -16,6 +16,18 @@ export default class Actor {
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
+	addItem(item){
+		this.inventory.push(item);
+	}
+	removeItem(item){
+		let index = this.inventory.indexOf(item);
+		if(index > -1){
+			this.inventory.splice(index, 1);
+		}
+		else{
+			throw new Error(`'${item.name}' not in ${this.name}'s inventory`)
+		}
+	}
 	act(){
 		if(this.controller){
 			this.controller.run(this);
@@ -73,6 +85,15 @@ export default class Actor {
 				break;
 			case 'exit':
 				if(this == Game.player && Game.map.exitRevealed){
+					let key = null;
+					for(let item of this.inventory){
+						if(item.type='exit_key'){
+							key = item;
+							break;
+						}
+					}
+					this.removeItem(key);
+					Game.resetItemsUI();
 					Game.nextLevel();
 				}
 				break;
