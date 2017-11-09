@@ -11,7 +11,6 @@ import Glyph from './glyph';
 
 const w = 50;
 const h = 25;
-const distFromExit = 25;
 
 export var randInt = function(a, b){
 	return a + Math.floor((b-a) * ROT.RNG.getUniform());
@@ -79,11 +78,12 @@ export default {
 		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
 			totalTime++;
 		})
+
 		console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + 1,
-			Math.floor(totalTime / 3)
+			Math.floor(totalTime / 3) * 2 + randInt(1, 6),
+			Math.floor(totalTime / 3) + randInt(1, 6)
 		);
 		bus.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();

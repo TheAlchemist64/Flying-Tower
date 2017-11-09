@@ -5920,6 +5920,8 @@ var Items = {
   }
 };
 
+const distFromExit = 10;
+
 function generateMap(w,h){
 	let map = new TileMap(w, h);
 	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
@@ -5952,14 +5954,27 @@ function generateMap(w,h){
 		});
 	}*/
 	//Create exit
-	map.exit = randFloor(map);
-	delete map.floors[map.exit.join(',')];
 	//map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let queue = new priorityQueue_min({
 		comparator: (a,b) => rot.RNG.getUniform() * 2 - 1,
 		initialValues: Object.keys(map.floors)
 	});
+	let [eX, eY] = [null, null];
+	let done = [];
+	while(queue.length > 0){
+		let pick = queue.dequeue();
+		[eX, eY] = pick.split(',').map(x => Number(x));
+		if(distance(map.exitKey[0], map.exitKey[1], eX, eY) >= distFromExit){
+			break;
+		}
+		else{
+			done.push(pick);
+		}
+	}
+	map.exit = [eX, eY];
+	delete map.floors[map.exit.join(',')];
+	done.forEach(pick => queue.queue(pick));
 	let f = queue.dequeue();
 	let [rX, rY] = f.split(',').map(x => Number(x));
 	map.start = { x: rX, y: rY };
@@ -5968,25 +5983,18 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
+
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 };
 
 
 
-function randFloor(map){
-	let floors = Object.keys(map.floors);
-	if(floors.length > 0){
-		let floor = floors[randInt(0, floors.length)];
-		let [x, y] = floor.split(',');
-		return [Number(x), Number(y)];
-	}
-	else{
-		return null;
-	}
+
+
+function distance(x1, y1, x2, y2){
+	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }
-
-
 
 var Game = {
 	display: null,
@@ -6030,11 +6038,12 @@ var Game = {
 		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
 			totalTime++;
 		});
+
 		console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + 1,
-			Math.floor(totalTime / 3)
+			Math.floor(totalTime / 3) * 2 + randInt(1, 6),
+			Math.floor(totalTime / 3) + randInt(1, 6)
 		);
 		eventbus_min.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();

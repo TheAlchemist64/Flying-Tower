@@ -8,7 +8,7 @@ import TileTypes from './tiletypes';
 import Item from '../item';
 import Items from '../items';
 
-//const distFromExit = 25;
+const distFromExit = 10;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -42,14 +42,27 @@ export default function generateMap(w,h){
 		});
 	}*/
 	//Create exit
-	map.exit = randFloor(map);
-	delete map.floors[map.exit.join(',')];
 	//map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let queue = new PriorityQueue({
 		comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
 		initialValues: Object.keys(map.floors)
 	});
+	let [eX, eY] = [null, null];
+	let done = [];
+	while(queue.length > 0){
+		let pick = queue.dequeue();
+		[eX, eY] = pick.split(',').map(x => Number(x));
+		if(distance(map.exitKey[0], map.exitKey[1], eX, eY) >= distFromExit){
+			break;
+		}
+		else{
+			done.push(pick);
+		}
+	}
+	map.exit = [eX, eY];
+	delete map.floors[map.exit.join(',')];
+	done.forEach(pick => queue.queue(pick));
 	let f = queue.dequeue();
 	let [rX, rY] = f.split(',').map(x => Number(x));
 	map.start = { x: rX, y: rY };
