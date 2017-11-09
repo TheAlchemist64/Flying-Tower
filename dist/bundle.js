@@ -5731,8 +5731,16 @@ class Collapser{
 					if(this.betweenPlayerAndExit(...pick)){
 						done.push(pick);
 					}
-					else if(this.map.get(...pick).type =="floor"){
-						break;
+					else if(this.map.get(...pick).type == "sky"){
+						continue;
+					}
+					else {
+						this.collapseTile(...pick);
+						if(this.getPathToExit().length > 0){
+							this.map.set(new Tile(...pick, TileTypes.FLOOR));
+							break;
+						}
+						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 					}
 				}
 				if(this.floors.length > 0){
@@ -5753,11 +5761,14 @@ class Collapser{
 					if(this.map.get(...pick).type=="sky"){
 						continue;
 					}
-					else if(this.getPathToExit().length > 0){
+					this.collapseTile(...pick);
+					if(this.getPathToExit().length > 0){
+						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 						break;
 					}
 					else{
 						done.push(pick);
+						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 					}
 				}
 				if(this.floors.length > 0){
@@ -5920,7 +5931,7 @@ var Items = {
   }
 };
 
-const distFromExit = 10;
+const distFromExit = 20;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6042,8 +6053,8 @@ var Game = {
 		console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(1, 6),
-			Math.floor(totalTime / 3) + randInt(1, 6)
+			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			Math.floor(totalTime / 3) + randInt(0, 3)
 		);
 		eventbus_min.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();

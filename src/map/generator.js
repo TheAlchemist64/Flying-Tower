@@ -8,7 +8,7 @@ import TileTypes from './tiletypes';
 import Item from '../item';
 import Items from '../items';
 
-const distFromExit = 10;
+const distFromExit = 20;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);

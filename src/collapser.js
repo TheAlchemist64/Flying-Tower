@@ -85,8 +85,16 @@ export default class Collapser{
 					if(this.betweenPlayerAndExit(...pick)){
 						done.push(pick);
 					}
-					else if(this.map.get(...pick).type =="floor"){
-						break;
+					else if(this.map.get(...pick).type == "sky"){
+						continue;
+					}
+					else {
+						this.collapseTile(...pick);
+						if(this.getPathToExit().length > 0){
+							this.map.set(new Tile(...pick, TileTypes.FLOOR));
+							break;
+						}
+						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 					}
 				}
 				if(this.floors.length > 0){
@@ -107,11 +115,14 @@ export default class Collapser{
 					if(this.map.get(...pick).type=="sky"){
 						continue;
 					}
-					else if(this.getPathToExit().length > 0){
+					this.collapseTile(...pick);
+					if(this.getPathToExit().length > 0){
+						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 						break;
 					}
 					else{
 						done.push(pick);
+						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 					}
 				}
 				if(this.floors.length > 0){

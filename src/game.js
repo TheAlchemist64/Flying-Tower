@@ -82,8 +82,8 @@ export default {
 		console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(1, 6),
-			Math.floor(totalTime / 3) + randInt(1, 6)
+			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			Math.floor(totalTime / 3) + randInt(0, 3)
 		);
 		bus.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();
