@@ -25,8 +25,8 @@ export default {
 		name: 'exit',
 		glyph: new Glyph('^', 'white')
 	},
-	GOLD: {
-		name: 'gold',
-		glyph: new Glyph('$', 'gold')
+	BLOCK: {
+		name: 'block',
+		glyph: new Glyph('#','silver')
 	}
 }
