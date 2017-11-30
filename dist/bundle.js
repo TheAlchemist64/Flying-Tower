@@ -5961,6 +5961,23 @@ var Items = {
   }
 };
 
+var ItemFactory = {
+  createItem(id, map, x, y){
+    let item = new Item(
+      Items[id].name,
+  		Items[id].glyph,
+  		Items[id].event,
+  		Items[id].slot,
+  		x,
+      y
+    );
+    if(map){
+      map.dropItem(item);
+    }
+    return item;
+  }
+};
+
 const distFromExit = 20;
 
 function generateMap(w,h){
@@ -5977,12 +5994,7 @@ function generateMap(w,h){
 	let rooms = generator.getRooms();
 	map.exitKey = rooms[Math.floor(rot.RNG.getUniform() * rooms.length)].getCenter();
 	delete map.floors[map.exitKey.join(',')];
-	map.dropItem(new Item(
-		Items.EXIT_KEY.name,
-		Items.EXIT_KEY.glyph,
-		Items.EXIT_KEY.event,
-		Items.EXIT_KEY.slot,
-		...map.exitKey));
+	ItemFactory.createItem('EXIT_KEY', map, ...map.exitKey);
 	//Create Treasure Rooms;
 	/*let numTreasureRooms = Math.floor(rooms.length/2);
 	for(let i = 0; i < numTreasureRooms; i++){

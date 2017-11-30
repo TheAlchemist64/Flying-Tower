@@ -5,8 +5,7 @@ import TileMap from './map';
 import Tile from './tile';
 import FloorPicker from '../floorpicker';
 import TileTypes from './tiletypes';
-import Item from '../item';
-import Items from '../items';
+import ItemFactory from '../itemfactory';
 
 const distFromExit = 20;
 
@@ -24,12 +23,7 @@ export default function generateMap(w,h){
 	let rooms = generator.getRooms();
 	map.exitKey = rooms[Math.floor(ROT.RNG.getUniform() * rooms.length)].getCenter();
 	delete map.floors[map.exitKey.join(',')];
-	map.dropItem(new Item(
-		Items.EXIT_KEY.name,
-		Items.EXIT_KEY.glyph,
-		Items.EXIT_KEY.event,
-		Items.EXIT_KEY.slot,
-		...map.exitKey));
+	ItemFactory.createItem('EXIT_KEY', map, ...map.exitKey);
 	//Create Treasure Rooms;
 	/*let numTreasureRooms = Math.floor(rooms.length/2);
 	for(let i = 0; i < numTreasureRooms; i++){
