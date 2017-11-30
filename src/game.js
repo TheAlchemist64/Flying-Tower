@@ -8,7 +8,6 @@ import PlayerController from './controllers/player';
 import Collapser from './collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
-import Item from './item';
 import Glyph from './glyph';
 
 const w = 50;
