@@ -1,7 +1,7 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
 
-import { passable } from './utils';
+import { passable, randInt } from './utils';
 
 import Actor from './actor';
 import PlayerController from './controllers/player';
@@ -13,18 +13,6 @@ import Glyph from './glyph';
 
 const w = 50;
 const h = 25;
-
-export var randInt = function(a, b){
-	return a + Math.floor((b-a) * ROT.RNG.getUniform());
-}
-
-export function randTile(){
-	return [randInt(2, w-2), randInt(2, h-2)];
-}
-
-export function distance(x1, y1, x2, y2){
-	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
-}
 
 export default {
 	display: null,

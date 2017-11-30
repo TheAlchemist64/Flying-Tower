@@ -5367,6 +5367,14 @@ function passable(x, y) {
   return t.type != "sky";
 }
 
+function distance(x1, y1, x2, y2){
+	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
+}
+
+function randInt(a, b){
+	return a + Math.floor((b-a) * rot.RNG.getUniform());
+}
+
 class Actor {
 	constructor(name, x, y, glyph, controller){
 		this.name = name;
@@ -5957,8 +5965,6 @@ var Items = {
   }
 };
 
-//import PriorityQueue from '../../vendor/priority-queue.min';
-
 const distFromExit = 20;
 
 function generateMap(w,h){
@@ -6019,16 +6025,6 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
-
-var randInt = function(a, b){
-	return a + Math.floor((b-a) * rot.RNG.getUniform());
-};
-
-
-
-function distance(x1, y1, x2, y2){
-	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
-}
 
 var Game = {
 	display: null,

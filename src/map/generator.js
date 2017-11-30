@@ -1,7 +1,7 @@
 import ROT from '../../vendor/rot';
 //import PriorityQueue from '../../vendor/priority-queue.min';
 
-import { distance } from '../game';
+import { distance } from '../utils';
 import TileMap from './map';
 import Tile from './tile';
 import FloorPicker from '../floorpicker';
