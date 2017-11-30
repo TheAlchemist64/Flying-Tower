@@ -121,12 +121,6 @@ export default {
 		}
 	},
 	nextLevel(){
-
-		//this.resetItemsUI();
-		/*let blanks = " ".repeat(w);
-		for(let i = 0; i < 4; i++){
-			this.display.drawText(0, h+i, blanks);
-		}*/
 		this.scheduler.clear();
 		let text = 'Multiple levels not implemented yet.'
 		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
