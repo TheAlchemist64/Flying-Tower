@@ -1,6 +1,5 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
-//import PriorityQueue from '../vendor/priority-queue.min';
 
 import { passable } from './utils';
 

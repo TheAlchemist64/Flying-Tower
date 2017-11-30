@@ -5688,8 +5688,6 @@ var FloorPicker = {
   }
 };
 
-//import PriorityQueue from '../vendor/priority-queue.min';
-
 class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;

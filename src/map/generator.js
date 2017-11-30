@@ -1,5 +1,4 @@
 import ROT from '../../vendor/rot';
-//import PriorityQueue from '../../vendor/priority-queue.min';
 
 import { distance } from '../utils';
 import TileMap from './map';
