@@ -1,6 +1,6 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
-import PriorityQueue from '../vendor/priority-queue.min';
+//import PriorityQueue from '../vendor/priority-queue.min';
 
 import { passable } from './utils';
 
@@ -8,14 +8,11 @@ import Game from './game';
 import Tile from "./map/tile";
 import TileTypes from './map/tiletypes';
 import Timer from './timer';
+import FloorPicker from './floorpicker';
 
 export default class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;
-		this.floors = new PriorityQueue({
-			comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
-			initialValues: Object.keys(this.map.floors)
-		});
 		this.state = "idle";
 		this.timer = new Timer('Stage 1', s1,()=>{
 			this.state = "notOnPath";
@@ -80,13 +77,13 @@ export default class Collapser{
 		let done = [];
 		switch(this.state){
 			case "notInTheWay":
-				while (this.floors.length > 0) {
-					pick = this.floors.dequeue();
+				while (!FloorPicker.empty()) {
+					pick = FloorPicker.pick();
 					pick = pick.split(',').map(x => Number(x));
 					if(this.betweenPlayerAndExit(...pick)){
 						done.push(pick);
 					}
-					else if(this.map.get(...pick).type == "sky"){
+					else if(!passable(...pick)){
 						continue;
 					}
 					else {
@@ -98,7 +95,7 @@ export default class Collapser{
 						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 					}
 				}
-				if(this.floors.length > 0){
+				if(!FloorPicker.empty()){
 					this.collapseTile(...pick);
 					delete this.map.floors[pick];
 					this.map.get(...pick).draw();
@@ -110,10 +107,10 @@ export default class Collapser{
 				}
 				break;
 			case "notOnPath":
-				while(this.floors.length > 0){
-					pick = this.floors.dequeue();
+				while(!FloorPicker.empty()){
+					pick = FloorPicker.pick();
 					pick = pick.split(',').map(x => Number(x));
-					if(this.map.get(...pick).type=="sky"){
+					if(!passable(...pick)){
 						continue;
 					}
 					this.collapseTile(...pick);
@@ -126,7 +123,7 @@ export default class Collapser{
 						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 					}
 				}
-				if(this.floors.length > 0){
+				if(!FloorPicker.empty()){
 					this.collapseTile(...pick);
 					delete this.map.floors[pick];
 					this.map.get(...pick).draw();
@@ -138,14 +135,14 @@ export default class Collapser{
 				}
 				break;
 			case "canBeFatal":
-				while(this.floors.length > 0){
-					pick = this.floors.dequeue();
+				while(!FloorPicker.empty()){
+					pick = FloorPicker.pick();
 					pick = pick.split(',').map(x => Number(x));
-					if(this.map.get(...pick).type!="sky"){
+					if(passable(...pick)){
 						break;
 					}
 				}
-				if(this.floors.length > 0){
+				if(!FloorPicker.empty()){
 					this.collapseTile(...pick);
 					delete this.map.floors[pick];
 					this.map.get(...pick).draw();
@@ -160,6 +157,6 @@ export default class Collapser{
 		if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
 			Game.over(false);
 		}
-		done.forEach(pick => this.floors.queue(pick.join(',')));
+		done.forEach(pick => FloorPicker.put(pick.join(',')));
 	}
 }
