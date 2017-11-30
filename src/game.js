@@ -22,18 +22,6 @@ export function randTile(){
 	return [randInt(2, w-2), randInt(2, h-2)];
 }
 
-export function randFloor(map){
-	let floors = Object.keys(map.floors);
-	if(floors.length > 0){
-		let floor = floors[randInt(0, floors.length)];
-		let [x, y] = floor.split(',');
-		return [Number(x), Number(y)];
-	}
-	else{
-		return null;
-	}
-}
-
 export function distance(x1, y1, x2, y2){
 	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }

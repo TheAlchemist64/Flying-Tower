@@ -5957,6 +5957,8 @@ var Items = {
   }
 };
 
+//import PriorityQueue from '../../vendor/priority-queue.min';
+
 const distFromExit = 20;
 
 function generateMap(w,h){
@@ -6021,8 +6023,6 @@ const h = 25;
 var randInt = function(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 };
-
-
 
 
 
