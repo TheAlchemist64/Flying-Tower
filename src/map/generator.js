@@ -1,9 +1,10 @@
 import ROT from '../../vendor/rot';
-import PriorityQueue from '../../vendor/priority-queue.min';
+//import PriorityQueue from '../../vendor/priority-queue.min';
 
 import { randFloor, distance } from '../game';
 import TileMap from './map';
 import Tile from './tile';
+import FloorPicker from '../floorpicker';
 import TileTypes from './tiletypes';
 import Item from '../item';
 import Items from '../items';
@@ -44,14 +45,11 @@ export default function generateMap(w,h){
 	//Create exit
 	//map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
-	let queue = new PriorityQueue({
-		comparator: (a,b) => ROT.RNG.getUniform() * 2 - 1,
-		initialValues: Object.keys(map.floors)
-	});
+	FloorPicker.setMap(map);
 	let [eX, eY] = [null, null];
 	let done = [];
-	while(queue.length > 0){
-		let pick = queue.dequeue();
+	while(!FloorPicker.empty()){
+		let pick = FloorPicker.pick();
 		[eX, eY] = pick.split(',').map(x => Number(x));
 		if(distance(map.exitKey[0], map.exitKey[1], eX, eY) >= distFromExit){
 			break;
@@ -62,8 +60,8 @@ export default function generateMap(w,h){
 	}
 	map.exit = [eX, eY];
 	delete map.floors[map.exit.join(',')];
-	done.forEach(pick => queue.queue(pick));
-	let f = queue.dequeue();
+	done.forEach(pick => FloorPicker.put(pick));
+	let f = FloorPicker.pick();
 	let [rX, rY] = f.split(',').map(x => Number(x));
 	map.start = { x: rX, y: rY };
 	return map;

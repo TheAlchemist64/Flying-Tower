@@ -30,7 +30,11 @@ export default class Collapser{
 		this.map.set(new Tile(x, y, TileTypes.SKY));
 	}
 	getPathToExit(){
-		let passable = (x, y) => this.map.get(x, y).type != "sky";
+		let passable = (x, y) => {
+			let t = this.map.get(x, y);
+			if(!t) return false;
+			return t.type != "sky";
+		}
 		let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
 		let path = [];
 		astar.compute(Game.player.x, Game.player.y, (x, y) => {

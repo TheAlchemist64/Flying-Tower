@@ -72,7 +72,11 @@ export default {
 			this.map.exit[0],
 			this.map.exit[1]
 		);*/
-		let passable = (x, y) => this.map.get(x, y).type != "sky";
+		let passable = (x, y) => {
+			let t = this.map.get(x, y);
+			if(!t) return false;
+			return t.type != "sky";
+		}
 		let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
 		let totalTime = 0;
 		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
