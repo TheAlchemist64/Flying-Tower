@@ -15,3 +15,12 @@ export function distance(x1, y1, x2, y2){
 export function randInt(a, b){
 	return a + Math.floor((b-a) * ROT.RNG.getUniform());
 }
+
+export function getPathToExit(){
+  let astar = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
+  let path = [];
+  astar.compute(Game.player.x, Game.player.y, (x, y) => {
+    path.push([x, y]);
+  });
+  return path;
+}

@@ -5375,6 +5375,15 @@ function randInt(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 }
 
+function getPathToExit(){
+  let astar = new rot.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
+  let path = [];
+  astar.compute(Game.player.x, Game.player.y, (x, y) => {
+    path.push([x, y]);
+  });
+  return path;
+}
+
 class Actor {
 	constructor(name, x, y, glyph, controller){
 		this.name = name;
@@ -5717,14 +5726,6 @@ class Collapser{
 	collapseTile(x, y){
 		this.map.set(new Tile(x, y, TileTypes.SKY));
 	}
-	getPathToExit(){
-		let astar = new rot.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
-		let path = [];
-		astar.compute(Game.player.x, Game.player.y, (x, y) => {
-			path.push([x, y]);
-		});
-		return path;
-	}
 	updateConnections(map, x, y){
 		if(!map.inBounds(x, y)){
 			return;
@@ -5757,7 +5758,7 @@ class Collapser{
 		});
 	}
 	collapseSectionNotOnPath(){
-		while(Object.keys(this.map.floors).length > this.getPathToExit().length){
+		while(Object.keys(this.map.floors).length > getPathToExit().length){
 
 		}
 	}
@@ -5777,7 +5778,7 @@ class Collapser{
 					}
 					else {
 						this.collapseTile(...pick);
-						if(this.getPathToExit().length > 0){
+						if(getPathToExit().length > 0){
 							this.map.set(new Tile(...pick, TileTypes.FLOOR));
 							break;
 						}
@@ -5803,7 +5804,7 @@ class Collapser{
 						continue;
 					}
 					this.collapseTile(...pick);
-					if(this.getPathToExit().length > 0){
+					if(getPathToExit().length > 0){
 						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 						break;
 					}

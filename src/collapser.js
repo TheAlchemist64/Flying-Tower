@@ -1,7 +1,7 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
 
-import { passable } from './utils';
+import { passable, getPathToExit } from './utils';
 
 import Game from './game';
 import Tile from "./map/tile";
@@ -23,14 +23,6 @@ export default class Collapser{
 	}
 	collapseTile(x, y){
 		this.map.set(new Tile(x, y, TileTypes.SKY));
-	}
-	getPathToExit(){
-		let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
-		let path = [];
-		astar.compute(Game.player.x, Game.player.y, (x, y) => {
-			path.push([x, y]);
-		});
-		return path;
 	}
 	updateConnections(map, x, y){
 		if(!map.inBounds(x, y)){
@@ -64,7 +56,7 @@ export default class Collapser{
 		});
 	}
 	collapseSectionNotOnPath(){
-		while(Object.keys(this.map.floors).length > this.getPathToExit().length){
+		while(Object.keys(this.map.floors).length > getPathToExit().length){
 
 		}
 	}
@@ -84,7 +76,7 @@ export default class Collapser{
 					}
 					else {
 						this.collapseTile(...pick);
-						if(this.getPathToExit().length > 0){
+						if(getPathToExit().length > 0){
 							this.map.set(new Tile(...pick, TileTypes.FLOOR));
 							break;
 						}
@@ -110,7 +102,7 @@ export default class Collapser{
 						continue;
 					}
 					this.collapseTile(...pick);
-					if(this.getPathToExit().length > 0){
+					if(getPathToExit().length > 0){
 						this.map.set(new Tile(...pick, TileTypes.FLOOR));
 						break;
 					}
