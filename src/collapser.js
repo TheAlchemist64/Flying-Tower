@@ -55,11 +55,6 @@ export default class Collapser{
 			}
 		});
 	}
-	collapseSectionNotOnPath(){
-		while(Object.keys(this.map.floors).length > getPathToExit().length){
-
-		}
-	}
 	act(){
 		let pick = null;
 		let done = [];
