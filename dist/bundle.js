@@ -5706,15 +5706,6 @@ class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;
 		this.state = "idle";
-		/*this.timer = new Timer('Stage 1', s1,()=>{
-			this.state = "notOnPath";
-			this.timer = new Timer('Stage 2', s2, ()=>{
-				this.state = "canBeFatal";
-				bus.dispatch('tickTimer',this.timer);
-			});
-			this.timer.activate();
-			bus.dispatch('tickTimer',this.timer);
-		});*/
 		this.timer = new Timer('Stage 1', s1, () => {
 			this.state = "notOnPath";
 		});
