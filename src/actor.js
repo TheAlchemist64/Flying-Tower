@@ -45,9 +45,6 @@ export default class Actor {
 		return [collides, other];
 	}
 	move(x, y, pusher){
-		if(this.stunned && !pusher){
-			return 0;
-		}
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
