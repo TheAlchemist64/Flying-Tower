@@ -5375,6 +5375,13 @@ function randInt(a, b){
 	return a + Math.floor((b-a) * rot.RNG.getUniform());
 }
 
+function betweenPlayerAndExit(x, y){
+  let dx = Game.map.exit[0] - Game.player.x;
+  let dy = Game.map.exit[1] - Game.player.y;
+  let innerProduct = (x - Game.player.x) * dx + (y - Game.player.y) * dy;
+  return 0 <= innerProduct && innerProduct <= dx*dx + dy*dy;
+}
+
 function getPathToExit(){
   let astar = new rot.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
   let path = [];
@@ -5742,12 +5749,6 @@ class Collapser{
 		this.updateConnections(map, x, y+1);
 		this.updateConnections(map, x-1, y);
 	}
-	betweenPlayerAndExit(x, y){
-		let dx = this.map.exit[0] - Game.player.x;
-		let dy = this.map.exit[1] - Game.player.y;
-		let innerProduct = (x - Game.player.x) * dx + (y - Game.player.y) * dy;
-		return 0 <= innerProduct && innerProduct <= dx*dx + dy*dy;
-	}
 	collapseSection(){
 		Object.keys(this.map.floors).forEach(floor => {
 			let [x,y] = floor.split(',');
@@ -5765,7 +5766,7 @@ class Collapser{
 				while (!FloorPicker.empty()) {
 					pick = FloorPicker.pick();
 					pick = pick.split(',').map(x => Number(x));
-					if(this.betweenPlayerAndExit(...pick)){
+					if(betweenPlayerAndExit(...pick)){
 						done.push(pick);
 					}
 					else if(!passable(...pick)){

@@ -1,7 +1,7 @@
 import ROT from '../vendor/rot';
 import bus from '../vendor/eventbus.min';
 
-import { passable, getPathToExit } from './utils';
+import { passable, betweenPlayerAndExit, getPathToExit } from './utils';
 
 import Game from './game';
 import Tile from "./map/tile";
@@ -40,12 +40,6 @@ export default class Collapser{
 		this.updateConnections(map, x, y+1);
 		this.updateConnections(map, x-1, y);
 	}
-	betweenPlayerAndExit(x, y){
-		let dx = this.map.exit[0] - Game.player.x;
-		let dy = this.map.exit[1] - Game.player.y;
-		let innerProduct = (x - Game.player.x) * dx + (y - Game.player.y) * dy;
-		return 0 <= innerProduct && innerProduct <= dx*dx + dy*dy;
-	}
 	collapseSection(){
 		Object.keys(this.map.floors).forEach(floor => {
 			let [x,y] = floor.split(',');
@@ -63,7 +57,7 @@ export default class Collapser{
 				while (!FloorPicker.empty()) {
 					pick = FloorPicker.pick();
 					pick = pick.split(',').map(x => Number(x));
-					if(this.betweenPlayerAndExit(...pick)){
+					if(betweenPlayerAndExit(...pick)){
 						done.push(pick);
 					}
 					else if(!passable(...pick)){

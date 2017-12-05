@@ -16,6 +16,13 @@ export function randInt(a, b){
 	return a + Math.floor((b-a) * ROT.RNG.getUniform());
 }
 
+export function betweenPlayerAndExit(x, y){
+  let dx = Game.map.exit[0] - Game.player.x;
+  let dy = Game.map.exit[1] - Game.player.y;
+  let innerProduct = (x - Game.player.x) * dx + (y - Game.player.y) * dy;
+  return 0 <= innerProduct && innerProduct <= dx*dx + dy*dy;
+}
+
 export function getPathToExit(){
   let astar = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology: 4});
   let path = [];
