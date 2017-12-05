@@ -10,9 +10,6 @@ export default class Actor {
 		this.glyph = glyph;
 		this.controller = controller || null;
 		this.inventory = [];
-		this.state = "active";
-		this.stunned = 0;
-		this.immune = 0;
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
@@ -56,21 +53,6 @@ export default class Actor {
 		}
 		let tileType = Game.map.get(x, y).type;
 		switch(tileType){
-			case 'wall':
-				if(pusher){
-					//Player/Actor was pushed into the wall, knocked out
-					if(this.state=="active"){
-						this.state = "stunned";
-						this.stunned = 4;
-						this._chr = this.glyph.chr;
-						this._fg = this.glyph.fg;
-						this.glyph.chr = this.stunned;
-						this.glyph.fg = "yellow";
-						this.draw();
-					}
-				}
-				return 0;
-				break;
 			case 'sky':
 				if(pusher){
 					Game.map.get(this.x, this.y).draw();
