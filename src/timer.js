@@ -1,13 +1,26 @@
 import bus from '../vendor/eventbus.min';
-
 import Game from './game';
 
 export default class Timer {
   constructor(name, count, f) {
     this.name = name;
     this.count = count;
-    this.f = f;
+    this.callbacks = [];
+    if(f){
+      this.then(f);
+    }
     this.activated = false;
+  }
+  then(f){
+    if(f instanceof Timer){
+      this.callbacks.push(() => {
+        f.activate();
+        bus.dispatch('tickTimer', f);
+      });
+    }
+    else{
+      this.callbacks.push(f);
+    }
   }
   activate(){
     if(!this.activated){
@@ -21,7 +34,7 @@ export default class Timer {
       bus.dispatch('tickTimer', this);
     }
     else{
-      this.f();
+      this.callbacks.forEach(f => f());
       Game.scheduler.remove(this);
     }
   }

@@ -5642,8 +5642,22 @@ class Timer {
   constructor(name, count, f) {
     this.name = name;
     this.count = count;
-    this.f = f;
+    this.callbacks = [];
+    if(f){
+      this.then(f);
+    }
     this.activated = false;
+  }
+  then(f){
+    if(f instanceof Timer){
+      this.callbacks.push(() => {
+        f.activate();
+        eventbus_min.dispatch('tickTimer', f);
+      });
+    }
+    else{
+      this.callbacks.push(f);
+    }
   }
   activate(){
     if(!this.activated){
@@ -5657,7 +5671,7 @@ class Timer {
       eventbus_min.dispatch('tickTimer', this);
     }
     else{
-      this.f();
+      this.callbacks.forEach(f => f());
       Game.scheduler.remove(this);
     }
   }
@@ -5692,15 +5706,21 @@ class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;
 		this.state = "idle";
-		this.timer = new Timer('Stage 1', s1,()=>{
+		/*this.timer = new Timer('Stage 1', s1,()=>{
 			this.state = "notOnPath";
 			this.timer = new Timer('Stage 2', s2, ()=>{
 				this.state = "canBeFatal";
-				eventbus_min.dispatch('tickTimer',this.timer);
+				bus.dispatch('tickTimer',this.timer);
 			});
 			this.timer.activate();
-			eventbus_min.dispatch('tickTimer',this.timer);
+			bus.dispatch('tickTimer',this.timer);
+		});*/
+		this.timer = new Timer('Stage 1', s1, () => {
+			this.state = "notOnPath";
 		});
+		this.timer.then(new Timer('Stage 2', s2, ()=>{
+			this.state = "canBeFatal";
+		}));
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){
