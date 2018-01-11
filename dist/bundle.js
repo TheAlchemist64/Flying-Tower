@@ -5545,6 +5545,9 @@ class SentinelController extends Controller {
   run(actor){
     super.run(actor);
     if(distance(actor.x, actor.y, Game.player.x, Game.player.y) < 5){
+      //Change color
+      actor._fg = actor.glyph.fg;
+      actor.glyph.fg = 'red';
       //Initialize pathfinder
   		let finder = new rot.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
   		//Find path from AI to player
@@ -5556,6 +5559,10 @@ class SentinelController extends Controller {
       if(path.length > 1){
   			actor.move(path[1].x, path[1].y);
   		}
+    }
+    else if(actor._fg){
+      actor.glyph.fg = actor._fg;
+      delete actor._fg;
     }
   }
 }
@@ -5911,7 +5918,7 @@ var Game = {
 		for(let i = 0; i < SENTINELS; i++){
 			let pick = FloorPicker.pick();
 			let [sx, sy] = pick.split(',').map(x => Number(x));
-			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','red'), new SentinelController());
+			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
 			sentinel.draw();
 			picks.push({x: sx, y: sy});
 		}

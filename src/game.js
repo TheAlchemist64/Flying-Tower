@@ -47,7 +47,7 @@ export default {
 		for(let i = 0; i < SENTINELS; i++){
 			let pick = FloorPicker.pick();
 			let [sx, sy] = pick.split(',').map(x => Number(x));
-			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','red'), new SentinelController());
+			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
 			sentinel.draw();
 			picks.push({x: sx, y: sy});
 		}

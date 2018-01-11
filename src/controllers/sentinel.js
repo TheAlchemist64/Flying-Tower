@@ -8,6 +8,9 @@ export default class SentinelController extends Controller {
   run(actor){
     super.run(actor);
     if(distance(actor.x, actor.y, Game.player.x, Game.player.y) < 5){
+      //Change color
+      actor._fg = actor.glyph.fg;
+      actor.glyph.fg = 'red';
       //Initialize pathfinder
   		let finder = new ROT.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
   		//Find path from AI to player
@@ -19,6 +22,10 @@ export default class SentinelController extends Controller {
       if(path.length > 1){
   			actor.move(path[1].x, path[1].y);
   		}
+    }
+    else if(actor._fg){
+      actor.glyph.fg = actor._fg;
+      delete actor._fg;
     }
   }
 }
