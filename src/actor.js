@@ -63,7 +63,8 @@ export default class Actor {
 				return 0;
 				break;
 			case 'exit':
-				Game.nextLevel();
+				bus.dispatch('exit', this);
+				//Game.nextLevel();
 				break;
 		}
 		let [collides, other] = this.collides(x, y);

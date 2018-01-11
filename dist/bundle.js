@@ -5452,7 +5452,8 @@ class Actor {
 				return 0;
 				break;
 			case 'exit':
-				Game.nextLevel();
+				eventbus_min.dispatch('exit', this);
+				//Game.nextLevel();
 				break;
 		}
 		let [collides, other] = this.collides(x, y);
@@ -5485,6 +5486,15 @@ class Controller {
 }
 
 class PlayerController extends Controller {
+	constructor(){
+		super();
+		this.actor = null;
+		eventbus_min.addEventListener('exit', (e)=>{
+			if(e.target==this.actor){
+				Game.nextLevel();
+			}
+		});
+	}
 	run(actor){
 		super.run(actor);
 		if(!this.actor){
@@ -5523,7 +5533,7 @@ class PlayerController extends Controller {
 			window.removeEventListener('keydown',this);
 			Game.engine.unlock();
 		}
-	}	
+	}
 	canFall(){
 		let x = this.x;
 		let y = this.y;
@@ -5550,7 +5560,8 @@ class SentinelController extends Controller {
       actor.glyph.fg = 'red';
       //Initialize pathfinder
   		let finder = new rot.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
-  		//Find path from AI to player
+      //let finder = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology:4});
+      //Find path from AI to player
   		let path = [];
   		finder.compute(actor.x, actor.y, (x, y)=>{
   			path.push({x: x, y: y});

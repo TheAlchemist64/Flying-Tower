@@ -1,9 +1,19 @@
 import ROT from '../../vendor/rot';
+import bus from '../../vendor/eventbus.min';
 
 import Game from '../game';
 import Controller from '../controller';
 
 export default class PlayerController extends Controller {
+	constructor(){
+		super();
+		this.actor = null;
+		bus.addEventListener('exit', (e)=>{
+			if(e.target==this.actor){
+				Game.nextLevel();
+			}
+		})
+	}
 	run(actor){
 		super.run(actor);
 		if(!this.actor){
@@ -42,7 +52,7 @@ export default class PlayerController extends Controller {
 			window.removeEventListener('keydown',this);
 			Game.engine.unlock();
 		}
-	}	
+	}
 	canFall(){
 		let x = this.x;
 		let y = this.y;

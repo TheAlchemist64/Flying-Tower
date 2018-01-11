@@ -13,7 +13,8 @@ export default class SentinelController extends Controller {
       actor.glyph.fg = 'red';
       //Initialize pathfinder
   		let finder = new ROT.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
-  		//Find path from AI to player
+      //let finder = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology:4});
+      //Find path from AI to player
   		let path = [];
   		finder.compute(actor.x, actor.y, (x, y)=>{
   			path.push({x: x, y: y});
