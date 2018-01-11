@@ -5703,86 +5703,74 @@ class Collapser{
 			}
 		});
 	}
+	collapseWithMethod(f){
+		let pick = null;
+		let [x, y] = [null, null];
+		let done = [];
+		while(!FloorPicker.empty()){
+			pick = FloorPicker.pick();
+			[x, y] = pick.split(',').map(x => Number(x));
+			let accepted = false;
+			f(x, y, () => accepted = true, () => done.push(pick));
+			if(accepted){
+				break;
+			}
+		}
+		if(!FloorPicker.empty()){
+			this.collapseTile(x, y);
+			delete this.map.floors[pick];
+			this.map.get(x, y).draw();
+			this.map.tiles.forEach((tile,k)=>{
+				tile.connected = false;
+			});
+			this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+			this.collapseSection();
+		}
+		if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
+			Game.over(false);
+		}
+		done.forEach(p => FloorPicker.put(p));
+	}
 	act(){
 		let pick = null;
 		let done = [];
 		switch(this.state){
 			case "notInTheWay":
-				while (!FloorPicker.empty()) {
-					pick = FloorPicker.pick();
-					pick = pick.split(',').map(x => Number(x));
-					if(betweenPlayerAndExit(...pick)){
-						done.push(pick);
+				this.collapseWithMethod((x, y, accept, reject) => {
+					if(betweenPlayerAndExit(x, y)){
+						reject();
 					}
-					else if(!passable(...pick)){
-						continue;
-					}
-					else {
-						this.collapseTile(...pick);
+					else if(passable(x, y)){
+						this.collapseTile(x, y);
 						if(getPathToExit().length > 0){
-							this.map.set(new Tile(...pick, TileTypes.FLOOR));
-							break;
+							this.map.set(new Tile(x, y, TileTypes.FLOOR));
+							accept();
 						}
-						this.map.set(new Tile(...pick, TileTypes.FLOOR));
+						this.map.set(new Tile(x, y, TileTypes.FLOOR));
 					}
-				}
-				if(!FloorPicker.empty()){
-					this.collapseTile(...pick);
-					delete this.map.floors[pick];
-					this.map.get(...pick).draw();
-					this.map.tiles.forEach((tile,k)=>{
-						tile.connected = false;
-					});
-					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-					this.collapseSection();
-				}
+				});
 				break;
 			case "notOnPath":
-				while(!FloorPicker.empty()){
-					pick = FloorPicker.pick();
-					pick = pick.split(',').map(x => Number(x));
-					if(!passable(...pick)){
-						continue;
+				this.collapseWithMethod((x, y, accept, reject) => {
+					if(passable(x, y)){
+						this.collapseTile(x, y);
+						if(getPathToExit().length > 0){
+							this.map.set(new Tile(x, y, TileTypes.FLOOR));
+							accept();
+						}
+						else{
+							reject();
+							this.map.set(new Tile(x, y, TileTypes.FLOOR));
+						}
 					}
-					this.collapseTile(...pick);
-					if(getPathToExit().length > 0){
-						this.map.set(new Tile(...pick, TileTypes.FLOOR));
-						break;
-					}
-					else{
-						done.push(pick);
-						this.map.set(new Tile(...pick, TileTypes.FLOOR));
-					}
-				}
-				if(!FloorPicker.empty()){
-					this.collapseTile(...pick);
-					delete this.map.floors[pick];
-					this.map.get(...pick).draw();
-					this.map.tiles.forEach((tile,k)=>{
-						tile.connected = false;
-					});
-					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-					this.collapseSection();
-				}
+				});
 				break;
 			case "canBeFatal":
-				while(!FloorPicker.empty()){
-					pick = FloorPicker.pick();
-					pick = pick.split(',').map(x => Number(x));
-					if(passable(...pick)){
-						break;
+				this.collapseWithMethod((x, y, accept, reject) => {
+					if(passable(x, y)){
+						accept();
 					}
-				}
-				if(!FloorPicker.empty()){
-					this.collapseTile(...pick);
-					delete this.map.floors[pick];
-					this.map.get(...pick).draw();
-					this.map.tiles.forEach((tile,k)=>{
-						tile.connected = false;
-					});
-					this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
-					this.collapseSection();
-				}
+				});
 				break;
 		}
 		if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
