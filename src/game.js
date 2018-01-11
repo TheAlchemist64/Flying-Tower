@@ -49,19 +49,19 @@ export default {
 			this.map.exit[0],
 			this.map.exit[1]
 		);*/
-		/*let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
+		let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
 		let totalTime = 0;
-		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
+		astar.compute(this.player.x, this.player.y, (x, y)=>{
 			totalTime++;
 		})
 
-		console.log(totalTime);*/
+		//console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			//Math.floor(totalTime / 3) * 2 + randInt(0, 3),
-			//Math.floor(totalTime / 3) + randInt(0, 3)
-			25,
-			10,
+			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			Math.floor(totalTime / 3) + randInt(0, 3)
+			//25,
+			//10,
 		);
 		/*bus.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();
