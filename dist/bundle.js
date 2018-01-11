@@ -5711,7 +5711,7 @@ class Collapser{
 			pick = FloorPicker.pick();
 			[x, y] = pick.split(',').map(x => Number(x));
 			let accepted = false;
-			f(x, y, () => accepted = true, () => done.push(pick));
+			f(x, y, () => accepted = true, () => done.push({x: x, y: y}));
 			if(accepted){
 				break;
 			}
@@ -5747,6 +5747,9 @@ class Collapser{
 							accept();
 						}
 						this.map.set(new Tile(x, y, TileTypes.FLOOR));
+					}
+					else{
+						console.log(x+", "+y);
 					}
 				});
 				break;
