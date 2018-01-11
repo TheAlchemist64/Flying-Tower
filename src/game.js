@@ -5,10 +5,12 @@ import { passable, randInt } from './utils';
 
 import Actor from './actor';
 import PlayerController from './controllers/player';
+import SentinelController from './controllers/sentinel';
 import Collapser from './collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
 import Glyph from './glyph';
+import FloorPicker from './floorpicker';
 
 const w = 50;
 const h = 25;
@@ -40,6 +42,11 @@ export default {
 		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
 		//Create test monster
+		let pick = FloorPicker.pick();
+		let [sx, sy] = pick.split(',').map(x => Number(x));
+		let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','red'), new SentinelController());
+		sentinel.draw();
+		FloorPicker.put({x: sx, y: sy});
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map

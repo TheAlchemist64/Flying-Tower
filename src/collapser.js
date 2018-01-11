@@ -95,9 +95,6 @@ export default class Collapser{
 						}
 						this.map.set(new Tile(x, y, TileTypes.FLOOR));
 					}
-					else{
-						console.log(x+", "+y);
-					}
 				});
 				break;
 			case "notOnPath":

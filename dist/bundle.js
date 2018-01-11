@@ -5541,6 +5541,25 @@ class PlayerController extends Controller {
 	}
 }
 
+class SentinelController extends Controller {
+  run(actor){
+    super.run(actor);
+    if(distance(actor.x, actor.y, Game.player.x, Game.player.y) < 5){
+      //Initialize pathfinder
+  		let finder = new rot.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
+  		//Find path from AI to player
+  		let path = [];
+  		finder.compute(actor.x, actor.y, (x, y)=>{
+  			path.push({x: x, y: y});
+  		});
+      //Move onto player's tile
+      if(path.length > 1){
+  			actor.move(path[1].x, path[1].y);
+  		}
+    }
+  }
+}
+
 class Tile {
 	constructor(x, y, type){
 		this.x = x;
@@ -5748,9 +5767,6 @@ class Collapser{
 						}
 						this.map.set(new Tile(x, y, TileTypes.FLOOR));
 					}
-					else{
-						console.log(x+", "+y);
-					}
 				});
 				break;
 			case "notOnPath":
@@ -5890,6 +5906,11 @@ var Game = {
 		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
 		//Create test monster
+		let pick = FloorPicker.pick();
+		let [sx, sy] = pick.split(',').map(x => Number(x));
+		let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','red'), new SentinelController());
+		sentinel.draw();
+		FloorPicker.put({x: sx, y: sy});
 		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
 		//m.draw();
 		//Add Tile Collapser to map
