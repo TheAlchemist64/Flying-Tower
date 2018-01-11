@@ -44,6 +44,14 @@ export default class Actor {
 		});
 		return [collides, other];
 	}
+	kill(){
+		Game.map.get(this.x, this.y).draw();
+		Game.scheduler.remove(this);
+		Game.actors.splice(Game.actors.indexOf(this),1);
+		if(this == Game.player){
+			Game.over(false);
+		}
+	}
 	move(x, y, pusher){
 		if(!Game.map.inBounds(x, y)){
 			return 0;
@@ -52,12 +60,7 @@ export default class Actor {
 		switch(tileType){
 			case 'sky':
 				if(pusher){
-					Game.map.get(this.x, this.y).draw();
-					Game.scheduler.remove(this);
-					Game.actors.splice(Game.actors.indexOf(this),1);
-					if(this == Game.player){
-						Game.over(false);
-					}
+					this.kill();
 					return 1;
 				}
 				return 0;

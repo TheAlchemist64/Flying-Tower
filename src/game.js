@@ -44,12 +44,16 @@ export default {
 		this.player.draw();
 		//Create multiple sentinels
 		let picks = [];
-		for(let i = 0; i < SENTINELS; i++){
+		let numSentinels = 0;
+		while(numSentinels < SENTINELS){
 			let pick = FloorPicker.pick();
 			let [sx, sy] = pick.split(',').map(x => Number(x));
-			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
-			sentinel.draw();
-			picks.push({x: sx, y: sy});
+			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
+				let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
+				sentinel.draw();
+				picks.push({x: sx, y: sy});
+				numSentinels++;
+			}
 		}
 		picks.forEach(p => FloorPicker.put(p));
 		//Add Tile Collapser to map

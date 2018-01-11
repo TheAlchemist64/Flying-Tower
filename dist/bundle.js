@@ -5433,6 +5433,14 @@ class Actor {
 		});
 		return [collides, other];
 	}
+	kill(){
+		Game.map.get(this.x, this.y).draw();
+		Game.scheduler.remove(this);
+		Game.actors.splice(Game.actors.indexOf(this),1);
+		if(this == Game.player){
+			Game.over(false);
+		}
+	}
 	move(x, y, pusher){
 		if(!Game.map.inBounds(x, y)){
 			return 0;
@@ -5441,12 +5449,7 @@ class Actor {
 		switch(tileType){
 			case 'sky':
 				if(pusher){
-					Game.map.get(this.x, this.y).draw();
-					Game.scheduler.remove(this);
-					Game.actors.splice(Game.actors.indexOf(this),1);
-					if(this == Game.player){
-						Game.over(false);
-					}
+					this.kill();
 					return 1;
 				}
 				return 0;
@@ -5762,9 +5765,15 @@ class Collapser{
 			this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
 			this.collapseSection();
 		}
-		if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
+		/*if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
 			Game.over(false);
-		}
+		}*/
+		Game.actors.forEach(actor => {
+			console.log(actor.x+","+actor.y);
+			if(this.map.get(actor.x, actor.y).type == 'sky'){
+				actor.kill();
+			}
+		});
 		done.forEach(p => FloorPicker.put(p));
 	}
 	act(){
@@ -5925,12 +5934,16 @@ var Game = {
 		this.player.draw();
 		//Create multiple sentinels
 		let picks = [];
-		for(let i = 0; i < SENTINELS; i++){
+		let numSentinels = 0;
+		while(numSentinels < SENTINELS){
 			let pick = FloorPicker.pick();
 			let [sx, sy] = pick.split(',').map(x => Number(x));
-			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
-			sentinel.draw();
-			picks.push({x: sx, y: sy});
+			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
+				let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
+				sentinel.draw();
+				picks.push({x: sx, y: sy});
+				numSentinels++;
+			}
 		}
 		picks.forEach(p => FloorPicker.put(p));
 		//Add Tile Collapser to map
