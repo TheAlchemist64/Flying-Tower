@@ -14,6 +14,7 @@ import FloorPicker from './floorpicker';
 
 const w = 50;
 const h = 25;
+const SENTINELS = 5;
 
 export default {
 	display: null,
@@ -41,14 +42,16 @@ export default {
 		//Create Player
 		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
-		//Create test monster
-		let pick = FloorPicker.pick();
-		let [sx, sy] = pick.split(',').map(x => Number(x));
-		let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','red'), new SentinelController());
-		sentinel.draw();
-		FloorPicker.put({x: sx, y: sy});
-		//let m = new Monster('Monster',8,8,new Glyph('m','#f00'),new PusherAI());
-		//m.draw();
+		//Create multiple sentinels
+		let picks = [];
+		for(let i = 0; i < SENTINELS; i++){
+			let pick = FloorPicker.pick();
+			let [sx, sy] = pick.split(',').map(x => Number(x));
+			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','red'), new SentinelController());
+			sentinel.draw();
+			picks.push({x: sx, y: sy});
+		}
+		picks.forEach(p => FloorPicker.put(p));
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(
 			this.map.exitKey[0],
