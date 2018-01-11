@@ -49,50 +49,47 @@ export default {
 			this.map.exit[0],
 			this.map.exit[1]
 		);*/
-		let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
+		/*let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
 		let totalTime = 0;
 		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
 			totalTime++;
 		})
 
-		console.log(totalTime);
+		console.log(totalTime);*/
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
-			Math.floor(totalTime / 3) + randInt(0, 3)
+			//Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			//Math.floor(totalTime / 3) + randInt(0, 3)
+			25,
+			10,
 		);
-		bus.addEventListener('revealExit',(e,x,y) => {
+		/*bus.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();
 			c.state = "notInTheWay";
-		});
+		});*/
 		//Add Timer Listener
 		bus.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let timerText = '';
-			if(c.timer.activated){
-				let count = e.target.count;
-				if(count==0 && e.target.name=='Stage 2'){
-					timerText = '%c{red}';
-				}
-				else if(e.target.name=='Stage 2'){
-					timerText = '%c{yellow}';
-				}
-				else if(e.target.name=='Stage 1'){
-					timerText = '%c{green}';
-				}
-				else{
-					timerText = '%c{black}';
-				}
-				timerText+='%b{skyblue}';
-				if(count < 10){
-					timerText += '0'+count;
-				}
-				else{
-					timerText += count;
-				}
+			let count = e.target.count;
+			if(count==0 && e.target.name=='Stage 2'){
+				timerText = '%c{red}';
+			}
+			else if(e.target.name=='Stage 2'){
+				timerText = '%c{yellow}';
+			}
+			else if(e.target.name=='Stage 1'){
+				timerText = '%c{green}';
 			}
 			else{
-				timerText = '%c{black}%b{skyblue}--';
+				timerText = '%c{black}';
+			}
+			timerText+='%b{skyblue}';
+			if(count < 10){
+				timerText += '0'+count;
+			}
+			else{
+				timerText += count;
 			}
 			this.display.drawText(x, 0, timerText);
 		});

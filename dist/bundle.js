@@ -5371,9 +5371,7 @@ function distance(x1, y1, x2, y2){
 	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }
 
-function randInt(a, b){
-	return a + Math.floor((b-a) * rot.RNG.getUniform());
-}
+
 
 function betweenPlayerAndExit(x, y){
   let dx = Game.map.exit[0] - Game.player.x;
@@ -5452,18 +5450,7 @@ class Actor {
 				return 0;
 				break;
 			case 'exit':
-				if(this == Game.player && Game.map.exitRevealed){
-					let key = null;
-					for(let item of this.inventory){
-						if(item.type='exit_key'){
-							key = item;
-							break;
-						}
-					}
-					this.removeItem(key);
-					Game.resetItemsUI();
-					Game.nextLevel();
-				}
+				Game.nextLevel();
 				break;
 		}
 		let [collides, other] = this.collides(x, y);
@@ -5676,13 +5663,14 @@ var FloorPicker = {
 class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;
-		this.state = "idle";
+		this.state = "notInTheWay";
 		this.timer = new Timer('Stage 1', s1, () => {
 			this.state = "notOnPath";
 		});
 		this.timer.then(new Timer('Stage 2', s2, ()=>{
 			this.state = "canBeFatal";
 		}));
+		this.timer.activate();
 		Game.scheduler.add(this,true);
 	}
 	collapseTile(x, y){
@@ -5811,8 +5799,6 @@ class TileMap {
 		this.items = [];
 		this.start = {};
 		this.exit = [];
-		this.exitKey = null;
-		this.exitRevealed = false;
 		for(let x = 0; x < width; x++){
 			for(let y = 0; y < height; y++){
 				this.tiles.set(x+','+y,new Tile(x, y, TileTypes.SKY));
@@ -5845,103 +5831,7 @@ class TileMap {
 	}
 }
 
-var Events = {
-  revealExit(e, x, y){
-    Game.map.exitRevealed = true;
-    Game.map.set(new Tile(Game.map.exit[0], Game.map.exit[1], TileTypes.EXIT));
-    Game.map.draw();
-    Game.map.floors[x+','+y] = true;
-  }
-};
-
-class Item {
-	constructor(name, glyph, evt, slot, x, y){
-		this.name = name;
-		this.glyph = glyph;
-		this._x = x || -1;
-		this._y = y || -1;
-		this.slot = slot;
-		eventbus_min.addEventListener('moveout', (e, x, y) => {
-			if(x==this._x && y==this._y){
-				this.draw();
-			}
-		});
-		eventbus_min.addEventListener('movein', (e, x, y) => {
-			if(x==this.x && y==this.y){
-				this.x = -1;
-				this.y = -1;
-				if((typeof slot=="undefined" || slot) && e.target.inventory){
-					e.target.inventory.push(this);
-				}
-				eventbus_min.dispatch('pickup',this, e.target, x, y);
-			}
-		});
-		if(evt){
-			eventbus_min.addEventListener(evt, Events[evt]);
-			eventbus_min.addEventListener('pickup', (e, actor, x, y)=>{
-				eventbus_min.dispatch(evt, this, x, y);
-			});
-		}
-	}
-	draw(){
-		this.glyph.draw(this._x, this._y);
-	}
-	get x(){ return this._x; }
-	get y(){ return this._y; }
-	set x(x){
-		if(x >= 0 && this._y > 0){
-			this._x = x;
-			this.draw();
-		}
-		else if(this._x > 0 && this._y > 0){
-			eventbus_min.dispatch('resetTile', this, this._x, this._y);
-			this._x = x;
-		}
-		else{
-			this._x = x;
-		}
-	}
-	set y(y){
-		if(y >= 0 && this._y > 0){
-			this._y = y;
-			this.draw();
-		}
-		else if(this._x > 0 && this._y > 0){
-			eventbus_min.dispatch('resetTile', this, this._x, y);
-		}
-		else{
-			this._y = y;
-		}
-	}
-}
-
-var Items = {
-  EXIT_KEY: {
-    name: 'Golden Idol',
-    type: 'exit_key',
-    glyph: new Glyph('i', 'gold'),
-    event: 'revealExit',
-  }
-};
-
-var ItemFactory = {
-  createItem(id, map, x, y){
-    let item = new Item(
-      Items[id].name,
-  		Items[id].glyph,
-  		Items[id].event,
-  		Items[id].slot,
-  		x,
-      y
-    );
-    if(map){
-      map.dropItem(item);
-    }
-    return item;
-  }
-};
-
-const distFromExit = 20;
+const distFromExit = 25;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -5950,46 +5840,29 @@ function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		//let WALL = TileTypes.WALL;
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
-	//Create Exit Key
-	let rooms = generator.getRooms();
-	map.exitKey = rooms[Math.floor(rot.RNG.getUniform() * rooms.length)].getCenter();
-	delete map.floors[map.exitKey.join(',')];
-	ItemFactory.createItem('EXIT_KEY', map, ...map.exitKey);
-	//Create Treasure Rooms;
-	/*let numTreasureRooms = Math.floor(rooms.length/2);
-	for(let i = 0; i < numTreasureRooms; i++){
-		//Place Treasure
-		let center = rooms[i].getCenter();
-		map.dropItem(new Item(TileTypes.GOLD.name, TileTypes.GOLD.glyph, ...center));
-		//Place Door
-		rooms[i].getDoors((x, y)=>{
-			map.set(new Tile(x, y+1, TileTypes.DOOR));
-		});
-	}*/
 	//Create exit
-	//map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
-	//Create start location
 	FloorPicker.setMap(map);
-	let [eX, eY] = [null, null];
+	let pick = FloorPicker.pick();
+	map.exit = pick.split(',').map(x => Number(x));
+	delete map.floors[pick];
+	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
+	//Create start location
+	let [rX, rY] = [null, null];
 	let done = [];
 	while(!FloorPicker.empty()){
 		let pick = FloorPicker.pick();
-		[eX, eY] = pick.split(',').map(x => Number(x));
-		if(distance(map.exitKey[0], map.exitKey[1], eX, eY) >= distFromExit){
+		[rX, rY] = pick.split(',').map(x => Number(x));
+		let dist = distance(...map.exit, rX, rY);
+		if(dist >= distFromExit){
 			break;
 		}
 		else{
 			done.push(pick);
 		}
 	}
-	map.exit = [eX, eY];
-	delete map.floors[map.exit.join(',')];
-	done.forEach(pick => FloorPicker.put(pick));
-	let f = FloorPicker.pick();
-	let [rX, rY] = f.split(',').map(x => Number(x));
+	done.forEach(p => FloorPicker.put(p));
 	map.start = { x: rX, y: rY };
 	return map;
 }
@@ -6033,50 +5906,47 @@ var Game = {
 			this.map.exit[0],
 			this.map.exit[1]
 		);*/
-		let astar = new rot.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
+		/*let astar = new ROT.Path.AStar(this.map.exit[0], this.map.exit[1], passable, {topology: 4});
 		let totalTime = 0;
 		astar.compute(this.map.exitKey[0], this.map.exitKey[1], (x, y)=>{
 			totalTime++;
-		});
+		})
 
-		console.log(totalTime);
+		console.log(totalTime);*/
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
-			Math.floor(totalTime / 3) + randInt(0, 3)
+			//Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			//Math.floor(totalTime / 3) + randInt(0, 3)
+			25,
+			10,
 		);
-		eventbus_min.addEventListener('revealExit',(e,x,y) => {
+		/*bus.addEventListener('revealExit',(e,x,y) => {
 			c.timer.activate();
 			c.state = "notInTheWay";
-		});
+		});*/
 		//Add Timer Listener
 		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;
 			let timerText = '';
-			if(c.timer.activated){
-				let count = e.target.count;
-				if(count==0 && e.target.name=='Stage 2'){
-					timerText = '%c{red}';
-				}
-				else if(e.target.name=='Stage 2'){
-					timerText = '%c{yellow}';
-				}
-				else if(e.target.name=='Stage 1'){
-					timerText = '%c{green}';
-				}
-				else{
-					timerText = '%c{black}';
-				}
-				timerText+='%b{skyblue}';
-				if(count < 10){
-					timerText += '0'+count;
-				}
-				else{
-					timerText += count;
-				}
+			let count = e.target.count;
+			if(count==0 && e.target.name=='Stage 2'){
+				timerText = '%c{red}';
+			}
+			else if(e.target.name=='Stage 2'){
+				timerText = '%c{yellow}';
+			}
+			else if(e.target.name=='Stage 1'){
+				timerText = '%c{green}';
 			}
 			else{
-				timerText = '%c{black}%b{skyblue}--';
+				timerText = '%c{black}';
+			}
+			timerText+='%b{skyblue}';
+			if(count < 10){
+				timerText += '0'+count;
+			}
+			else{
+				timerText += count;
 			}
 			this.display.drawText(x, 0, timerText);
 		});

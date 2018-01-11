@@ -63,18 +63,7 @@ export default class Actor {
 				return 0;
 				break;
 			case 'exit':
-				if(this == Game.player && Game.map.exitRevealed){
-					let key = null;
-					for(let item of this.inventory){
-						if(item.type='exit_key'){
-							key = item;
-							break;
-						}
-					}
-					this.removeItem(key);
-					Game.resetItemsUI();
-					Game.nextLevel();
-				}
+				Game.nextLevel();
 				break;
 		}
 		let [collides, other] = this.collides(x, y);
