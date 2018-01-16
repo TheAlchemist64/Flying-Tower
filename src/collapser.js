@@ -73,9 +73,6 @@ export default class Collapser{
 			this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
 			this.collapseSection();
 		}
-		/*if(this.map.get(Game.player.x, Game.player.y).type=='sky'){
-			Game.over(false);
-		}*/
 		Game.actors.forEach(actor => {
 			console.log(actor.x+","+actor.y);
 			if(this.map.get(actor.x, actor.y).type == 'sky'){
