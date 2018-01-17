@@ -5402,10 +5402,12 @@ class Actor {
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
-	addItem(item){
+	pickup(item){
 		this.inventory.push(item);
+		item.x = -1;
+		item.y = -1;
 	}
-	removeItem(item){
+	drop(item){
 		let index = this.inventory.indexOf(item);
 		if(index > -1){
 			this.inventory.splice(index, 1);
@@ -5459,6 +5461,7 @@ class Actor {
 				//Game.nextLevel();
 				break;
 		}
+		//Check actor collision
 		let [collides, other] = this.collides(x, y);
 		if(collides){
 			//Push actor
@@ -5467,6 +5470,13 @@ class Actor {
 			let mv = other.move(other.x+dx,other.y+dy, this);
 			if(!mv){
 				return 0;
+			}
+		}
+		//Check item collision
+		for(let item of Game.map.items){
+			if(x==item.x && y==item.y){
+				this.pickup(item);
+				eventbus_min.dispatch('pickup', this, item);
 			}
 		}
 		//Capture current position
@@ -5863,6 +5873,68 @@ class TileMap {
 	}
 }
 
+var Events = {
+  revealExit(e, x, y){
+    Game.map.exitRevealed = true;
+    Game.map.set(new Tile(Game.map.exit[0], Game.map.exit[1], TileTypes.EXIT));
+    Game.map.draw();
+    Game.map.floors[x+','+y] = true;
+  }
+};
+
+class Item {
+	constructor(name, glyph, evt, slot, x, y){
+		this.name = name;
+		this.glyph = glyph;
+		this.x = x || -1;
+		this.y = y || -1;
+		this.slot = slot;
+		if(evt){
+			eventbus_min.addEventListener(evt, Events[evt]);
+			eventbus_min.addEventListener('pickup', (e, actor, x, y)=>{
+				eventbus_min.dispatch(evt, this, x, y);
+			});
+		}
+	}
+	draw(){
+		if(this.x > -1 && this.y > -1){
+			this.glyph.draw(this.x, this.y);
+		}
+	}
+}
+
+var Items = {
+  EXIT_KEY: {
+    name: 'Golden Idol',
+    type: 'exit_key',
+    glyph: new Glyph('i', 'gold'),
+    event: 'revealExit',
+  },
+  WIND_RUNE: {
+    name: 'Wind Rune',
+    type: 'rune',
+    glyph: new Glyph('w', 'skyblue'),
+    event: 'windAttack'
+  }
+};
+
+var ItemFactory = {
+  createItem(id, map, x, y){
+    let item = new Item(
+      Items[id].name,
+  		Items[id].glyph,
+  		Items[id].event,
+  		Items[id].slot,
+  		x,
+      y
+    );
+    if(map){
+      map.dropItem(item);
+    }
+    return item;
+  }
+};
+
 const distFromExit = 25;
 
 function generateMap(w,h){
@@ -5874,6 +5946,11 @@ function generateMap(w,h){
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
+	//Create Wind Rune
+	let rooms = generator.getRooms();
+	let windXY = rooms[Math.floor(rot.RNG.getUniform() * rooms.length)].getCenter();
+	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
+
 	//Create exit
 	FloorPicker.setMap(map);
 	let pick = FloorPicker.pick();
@@ -5901,7 +5978,7 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
-const SENTINELS = 5;
+const SENTINELS = 1;
 
 var Game = {
 	display: null,
@@ -5998,13 +6075,15 @@ var Game = {
 
 		//Create UI
 		this.resetItemsUI();
-		eventbus_min.addEventListener('pickup', (e, actor) => {
-			let item = e.target;
-			if(typeof item.slot == "undefined" || item.slot){
-				this.display.drawText(3, h + actor.inventory.length-1, item.name);
-			}
-			else if(item.type='exit_key'){
-				this.display.drawText(Math.floor(w/2)+1,h,item.name);
+		eventbus_min.addEventListener('pickup', (e, item) => {
+			if(e.target == this.player){
+				let actor = e.target;
+				if(typeof item.slot == "undefined" || item.slot){
+					this.display.drawText(3, h + actor.inventory.length-1, item.name);
+				}
+				else if(item.type='exit_key'){
+					this.display.drawText(Math.floor(w/2)+1,h,item.name);
+				}
 			}
 		});
 

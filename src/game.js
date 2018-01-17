@@ -14,7 +14,7 @@ import FloorPicker from './floorpicker';
 
 const w = 50;
 const h = 25;
-const SENTINELS = 5;
+const SENTINELS = 1;
 
 export default {
 	display: null,
@@ -111,13 +111,15 @@ export default {
 
 		//Create UI
 		this.resetItemsUI();
-		bus.addEventListener('pickup', (e, actor) => {
-			let item = e.target;
-			if(typeof item.slot == "undefined" || item.slot){
-				this.display.drawText(3, h + actor.inventory.length-1, item.name);
-			}
-			else if(item.type='exit_key'){
-				this.display.drawText(Math.floor(w/2)+1,h,item.name);
+		bus.addEventListener('pickup', (e, item) => {
+			if(e.target == this.player){
+				let actor = e.target;
+				if(typeof item.slot == "undefined" || item.slot){
+					this.display.drawText(3, h + actor.inventory.length-1, item.name);
+				}
+				else if(item.type='exit_key'){
+					this.display.drawText(Math.floor(w/2)+1,h,item.name);
+				}
 			}
 		});
 

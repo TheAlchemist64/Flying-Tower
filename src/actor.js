@@ -13,10 +13,12 @@ export default class Actor {
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
-	addItem(item){
+	pickup(item){
 		this.inventory.push(item);
+		item.x = -1;
+		item.y = -1;
 	}
-	removeItem(item){
+	drop(item){
 		let index = this.inventory.indexOf(item);
 		if(index > -1){
 			this.inventory.splice(index, 1);
@@ -70,6 +72,7 @@ export default class Actor {
 				//Game.nextLevel();
 				break;
 		}
+		//Check actor collision
 		let [collides, other] = this.collides(x, y);
 		if(collides){
 			//Push actor
@@ -78,6 +81,13 @@ export default class Actor {
 			let mv = other.move(other.x+dx,other.y+dy, this);
 			if(!mv){
 				return 0;
+			}
+		}
+		//Check item collision
+		for(let item of Game.map.items){
+			if(x==item.x && y==item.y){
+				this.pickup(item);
+				bus.dispatch('pickup', this, item);
 			}
 		}
 		//Capture current position
