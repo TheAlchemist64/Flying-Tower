@@ -5487,8 +5487,6 @@ class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
-		eventbus_min.dispatch('moveout', this, cx, cy);
-		eventbus_min.dispatch('movein', this, x, y);
 		this.draw();
 		return 1;
 	}

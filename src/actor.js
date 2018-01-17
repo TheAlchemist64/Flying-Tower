@@ -98,8 +98,6 @@ export default class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
-		bus.dispatch('moveout', this, cx, cy);
-		bus.dispatch('movein', this, x, y);
 		this.draw();
 		return 1;
 	}
