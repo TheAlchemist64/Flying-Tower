@@ -9,18 +9,19 @@ export default function animate(glyphs, frames){
     tiles.push([x, y]);
   }
   let index = 0;
+  let cleanup = 0;
   let done = false;
   let step = function(dt){
     if(index < frames.length){
       frames[index](draw);
       index++;
       requestAnimationFrame(step);
-    } else if (index - frames.length < tiles.length){
-      bus.dispatch('resetTile', this, ...tiles[index - frames.length]);
+    } else if (cleanup < tiles.length){
+      bus.dispatch('resetTile', this, ...tiles[cleanup]);
+      cleanup++;
       requestAnimationFrame(step);
     }
   }
   Game.engine.lock();
   requestAnimationFrame(step);
   Game.engine.unlock();
-}
