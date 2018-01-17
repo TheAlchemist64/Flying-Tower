@@ -5465,9 +5465,9 @@ class Actor {
 		let [collides, other] = this.collides(x, y);
 		if(collides){
 			//Push actor
-			let dx = x - this.x;
-			let dy = y - this.y;
-			let mv = other.move(other.x+dx,other.y+dy, this);
+			let mv = null;
+			let canMove = (x) => mv = x;
+			eventbus_min.dispatch('attack', this, other, canMove);
 			if(!mv){
 				return 0;
 			}
@@ -5976,7 +5976,7 @@ function generateMap(w,h){
 
 const w = 50;
 const h = 25;
-const SENTINELS = 1;
+const SENTINELS = 5;
 
 var Game = {
 	display: null,
@@ -6043,6 +6043,14 @@ var Game = {
 			c.timer.activate();
 			c.state = "notInTheWay";
 		});*/
+
+		//Add Attack Event
+		eventbus_min.addEventListener('attack', (e, actor, cb) => {
+			let dx = actor.x - e.target.x;
+			let dy = actor.y - e.target.y;
+			cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+		});
+
 		//Add Timer Listener
 		eventbus_min.addEventListener('tickTimer', (e) => {
 			let x = w - 2;

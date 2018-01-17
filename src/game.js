@@ -14,7 +14,7 @@ import FloorPicker from './floorpicker';
 
 const w = 50;
 const h = 25;
-const SENTINELS = 1;
+const SENTINELS = 5;
 
 export default {
 	display: null,
@@ -81,6 +81,14 @@ export default {
 			c.timer.activate();
 			c.state = "notInTheWay";
 		});*/
+
+		//Add Attack Event
+		bus.addEventListener('attack', (e, actor, cb) => {
+			let dx = actor.x - e.target.x;
+			let dy = actor.y - e.target.y;
+			cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+		});
+
 		//Add Timer Listener
 		bus.addEventListener('tickTimer', (e) => {
 			let x = w - 2;

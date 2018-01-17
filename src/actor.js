@@ -76,9 +76,9 @@ export default class Actor {
 		let [collides, other] = this.collides(x, y);
 		if(collides){
 			//Push actor
-			let dx = x - this.x;
-			let dy = y - this.y;
-			let mv = other.move(other.x+dx,other.y+dy, this);
+			let mv = null;
+			let canMove = (x) => mv = x;
+			bus.dispatch('attack', this, other, canMove);
 			if(!mv){
 				return 0;
 			}
