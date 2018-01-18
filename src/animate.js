@@ -3,8 +3,11 @@ import bus from '../vendor/eventbus.min';
 import Game from './game';
 
 class Frame {
-  constructor(options) {
-    this.draw = options.draw;
+  constructor(opts) {
+    this.draw = opts.draw;
+    if(opts.delay){
+      this.delay = opts.delay;
+    }
   }
 }
 
@@ -14,26 +17,31 @@ export default function animate(glyphs, ...frames){
   let index = 0;
   let cleanup = 0;
   let done = false;
+  let count = 0;
   let step = function(dt){
     if(index < frames.length){
-      for(let instr of frames[index].draw){
-        if(!instr.condition || instr.condition()){
-          let x = instr.x;
-          let y = instr.y;
-          let glyph = null;
-          if(typeof instr.glyph == 'string'){
-            glyph = glyphs[instr.glyph];
-          }
-          else{
-            glyph = instr.glyph;
-          }
-          glyph.draw(x, y);
-          if(instr.reset || (instr.resetIf && instr.resetIf())){
-            tiles.push([x, y]);
+      count += dt / 60;
+      if(!frames[index].delay || (frames[index].delay && count >= frames[index].delay)){
+        for(let instr of frames[index].draw){
+          if(!instr.condition || instr.condition()){
+            let x = instr.x;
+            let y = instr.y;
+            let glyph = null;
+            if(typeof instr.glyph == 'string'){
+              glyph = glyphs[instr.glyph];
+            }
+            else{
+              glyph = instr.glyph;
+            }
+            glyph.draw(x, y);
+            if(instr.reset || (instr.resetIf && instr.resetIf())){
+              tiles.push([x, y]);
+            }
           }
         }
+        index++;
+        count = 0;
       }
-      index++;
       requestAnimationFrame(step);
     } else if (cleanup < tiles.length){
       bus.dispatch('resetTile', this, ...tiles[cleanup]);
