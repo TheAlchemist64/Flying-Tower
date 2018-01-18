@@ -8,5 +8,8 @@ export default {
     Game.map.set(new Tile(Game.map.exit[0], Game.map.exit[1], TileTypes.EXIT));
     Game.map.draw();
     Game.map.floors[x+','+y] = true;
+  },
+  windAttack(e, actor, dx, dy){
+    console.log(e.target.name+', '+actor.name+', '+dx+', '+dy);
   }
 }

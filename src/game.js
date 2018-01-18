@@ -86,7 +86,17 @@ export default {
 		bus.addEventListener('attack', (e, actor, cb) => {
 			let dx = actor.x - e.target.x;
 			let dy = actor.y - e.target.y;
-			cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+			switch (e.target.name) {
+				case "Player":
+					for(let item of e.target.inventory){
+						if(item.event && item.event.type == 'attack'){
+							bus.dispatch(item.event.name, e.target, actor, dx, dy);
+						}
+					}
+					break;
+				default:
+					cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+			}
 		});
 
 		//Add Timer Listener

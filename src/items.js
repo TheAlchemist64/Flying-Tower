@@ -11,6 +11,9 @@ export default {
     name: 'Wind Rune',
     type: 'rune',
     glyph: new Glyph('w', 'skyblue'),
-    event: 'windAttack'
+    event: {
+      type: 'attack',
+      name: 'windAttack'
+    }
   }
 }

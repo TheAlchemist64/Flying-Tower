@@ -5877,6 +5877,9 @@ var Events = {
     Game.map.set(new Tile(Game.map.exit[0], Game.map.exit[1], TileTypes.EXIT));
     Game.map.draw();
     Game.map.floors[x+','+y] = true;
+  },
+  windAttack(e, actor, dx, dy){
+    console.log(e.target.name+', '+actor.name+', '+dx+', '+dy);
   }
 };
 
@@ -5888,10 +5891,11 @@ class Item {
 		this.y = y || -1;
 		this.slot = slot;
 		if(evt){
-			eventbus_min.addEventListener(evt, Events[evt]);
-			eventbus_min.addEventListener('pickup', (e, actor, x, y)=>{
-				eventbus_min.dispatch(evt, this, x, y);
-			});
+			this.event = evt;
+			eventbus_min.addEventListener(evt.name, Events[evt.name]);
+			/*bus.addEventListener('pickup', (e, actor, x, y)=>{
+				bus.dispatch(evt.name, this, actor, x, y);
+			})*/
 		}
 	}
 	draw(){
@@ -5912,7 +5916,10 @@ var Items = {
     name: 'Wind Rune',
     type: 'rune',
     glyph: new Glyph('w', 'skyblue'),
-    event: 'windAttack'
+    event: {
+      type: 'attack',
+      name: 'windAttack'
+    }
   }
 };
 
@@ -6048,7 +6055,17 @@ var Game = {
 		eventbus_min.addEventListener('attack', (e, actor, cb) => {
 			let dx = actor.x - e.target.x;
 			let dy = actor.y - e.target.y;
-			cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+			switch (e.target.name) {
+				case "Player":
+					for(let item of e.target.inventory){
+						if(item.event && item.event.type == 'attack'){
+							eventbus_min.dispatch(item.event.name, e.target, actor, dx, dy);
+						}
+					}
+					break;
+				default:
+					cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+			}
 		});
 
 		//Add Timer Listener
