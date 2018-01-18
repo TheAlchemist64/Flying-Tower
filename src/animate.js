@@ -2,14 +2,21 @@ import bus from '../vendor/eventbus.min';
 
 import Game from './game';
 
+class Frame {
+  constructor(options) {
+    this.draw = options.draw;
+  }
+}
+
 export default function animate(glyphs, ...frames){
+  frames = frames.map(opts => new Frame(opts));
   let tiles = [];
   let index = 0;
   let cleanup = 0;
   let done = false;
   let step = function(dt){
     if(index < frames.length){
-      for(let instr of frames[index]){
+      for(let instr of frames[index].draw){
         if(!instr.condition || instr.condition()){
           let x = instr.x;
           let y = instr.y;

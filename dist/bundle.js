@@ -5875,14 +5875,21 @@ class TileMap {
 	}
 }
 
+class Frame {
+  constructor(options) {
+    this.draw = options.draw;
+  }
+}
+
 function animate(glyphs, ...frames){
+  frames = frames.map(opts => new Frame(opts));
   let tiles = [];
   let index = 0;
   let cleanup = 0;
   let done = false;
   let step = function(dt){
     if(index < frames.length){
-      for(let instr of frames[index]){
+      for(let instr of frames[index].draw){
         if(!instr.condition || instr.condition()){
           let x = instr.x;
           let y = instr.y;
@@ -5929,41 +5936,45 @@ var Events = {
       hTrail: new Glyph('-', 'skyblue'),
       vTrail: new Glyph('|', 'skyblue')
     },
-    [
-      {
-        glyph: actor.glyph,
-        x: x + dx,
-        y: y + dy
-      },
-      {
-        glyph: 'impact',
-        x: x,
-        y: y,
-        reset: true
-      }
-    ],
-    [
-      {
-        glyph: actor.glyph,
-        x: x + dx * 2,
-        y: y + dy * 2,
-        resetIf: () => actor.dead
-      },
-      {
-        glyph: 'hTrail',
-        x: x + dx,
-        y: y + dy,
-        reset: true,
-        condition: () => dy == 0,
-      },
-      {
-        glyph: 'vTrail',
-        x: x + dx,
-        y: y + dy,
-        reset: true,
-        condition: () => dx == 0
-      }
-    ]);
+    {
+      draw:[
+        {
+          glyph: actor.glyph,
+          x: x + dx,
+          y: y + dy
+        },
+        {
+          glyph: 'impact',
+          x: x,
+          y: y,
+          reset: true
+        }
+      ]
+    },
+    {
+      draw: [
+        {
+          glyph: actor.glyph,
+          x: x + dx * 2,
+          y: y + dy * 2,
+          resetIf: () => actor.dead
+        },
+        {
+          glyph: 'hTrail',
+          x: x + dx,
+          y: y + dy,
+          reset: true,
+          condition: () => dy == 0,
+        },
+        {
+          glyph: 'vTrail',
+          x: x + dx,
+          y: y + dy,
+          reset: true,
+          condition: () => dx == 0
+        }
+      ]
+    });
   }
 };
 

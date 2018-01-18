@@ -23,40 +23,44 @@ export default {
       hTrail: new Glyph('-', 'skyblue'),
       vTrail: new Glyph('|', 'skyblue')
     },
-    [
-      {
-        glyph: actor.glyph,
-        x: x + dx,
-        y: y + dy
-      },
-      {
-        glyph: 'impact',
-        x: x,
-        y: y,
-        reset: true
-      }
-    ],
-    [
-      {
-        glyph: actor.glyph,
-        x: x + dx * 2,
-        y: y + dy * 2,
-        resetIf: () => actor.dead
-      },
-      {
-        glyph: 'hTrail',
-        x: x + dx,
-        y: y + dy,
-        reset: true,
-        condition: () => dy == 0,
-      },
-      {
-        glyph: 'vTrail',
-        x: x + dx,
-        y: y + dy,
-        reset: true,
-        condition: () => dx == 0
-      }
-    ]);
+    {
+      draw:[
+        {
+          glyph: actor.glyph,
+          x: x + dx,
+          y: y + dy
+        },
+        {
+          glyph: 'impact',
+          x: x,
+          y: y,
+          reset: true
+        }
+      ]
+    },
+    {
+      draw: [
+        {
+          glyph: actor.glyph,
+          x: x + dx * 2,
+          y: y + dy * 2,
+          resetIf: () => actor.dead
+        },
+        {
+          glyph: 'hTrail',
+          x: x + dx,
+          y: y + dy,
+          reset: true,
+          condition: () => dy == 0,
+        },
+        {
+          glyph: 'vTrail',
+          x: x + dx,
+          y: y + dy,
+          reset: true,
+          condition: () => dx == 0
+        }
+      ]
+    });
   }
 }
