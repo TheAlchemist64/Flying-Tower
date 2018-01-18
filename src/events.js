@@ -1,6 +1,10 @@
+import bus from '../vendor/eventbus.min';
+
 import Game from './game';
+import Glyph from './glyph';
 import Tile from './map/tile';
 import TileTypes from './map/tiletypes';
+import animate from './animate';
 
 export default {
   revealExit(e, x, y){
@@ -11,5 +15,48 @@ export default {
   },
   windAttack(e, actor, dx, dy){
     console.log(e.target.name+', '+actor.name+', '+dx+', '+dy);
+    let x = actor.x;
+    let y = actor.y;
+    actor.move(actor.x + dx * 2, actor.y + dy * 2, e.target, true);
+    animate({
+      impact: new Glyph('o', 'skyblue'),
+      hTrail: new Glyph('-', 'skyblue'),
+      vTrail: new Glyph('|', 'skyblue')
+    },
+    [
+      {
+        glyph: actor.glyph,
+        x: x + dx,
+        y: y + dy
+      },
+      {
+        glyph: 'impact',
+        x: x,
+        y: y,
+        reset: true
+      }
+    ],
+    [
+      {
+        glyph: actor.glyph,
+        x: x + dx * 2,
+        y: y + dy * 2,
+        resetIf: () => actor.dead
+      },
+      {
+        glyph: 'hTrail',
+        x: x + dx,
+        y: y + dy,
+        reset: true,
+        condition: () => dy == 0,
+      },
+      {
+        glyph: 'vTrail',
+        x: x + dx,
+        y: y + dy,
+        reset: true,
+        condition: () => dx == 0
+      }
+    ]);
   }
 }

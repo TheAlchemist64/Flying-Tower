@@ -5399,6 +5399,7 @@ class Actor {
 		this.glyph = glyph;
 		this.controller = controller || null;
 		this.inventory = [];
+		this.dead = false;
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
@@ -5436,6 +5437,7 @@ class Actor {
 		return [collides, other];
 	}
 	kill(){
+		this.dead = true;
 		Game.map.get(this.x, this.y).draw();
 		Game.scheduler.remove(this);
 		Game.actors.splice(Game.actors.indexOf(this),1);
@@ -5443,7 +5445,7 @@ class Actor {
 			Game.over(false);
 		}
 	}
-	move(x, y, pusher){
+	move(x, y, pusher, nodraw){
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
@@ -5487,7 +5489,9 @@ class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
-		this.draw();
+		if(!nodraw){
+			this.draw();
+		}
 		return 1;
 	}
 }
@@ -5871,6 +5875,43 @@ class TileMap {
 	}
 }
 
+function animate(glyphs, ...frames){
+  let tiles = [];
+  let index = 0;
+  let cleanup = 0;
+  let done = false;
+  let step = function(dt){
+    if(index < frames.length){
+      for(let instr of frames[index]){
+        if(!instr.condition || instr.condition()){
+          let x = instr.x;
+          let y = instr.y;
+          let glyph = null;
+          if(typeof instr.glyph == 'string'){
+            glyph = glyphs[instr.glyph];
+          }
+          else{
+            glyph = instr.glyph;
+          }
+          glyph.draw(x, y);
+          if(instr.reset || (instr.resetIf && instr.resetIf())){
+            tiles.push([x, y]);
+          }
+        }
+      }
+      index++;
+      requestAnimationFrame(step);
+    } else if (cleanup < tiles.length){
+      eventbus_min.dispatch('resetTile', this, ...tiles[cleanup]);
+      cleanup++;
+      requestAnimationFrame(step);
+    }
+  };
+  Game.engine.lock();
+  requestAnimationFrame(step);
+  Game.engine.unlock();
+}
+
 var Events = {
   revealExit(e, x, y){
     Game.map.exitRevealed = true;
@@ -5880,6 +5921,49 @@ var Events = {
   },
   windAttack(e, actor, dx, dy){
     console.log(e.target.name+', '+actor.name+', '+dx+', '+dy);
+    let x = actor.x;
+    let y = actor.y;
+    actor.move(actor.x + dx * 2, actor.y + dy * 2, e.target, true);
+    animate({
+      impact: new Glyph('o', 'skyblue'),
+      hTrail: new Glyph('-', 'skyblue'),
+      vTrail: new Glyph('|', 'skyblue')
+    },
+    [
+      {
+        glyph: actor.glyph,
+        x: x + dx,
+        y: y + dy
+      },
+      {
+        glyph: 'impact',
+        x: x,
+        y: y,
+        reset: true
+      }
+    ],
+    [
+      {
+        glyph: actor.glyph,
+        x: x + dx * 2,
+        y: y + dy * 2,
+        resetIf: () => actor.dead
+      },
+      {
+        glyph: 'hTrail',
+        x: x + dx,
+        y: y + dy,
+        reset: true,
+        condition: () => dy == 0,
+      },
+      {
+        glyph: 'vTrail',
+        x: x + dx,
+        y: y + dy,
+        reset: true,
+        condition: () => dx == 0
+      }
+    ]);
   }
 };
 

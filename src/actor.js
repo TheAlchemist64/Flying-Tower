@@ -10,6 +10,7 @@ export default class Actor {
 		this.glyph = glyph;
 		this.controller = controller || null;
 		this.inventory = [];
+		this.dead = false;
 		Game.actors.push(this);
 		Game.scheduler.add(this,true);
 	}
@@ -47,6 +48,7 @@ export default class Actor {
 		return [collides, other];
 	}
 	kill(){
+		this.dead = true;
 		Game.map.get(this.x, this.y).draw();
 		Game.scheduler.remove(this);
 		Game.actors.splice(Game.actors.indexOf(this),1);
@@ -54,7 +56,7 @@ export default class Actor {
 			Game.over(false);
 		}
 	}
-	move(x, y, pusher){
+	move(x, y, pusher, nodraw){
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
@@ -98,7 +100,9 @@ export default class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
-		this.draw();
+		if(!nodraw){
+			this.draw();
+		}
 		return 1;
 	}
 }
