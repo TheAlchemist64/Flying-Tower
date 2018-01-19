@@ -37,7 +37,7 @@ export default {
           reset: true
         }
       ],
-      delay: 500
+      delay: 50
     },
     {
       draw: [
@@ -62,7 +62,7 @@ export default {
           condition: () => dx == 0
         }
       ],
-      delay: 500
+      delay: 50
     });
   }
 }
