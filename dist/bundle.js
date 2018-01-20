@@ -6053,7 +6053,7 @@ function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
+		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
 	});
 	//Create Wind Rune
 	let rooms = generator.getRooms();
