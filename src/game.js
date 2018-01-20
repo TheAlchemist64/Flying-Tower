@@ -100,6 +100,7 @@ export default {
 					break;
 				default:
 					cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+					break;
 			}
 		});
 

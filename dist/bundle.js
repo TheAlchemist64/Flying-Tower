@@ -5469,7 +5469,7 @@ class Actor {
 			let canMove = (x) => mv = x;
 			eventbus_min.dispatch('attack', this, other, canMove);
 			if(!mv){
-				return 0;
+				return 1;
 			}
 		}
 		//Check item collision
@@ -6173,6 +6173,7 @@ var Game = {
 					break;
 				default:
 					cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+					break;
 			}
 		});
 
