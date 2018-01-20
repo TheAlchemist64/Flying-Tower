@@ -5371,9 +5371,7 @@ function distance(x1, y1, x2, y2){
 	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }
 
-function randInt(a, b){
-	return a + Math.floor((b-a) * rot.RNG.getUniform());
-}
+
 
 function betweenPlayerAndExit(x, y){
   let dx = Game.map.exit[0] - Game.player.x;
@@ -6047,7 +6045,7 @@ var ItemFactory = {
   }
 };
 
-const distFromExit = 25;
+const distFromExit = 40;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6088,8 +6086,8 @@ function generateMap(w,h){
 	return map;
 }
 
-const w = 50;
-const h = 25;
+const w = 64;
+const h = 32;
 const SENTINELS = 5;
 
 var Game = {
@@ -6144,12 +6142,16 @@ var Game = {
 		astar.compute(this.player.x, this.player.y, (x, y)=>{
 			totalTime++;
 		});
+		let firstTimer = Math.max(totalTime, 100);
+		let secondTimer = Math.max(totalTime / 2, 50);
 
 		//console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
-			Math.floor(totalTime / 3) + randInt(0, 3)
+			firstTimer,
+			secondTimer
+			//Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			//Math.floor(totalTime / 3) + randInt(0, 3)
 			//25,
 			//10,
 		);
@@ -6177,7 +6179,7 @@ var Game = {
 
 		//Add Timer Listener
 		eventbus_min.addEventListener('tickTimer', (e) => {
-			let x = w - 2;
+			let x = w - 3;
 			let timerText = '';
 			let count = e.target.count;
 			if(count==0 && e.target.name=='Stage 2'){
@@ -6193,8 +6195,11 @@ var Game = {
 				timerText = '%c{black}';
 			}
 			timerText+='%b{skyblue}';
-			if(count < 10){
-				timerText += '0'+count;
+			if(count < 100){
+				timerText += '0' + count;
+			}
+			else if(count < 10){
+				timerText += '00'+count;
 			}
 			else{
 				timerText += count;

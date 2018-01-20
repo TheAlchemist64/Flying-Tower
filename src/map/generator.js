@@ -7,7 +7,7 @@ import FloorPicker from '../floorpicker';
 import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
 
-const distFromExit = 25;
+const distFromExit = 40;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
