@@ -74,7 +74,6 @@ export default class Collapser{
 			this.collapseSection();
 		}
 		Game.actors.forEach(actor => {
-			console.log(actor.x+","+actor.y);
 			if(this.map.get(actor.x, actor.y).type == 'sky'){
 				actor.kill();
 			}
