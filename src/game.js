@@ -122,11 +122,11 @@ export default {
 				timerText = '%c{black}';
 			}
 			timerText+='%b{skyblue}';
-			if(count < 100){
-				timerText += '0' + count;
-			}
-			else if(count < 10){
+			if(count < 10){
 				timerText += '00'+count;
+			}
+			else if(count < 100){
+				timerText += '0' + count;
 			}
 			else{
 				timerText += count;
