@@ -5371,9 +5371,7 @@ function distance(x1, y1, x2, y2){
 	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }
 
-function randInt(a, b){
-	return a + Math.floor((b-a) * rot.RNG.getUniform());
-}
+
 
 function betweenPlayerAndExit(x, y){
   let dx = Game.map.exit[0] - Game.player.x;
@@ -5471,7 +5469,7 @@ class Actor {
 			let canMove = (x) => mv = x;
 			eventbus_min.dispatch('attack', this, other, canMove);
 			if(!mv){
-				return 0;
+				return 1;
 			}
 		}
 		//Check item collision
@@ -5778,7 +5776,6 @@ class Collapser{
 			this.collapseSection();
 		}
 		Game.actors.forEach(actor => {
-			console.log(actor.x+","+actor.y);
 			if(this.map.get(actor.x, actor.y).type == 'sky'){
 				actor.kill();
 			}
@@ -5938,9 +5935,11 @@ function animate(glyphs, ...frames){
   let cleanup = 0;
   let done = false;
   let count = 0;
-  let step = function(dt){
+  let lastframe = performance.now();
+  let step = function(ts){
     if(index < frames.length){
-      count += dt / 60;
+      count += (ts - lastframe);
+	  lastframe = ts;
       if(!frames[index].delay || (frames[index].delay && count >= frames[index].delay)){
         for(let instr of frames[index].draw){
           if(!instr.condition || instr.condition()){
@@ -6005,7 +6004,7 @@ var Events = {
           reset: true
         }
       ],
-      delay: 500
+      delay: 50
     },
     {
       draw: [
@@ -6030,7 +6029,7 @@ var Events = {
           condition: () => dx == 0
         }
       ],
-      delay: 500
+      delay: 50
     });
   }
 };
@@ -6092,7 +6091,7 @@ var ItemFactory = {
   }
 };
 
-const distFromExit = 25;
+const distFromExit = 40;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6101,7 +6100,7 @@ function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
+		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
 	});
 	//Create Wind Rune
 	Decorator.setRooms(generator.getRooms());
@@ -6134,8 +6133,8 @@ function generateMap(w,h){
 	return map;
 }
 
-const w = 50;
-const h = 25;
+const w = 64;
+const h = 32;
 const SENTINELS = 5;
 
 var Game = {
@@ -6190,12 +6189,16 @@ var Game = {
 		astar.compute(this.player.x, this.player.y, (x, y)=>{
 			totalTime++;
 		});
+		let firstTimer = Math.max(totalTime, 100);
+		let secondTimer = Math.max(totalTime / 2, 50);
 
 		//console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
-			Math.floor(totalTime / 3) + randInt(0, 3)
+			firstTimer,
+			secondTimer
+			//Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			//Math.floor(totalTime / 3) + randInt(0, 3)
 			//25,
 			//10,
 		);
@@ -6218,12 +6221,13 @@ var Game = {
 					break;
 				default:
 					cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+					break;
 			}
 		});
 
 		//Add Timer Listener
 		eventbus_min.addEventListener('tickTimer', (e) => {
-			let x = w - 2;
+			let x = w - 3;
 			let timerText = '';
 			let count = e.target.count;
 			if(count==0 && e.target.name=='Stage 2'){
@@ -6240,7 +6244,10 @@ var Game = {
 			}
 			timerText+='%b{skyblue}';
 			if(count < 10){
-				timerText += '0'+count;
+				timerText += '00'+count;
+			}
+			else if(count < 100){
+				timerText += '0' + count;
 			}
 			else{
 				timerText += count;

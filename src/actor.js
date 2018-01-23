@@ -82,7 +82,7 @@ export default class Actor {
 			let canMove = (x) => mv = x;
 			bus.dispatch('attack', this, other, canMove);
 			if(!mv){
-				return 0;
+				return 1;
 			}
 		}
 		//Check item collision

@@ -12,8 +12,8 @@ import generateMap from './map/generator';
 import Glyph from './glyph';
 import FloorPicker from './floorpicker';
 
-const w = 50;
-const h = 25;
+const w = 64;
+const h = 32;
 const SENTINELS = 5;
 
 export default {
@@ -68,12 +68,16 @@ export default {
 		astar.compute(this.player.x, this.player.y, (x, y)=>{
 			totalTime++;
 		})
+		let firstTimer = Math.max(totalTime, 100);
+		let secondTimer = Math.max(totalTime / 2, 50);
 
 		//console.log(totalTime);
 		let c = new Collapser(
 			this.map,
-			Math.floor(totalTime / 3) * 2 + randInt(0, 3),
-			Math.floor(totalTime / 3) + randInt(0, 3)
+			firstTimer,
+			secondTimer
+			//Math.floor(totalTime / 3) * 2 + randInt(0, 3),
+			//Math.floor(totalTime / 3) + randInt(0, 3)
 			//25,
 			//10,
 		);
@@ -96,12 +100,13 @@ export default {
 					break;
 				default:
 					cb(actor.move(actor.x + dx, actor.y + dy, e.target));
+					break;
 			}
 		});
 
 		//Add Timer Listener
 		bus.addEventListener('tickTimer', (e) => {
-			let x = w - 2;
+			let x = w - 3;
 			let timerText = '';
 			let count = e.target.count;
 			if(count==0 && e.target.name=='Stage 2'){
@@ -118,7 +123,10 @@ export default {
 			}
 			timerText+='%b{skyblue}';
 			if(count < 10){
-				timerText += '0'+count;
+				timerText += '00'+count;
+			}
+			else if(count < 100){
+				timerText += '0' + count;
 			}
 			else{
 				timerText += count;

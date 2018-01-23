@@ -8,7 +8,7 @@ import Decorator from '../decorator';
 import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
 
-const distFromExit = 25;
+const distFromExit = 40;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -17,7 +17,7 @@ export default function generateMap(w,h){
 	generator.create((x, y, wall)=>{
 		let SKY = TileTypes.SKY;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
+		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
 	});
 	//Create Wind Rune
 	Decorator.setRooms(generator.getRooms());

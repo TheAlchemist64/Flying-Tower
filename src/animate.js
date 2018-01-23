@@ -18,9 +18,11 @@ export default function animate(glyphs, ...frames){
   let cleanup = 0;
   let done = false;
   let count = 0;
-  let step = function(dt){
+  let lastframe = performance.now();
+  let step = function(ts){
     if(index < frames.length){
-      count += dt / 60;
+      count += (ts - lastframe);
+	  lastframe = ts;
       if(!frames[index].delay || (frames[index].delay && count >= frames[index].delay)){
         for(let instr of frames[index].draw){
           if(!instr.condition || instr.condition()){
