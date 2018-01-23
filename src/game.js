@@ -5,7 +5,6 @@ import { passable, randInt } from './utils';
 
 import Actor from './actor';
 import PlayerController from './controllers/player';
-import SentinelController from './controllers/sentinel';
 import Collapser from './collapser';
 import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
@@ -14,7 +13,6 @@ import FloorPicker from './floorpicker';
 
 const w = 64;
 const h = 32;
-const SENTINELS = 5;
 
 export default {
 	display: null,
@@ -28,34 +26,21 @@ export default {
 		//Initialize Display
 		this.display = new ROT.Display({width: w, height: h + 4});
 		document.body.appendChild(this.display.getContainer());
+		//Initialize Turn Engine
+		this.scheduler = new ROT.Scheduler.Simple();
+		this.engine = new ROT.Engine(this.scheduler);
 		//Generate map with dimensions (w, h)
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
+		this.map.drawEnemies();
 		//Tell map to listen for reset tile events
 		bus.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
 		});
-		//Initialize Turn Engine
-		this.scheduler = new ROT.Scheduler.Simple();
-		this.engine = new ROT.Engine(this.scheduler);
 		//Create Player
 		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
-		//Create multiple sentinels
-		let picks = [];
-		let numSentinels = 0;
-		while(!FloorPicker.empty() && numSentinels < SENTINELS){
-			let pick = FloorPicker.pick();
-			let [sx, sy] = [pick.x, pick.y];
-			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
-				let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
-				sentinel.draw();
-				picks.push({x: sx, y: sy});
-				numSentinels++;
-			}
-		}
-		picks.forEach(p => FloorPicker.put(p));
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(
 			this.map.exitKey[0],

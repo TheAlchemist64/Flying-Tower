@@ -3,12 +3,16 @@ import ROT from '../../vendor/rot';
 import { distance } from '../utils';
 import TileMap from './map';
 import Tile from './tile';
+import Glyph from '../glyph';
 import FloorPicker from '../floorpicker';
 import Decorator from '../decorator';
 import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
+import Actor from '../actor';
+import SentinelController from '../controllers/sentinel';
 
 const distFromExit = 40;
+const SENTINELS = 5;
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -24,8 +28,22 @@ export default function generateMap(w,h){
 	let windXY = Decorator.pick();
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
 
-	//Create exit
+
+	//Create multiple sentinels
 	FloorPicker.setMap(map);
+	let picks = [];
+	let numSentinels = 0;
+	while(!FloorPicker.empty() && numSentinels < SENTINELS){
+		let pick = FloorPicker.pick();
+		let [sx, sy] = [pick.x, pick.y];
+		if(!Number.isNaN(sx) && !Number.isNaN(sy)){
+			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
+			picks.push({x: sx, y: sy});
+			numSentinels++;
+		}
+	}
+	picks.forEach(p => FloorPicker.put(p));
+	//Create exit
 	let pickExit = Decorator.pick();
 	map.exit = pickExit;
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));

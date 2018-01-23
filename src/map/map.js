@@ -7,6 +7,7 @@ export default class TileMap {
 		this.height = height;
 		this.tiles = new Map();
 		this.items = [];
+		this.enemies = [];
 		this.start = {};
 		this.exit = [];
 		for(let x = 0; x < width; x++){
@@ -32,5 +33,8 @@ export default class TileMap {
 			tile.draw();
 		}
 		this.items.forEach(item => item.draw());
+	}
+	drawEnemies(){
+		this.enemies.forEach(enemy => enemy.draw());
 	}
 }

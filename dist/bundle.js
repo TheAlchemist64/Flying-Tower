@@ -5439,6 +5439,10 @@ class Actor {
 		Game.map.get(this.x, this.y).draw();
 		Game.scheduler.remove(this);
 		Game.actors.splice(Game.actors.indexOf(this),1);
+		let eIndex = Game.map.enemies.indexOf(this);
+		if(eIndex > -1){
+			Game.map.enemies.splice(eIndex);
+		}
 		if(this == Game.player){
 			Game.over(false);
 		}
@@ -5562,32 +5566,6 @@ class PlayerController extends Controller {
 		}
 		return [true, sky];
 	}
-}
-
-class SentinelController extends Controller {
-  run(actor){
-    super.run(actor);
-    if(distance(actor.x, actor.y, Game.player.x, Game.player.y) < 5){
-      //Change color
-      actor.glyph.fg = 'red';
-      //Initialize pathfinder
-  		let finder = new rot.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
-      //let finder = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology:4});
-      //Find path from AI to player
-  		let path = [];
-  		finder.compute(actor.x, actor.y, (x, y)=>{
-  			path.push({x: x, y: y});
-  		});
-      //Move onto player's tile
-      if(path.length > 1){
-  			actor.move(path[1].x, path[1].y);
-  		}
-    }
-    else{
-      actor.glyph.fg = 'grey';
-    }
-    actor.draw();
-  }
 }
 
 class Tile {
@@ -5840,6 +5818,7 @@ class TileMap {
 		this.height = height;
 		this.tiles = new Map();
 		this.items = [];
+		this.enemies = [];
 		this.start = {};
 		this.exit = [];
 		for(let x = 0; x < width; x++){
@@ -5865,6 +5844,9 @@ class TileMap {
 			tile.draw();
 		}
 		this.items.forEach(item => item.draw());
+	}
+	drawEnemies(){
+		this.enemies.forEach(enemy => enemy.draw());
 	}
 }
 
@@ -6072,7 +6054,34 @@ var ItemFactory = {
   }
 };
 
+class SentinelController extends Controller {
+  run(actor){
+    super.run(actor);
+    if(distance(actor.x, actor.y, Game.player.x, Game.player.y) < 5){
+      //Change color
+      actor.glyph.fg = 'red';
+      //Initialize pathfinder
+  		let finder = new rot.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
+      //let finder = new ROT.Path.AStar(Game.map.exit[0], Game.map.exit[1], passable, {topology:4});
+      //Find path from AI to player
+  		let path = [];
+  		finder.compute(actor.x, actor.y, (x, y)=>{
+  			path.push({x: x, y: y});
+  		});
+      //Move onto player's tile
+      if(path.length > 1){
+  			actor.move(path[1].x, path[1].y);
+  		}
+    }
+    else{
+      actor.glyph.fg = 'grey';
+    }
+    actor.draw();
+  }
+}
+
 const distFromExit = 40;
+const SENTINELS = 5;
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6088,8 +6097,22 @@ function generateMap(w,h){
 	let windXY = Decorator.pick();
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
 
-	//Create exit
+
+	//Create multiple sentinels
 	FloorPicker.setMap(map);
+	let picks = [];
+	let numSentinels = 0;
+	while(!FloorPicker.empty() && numSentinels < SENTINELS){
+		let pick = FloorPicker.pick();
+		let [sx, sy] = [pick.x, pick.y];
+		if(!Number.isNaN(sx) && !Number.isNaN(sy)){
+			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
+			picks.push({x: sx, y: sy});
+			numSentinels++;
+		}
+	}
+	picks.forEach(p => FloorPicker.put(p));
+	//Create exit
 	let pickExit = Decorator.pick();
 	map.exit = pickExit;
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
@@ -6113,7 +6136,6 @@ function generateMap(w,h){
 
 const w = 64;
 const h = 32;
-const SENTINELS = 5;
 
 var Game = {
 	display: null,
@@ -6127,34 +6149,21 @@ var Game = {
 		//Initialize Display
 		this.display = new rot.Display({width: w, height: h + 4});
 		document.body.appendChild(this.display.getContainer());
+		//Initialize Turn Engine
+		this.scheduler = new rot.Scheduler.Simple();
+		this.engine = new rot.Engine(this.scheduler);
 		//Generate map with dimensions (w, h)
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
+		this.map.drawEnemies();
 		//Tell map to listen for reset tile events
 		eventbus_min.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
 		});
-		//Initialize Turn Engine
-		this.scheduler = new rot.Scheduler.Simple();
-		this.engine = new rot.Engine(this.scheduler);
 		//Create Player
 		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player.draw();
-		//Create multiple sentinels
-		let picks = [];
-		let numSentinels = 0;
-		while(!FloorPicker.empty() && numSentinels < SENTINELS){
-			let pick = FloorPicker.pick();
-			let [sx, sy] = [pick.x, pick.y];
-			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
-				let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
-				sentinel.draw();
-				picks.push({x: sx, y: sy});
-				numSentinels++;
-			}
-		}
-		picks.forEach(p => FloorPicker.put(p));
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(
 			this.map.exitKey[0],
