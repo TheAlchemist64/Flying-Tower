@@ -7,11 +7,13 @@ function tileEvent(type, actor, x, y) {
 	switch(type){
 		case 'sky':
 			if(actor.hasItem('Earth Rune')){
-				bus.dispatch('skyStep', actor, x, y)
+				bus.dispatch('skyStep', actor, x, y);
+				return true;
 			}
 			break;
 		case 'exit':
 			bus.dispatch('exit', actor);
+			return false;
 			break;
 	}
 }
@@ -77,7 +79,10 @@ export default class Actor {
 			return 0;
 		}
 		let tileType = Game.map.get(x, y).type;
-		tileEvent(tileType, this, x, y);
+		let endTurn = tileEvent(tileType, this, x, y);
+		if(endTurn){
+			return 1;
+		}
 		switch(tileType){
 			case 'sky':
 				if(pusher){
