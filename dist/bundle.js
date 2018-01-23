@@ -5899,21 +5899,6 @@ var Decorator = {
   setRooms(rooms){
     rooms.forEach(room => this.rooms.push(this.createQueue(room)));
   },
-  pickTile(room){
-    let pos = room.getLeft+','+room.getTop();
-    if(!rooms[pos]){
-      rooms[pos] = this.createQueue(room);
-    }
-    if(rooms[pos].length != 0){
-      return rooms[pos].dequeue();
-    }
-    else{
-      return null;
-    }
-  },
-  pickCenter(room){
-    return room.getCenter();
-  },
   pick(){
     return this.rooms[(this.index++) % this.rooms.length].dequeue();
   }
