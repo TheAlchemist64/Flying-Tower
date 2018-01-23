@@ -80,7 +80,7 @@ export default class Actor {
 			//Push actor
 			let mv = null;
 			let canMove = (x) => mv = x;
-			bus.dispatch('attack', this, other, canMove);
+			bus.dispatch('attack', this, other, pusher, canMove);
 			if(!mv){
 				return 1;
 			}

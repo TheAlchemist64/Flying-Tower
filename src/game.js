@@ -87,7 +87,7 @@ export default {
 		});*/
 
 		//Add Attack Event
-		bus.addEventListener('attack', (e, actor, cb) => {
+		bus.addEventListener('attack', (e, actor, pusher, cb) => {
 			let dx = actor.x - e.target.x;
 			let dy = actor.y - e.target.y;
 			switch (e.target.name) {
@@ -96,6 +96,9 @@ export default {
 						if(item.event && item.event.type == 'attack'){
 							bus.dispatch(item.event.name, e.target, actor, dx, dy);
 						}
+					}
+					if(pusher){
+						cb(actor.move(actor.x + dx, actor.y + dy, e.target));
 					}
 					break;
 				default:

@@ -5467,7 +5467,7 @@ class Actor {
 			//Push actor
 			let mv = null;
 			let canMove = (x) => mv = x;
-			eventbus_min.dispatch('attack', this, other, canMove);
+			eventbus_min.dispatch('attack', this, other, pusher, canMove);
 			if(!mv){
 				return 1;
 			}
@@ -6193,7 +6193,7 @@ var Game = {
 		});*/
 
 		//Add Attack Event
-		eventbus_min.addEventListener('attack', (e, actor, cb) => {
+		eventbus_min.addEventListener('attack', (e, actor, pusher, cb) => {
 			let dx = actor.x - e.target.x;
 			let dy = actor.y - e.target.y;
 			switch (e.target.name) {
@@ -6202,6 +6202,9 @@ var Game = {
 						if(item.event && item.event.type == 'attack'){
 							eventbus_min.dispatch(item.event.name, e.target, actor, dx, dy);
 						}
+					}
+					if(pusher){
+						cb(actor.move(actor.x + dx, actor.y + dy, e.target));
 					}
 					break;
 				default:
