@@ -5951,11 +5951,12 @@ function animate(glyphs, ...frames){
       eventbus_min.dispatch('resetTile', this, ...tiles[cleanup]);
       cleanup++;
       requestAnimationFrame(step);
+    } else{
+      Game.engine.unlock();
     }
   };
   Game.engine.lock();
   requestAnimationFrame(step);
-  Game.engine.unlock();
 }
 
 var Events = {
@@ -5966,7 +5967,6 @@ var Events = {
     Game.map.floors[x+','+y] = true;
   },
   windAttack(e, actor, dx, dy){
-    console.log(e.target.name+', '+actor.name+', '+dx+', '+dy);
     let x = actor.x;
     let y = actor.y;
     actor.move(actor.x + dx * 2, actor.y + dy * 2, e.target, true);

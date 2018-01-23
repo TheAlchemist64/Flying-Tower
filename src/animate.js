@@ -49,9 +49,10 @@ export default function animate(glyphs, ...frames){
       bus.dispatch('resetTile', this, ...tiles[cleanup]);
       cleanup++;
       requestAnimationFrame(step);
+    } else{
+      Game.engine.unlock();
     }
   }
   Game.engine.lock();
   requestAnimationFrame(step);
-  Game.engine.unlock();
 }

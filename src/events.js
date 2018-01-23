@@ -14,7 +14,6 @@ export default {
     Game.map.floors[x+','+y] = true;
   },
   windAttack(e, actor, dx, dy){
-    console.log(e.target.name+', '+actor.name+', '+dx+', '+dy);
     let x = actor.x;
     let y = actor.y;
     actor.move(actor.x + dx * 2, actor.y + dy * 2, e.target, true);
