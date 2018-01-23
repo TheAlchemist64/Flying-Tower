@@ -5744,21 +5744,19 @@ class Collapser{
 		this.updateConnections(map, x-1, y);
 	}
 	collapseSection(){
-		Object.keys(this.map.floors).forEach(floor => {
-			let [x,y] = floor.split(',');
-			if(!this.map.get(x, y).connected){
+		this.map.tiles.forEach((tile, pos) => {
+			let [x,y] = pos.split(',');
+			if(tile.type!='sky' && !this.map.get(x, y).connected){
 				this.collapseTile(x, y);
 				this.map.get(x, y).draw();
 			}
 		});
 	}
 	collapseWithMethod(f){
-		let pick = null;
 		let [x, y] = [null, null];
 		let done = [];
 		while(!FloorPicker.empty()){
-			pick = FloorPicker.pick();
-			[x, y] = pick.split(',').map(x => Number(x));
+			[x, y] = FloorPicker.pick().split(',').map(x => Number(x));
 			let accepted = false;
 			f(x, y, () => accepted = true, () => done.push({x: x, y: y}));
 			if(accepted){
@@ -5767,7 +5765,6 @@ class Collapser{
 		}
 		if(!FloorPicker.empty()){
 			this.collapseTile(x, y);
-			delete this.map.floors[pick];
 			this.map.get(x, y).draw();
 			this.map.tiles.forEach((tile,k)=>{
 				tile.connected = false;
@@ -5836,7 +5833,6 @@ class TileMap {
 		this.width = width;
 		this.height = height;
 		this.tiles = new Map();
-		this.floors = {};
 		this.items = [];
 		this.start = {};
 		this.exit = [];
@@ -5850,12 +5846,6 @@ class TileMap {
 		return this.tiles.get(x+','+y);
 	}
 	set(tile){
-		if(tile.type=="floor"){
-			this.floors[tile.x+','+tile.y] = true;
-		}
-		else if(tile.type!="floor" && this.floors[tile.x+','+tile.y]){
-			delete this.floors[tile.x+','+tile.y];
-		}
 		this.tiles.set(tile.x+','+tile.y,tile);
 	}
 	inBounds(x, y){
@@ -6096,7 +6086,6 @@ function generateMap(w,h){
 	FloorPicker.setMap(map);
 	let pick = Decorator.pick();
 	map.exit = pick;
-	delete map.floors[pick.join(',')];
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let [rX, rY] = [null, null];

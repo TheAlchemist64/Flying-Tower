@@ -28,7 +28,6 @@ export default function generateMap(w,h){
 	FloorPicker.setMap(map);
 	let pick = Decorator.pick();
 	map.exit = pick;
-	delete map.floors[pick.join(',')];
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
 	let [rX, rY] = [null, null];

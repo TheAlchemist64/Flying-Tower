@@ -42,21 +42,19 @@ export default class Collapser{
 		this.updateConnections(map, x-1, y);
 	}
 	collapseSection(){
-		Object.keys(this.map.floors).forEach(floor => {
-			let [x,y] = floor.split(',');
-			if(!this.map.get(x, y).connected){
+		this.map.tiles.forEach((tile, pos) => {
+			let [x,y] = pos.split(',');
+			if(tile.type!='sky' && !this.map.get(x, y).connected){
 				this.collapseTile(x, y);
 				this.map.get(x, y).draw();
 			}
 		});
 	}
 	collapseWithMethod(f){
-		let pick = null;
 		let [x, y] = [null, null];
 		let done = [];
 		while(!FloorPicker.empty()){
-			pick = FloorPicker.pick();
-			[x, y] = pick.split(',').map(x => Number(x));
+			[x, y] = FloorPicker.pick().split(',').map(x => Number(x));
 			let accepted = false;
 			f(x, y, () => accepted = true, () => done.push({x: x, y: y}));
 			if(accepted){
@@ -65,7 +63,6 @@ export default class Collapser{
 		}
 		if(!FloorPicker.empty()){
 			this.collapseTile(x, y);
-			delete this.map.floors[pick];
 			this.map.get(x, y).draw();
 			this.map.tiles.forEach((tile,k)=>{
 				tile.connected = false;

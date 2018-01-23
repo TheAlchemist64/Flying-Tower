@@ -6,7 +6,6 @@ export default class TileMap {
 		this.width = width;
 		this.height = height;
 		this.tiles = new Map();
-		this.floors = {};
 		this.items = [];
 		this.start = {};
 		this.exit = [];
@@ -20,12 +19,6 @@ export default class TileMap {
 		return this.tiles.get(x+','+y);
 	}
 	set(tile){
-		if(tile.type=="floor"){
-			this.floors[tile.x+','+tile.y] = true;
-		}
-		else if(tile.type!="floor" && this.floors[tile.x+','+tile.y]){
-			delete this.floors[tile.x+','+tile.y];
-		}
 		this.tiles.set(tile.x+','+tile.y,tile);
 	}
 	inBounds(x, y){
