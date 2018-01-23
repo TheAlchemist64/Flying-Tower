@@ -63,5 +63,10 @@ export default {
       ],
       delay: 50
     });
+  },
+  skyStep(e, x, y){
+    let tile = new Tile(x, y, TileTypes.FLOOR);
+    Game.map.set(tile);
+    tile.draw();
   }
 }

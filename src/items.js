@@ -15,5 +15,13 @@ export default {
       type: 'attack',
       name: 'windAttack'
     }
+  },
+  EARTH_RUNE: {
+    name: 'Earth Rune',
+    type: 'rune',
+    glyph: new Glyph('e', 'brown'),
+    event: {
+      name: 'skyStep'
+    }
   }
 }

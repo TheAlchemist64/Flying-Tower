@@ -5399,6 +5399,19 @@ function getPathToExit(){
   return path;
 }
 
+function tileEvent(type, actor, x, y) {
+	switch(type){
+		case 'sky':
+			if(actor.hasItem('Earth Rune')){
+				eventbus_min.dispatch('skyStep', actor, x, y);
+			}
+			break;
+		case 'exit':
+			eventbus_min.dispatch('exit', actor);
+			break;
+	}
+}
+
 class Actor {
 	constructor(name, x, y, glyph, controller){
 		this.name = name;
@@ -5425,6 +5438,14 @@ class Actor {
 			throw new Error(`'${item.name}' not in ${this.name}'s inventory`)
 		}
 	}
+	hasItem(name){
+		for(let item of this.inventory){
+			if(item.name == name){
+				return true;
+			}
+		}
+		return false;
+	}
 	act(){
 		if(this.controller){
 			this.controller.run(this);
@@ -5447,10 +5468,12 @@ class Actor {
 		}
 	}
 	move(x, y, pusher, nodraw){
+		//Check that (x,y) within map boundaries
 		if(!Game.map.inBounds(x, y)){
 			return 0;
 		}
 		let tileType = Game.map.get(x, y).type;
+		tileEvent(tileType, this, x, y);
 		switch(tileType){
 			case 'sky':
 				if(pusher){
@@ -5458,10 +5481,6 @@ class Actor {
 					return 1;
 				}
 				return 0;
-				break;
-			case 'exit':
-				eventbus_min.dispatch('exit', this);
-				//Game.nextLevel();
 				break;
 		}
 		//Check actor collision
@@ -5993,6 +6012,11 @@ var Events = {
       ],
       delay: 50
     });
+  },
+  skyStep(e, x, y){
+    let tile = new Tile(x, y, TileTypes.FLOOR);
+    Game.map.set(tile);
+    tile.draw();
   }
 };
 
@@ -6032,6 +6056,14 @@ var Items = {
     event: {
       type: 'attack',
       name: 'windAttack'
+    }
+  },
+  EARTH_RUNE: {
+    name: 'Earth Rune',
+    type: 'rune',
+    glyph: new Glyph('e', 'brown'),
+    event: {
+      name: 'skyStep'
     }
   }
 };
@@ -6091,10 +6123,12 @@ function generateMap(w,h){
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
 	});
-	//Create Wind Rune
+	//Create Items
 	Decorator.setRooms(generator.getRooms());
 	let windXY = Decorator.pick();
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
+	let earthXY = Decorator.pick();
+	ItemFactory.createItem('EARTH_RUNE', map, ...earthXY);
 
 
 	//Create multiple sentinels

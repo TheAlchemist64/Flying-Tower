@@ -23,10 +23,12 @@ export default function generateMap(w,h){
 		let FLOOR = TileTypes.FLOOR;
 		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
 	});
-	//Create Wind Rune
+	//Create Items
 	Decorator.setRooms(generator.getRooms());
 	let windXY = Decorator.pick();
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
+	let earthXY = Decorator.pick();
+	ItemFactory.createItem('EARTH_RUNE', map, ...earthXY);
 
 
 	//Create multiple sentinels
