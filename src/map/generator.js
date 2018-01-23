@@ -26,16 +26,15 @@ export default function generateMap(w,h){
 
 	//Create exit
 	FloorPicker.setMap(map);
-	let pick = Decorator.pick();
-	map.exit = pick;
+	let pickExit = Decorator.pick();
+	map.exit = pickExit;
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
-	let [rX, rY] = [null, null];
+	let pick = null;
 	let done = [];
 	while(!FloorPicker.empty()){
-		let pick = FloorPicker.pick();
-		[rX, rY] = [pick.x, pick.y];
-		let dist = distance(...map.exit, rX, rY);
+		pick = FloorPicker.pick();
+		let dist = distance(...map.exit, pick.x, pick.y);
 		if(dist >= distFromExit){
 			break;
 		}
@@ -44,6 +43,6 @@ export default function generateMap(w,h){
 		}
 	}
 	done.forEach(p => FloorPicker.put(p));
-	map.start = { x: rX, y: rY };
+	map.start = pick;
 	return map;
 }
