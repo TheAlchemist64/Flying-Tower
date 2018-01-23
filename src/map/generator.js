@@ -1,6 +1,6 @@
 import ROT from '../../vendor/rot';
 
-import { distance } from '../utils';
+import { distance, checkCollision } from '../utils';
 import TileMap from './map';
 import Tile from './tile';
 import Glyph from '../glyph';
@@ -53,7 +53,7 @@ export default function generateMap(w,h){
 	while(!FloorPicker.empty()){
 		pick = FloorPicker.pick();
 		let dist = distance(...map.exit, pick.x, pick.y);
-		if(dist >= distFromExit){
+		if(dist >= distFromExit && checkCollision(pick.x, pick.y)==null){
 			break;
 		}
 		else{

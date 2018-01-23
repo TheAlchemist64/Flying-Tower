@@ -6121,7 +6121,7 @@ function generateMap(w,h){
 	while(!FloorPicker.empty()){
 		pick = FloorPicker.pick();
 		let dist = distance(...map.exit, pick.x, pick.y);
-		if(dist >= distFromExit){
+		if(dist >= distFromExit && checkCollision(pick.x, pick.y)==null){
 			break;
 		}
 		else{
