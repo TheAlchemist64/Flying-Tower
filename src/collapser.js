@@ -54,7 +54,9 @@ export default class Collapser{
 		let [x, y] = [null, null];
 		let done = [];
 		while(!FloorPicker.empty()){
-			[x, y] = FloorPicker.pick().split(',').map(x => Number(x));
+			let tile = FloorPicker.pick();
+			x = tile.x;
+			y = tile.y;
 			let accepted = false;
 			f(x, y, () => accepted = true, () => done.push({x: x, y: y}));
 			if(accepted){

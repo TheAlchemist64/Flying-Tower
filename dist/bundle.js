@@ -5702,13 +5702,16 @@ var FloorPicker = {
     return queue.dequeue();
   },
   put(tile) {
-    queue.queue(tile.x+','+tile.y);
+    if(tile && tile.type!='sky'){
+      queue.queue(tile);
+    }
+  },
+  cycle(f){
+    this.put(f(this.pick()));
   },
   setMap(map){
     queue.clear();
-    Array.from(map.tiles.values()).filter(
-      tile => tile.type == "floor"
-    ).forEach(tile => this.put(tile));
+    Array.from(map.tiles.values()).forEach(tile => this.put(tile));
   }
 };
 
@@ -5757,7 +5760,9 @@ class Collapser{
 		let [x, y] = [null, null];
 		let done = [];
 		while(!FloorPicker.empty()){
-			[x, y] = FloorPicker.pick().split(',').map(x => Number(x));
+			let tile = FloorPicker.pick();
+			x = tile.x;
+			y = tile.y;
 			let accepted = false;
 			f(x, y, () => accepted = true, () => done.push({x: x, y: y}));
 			if(accepted){
@@ -6093,7 +6098,7 @@ function generateMap(w,h){
 	let done = [];
 	while(!FloorPicker.empty()){
 		let pick = FloorPicker.pick();
-		[rX, rY] = pick.split(',').map(x => Number(x));
+		[rX, rY] = [pick.x, pick.y];
 		let dist = distance(...map.exit, rX, rY);
 		if(dist >= distFromExit){
 			break;
@@ -6142,7 +6147,7 @@ var Game = {
 		let numSentinels = 0;
 		while(!FloorPicker.empty() && numSentinels < SENTINELS){
 			let pick = FloorPicker.pick();
-			let [sx, sy] = pick.split(',').map(x => Number(x));
+			let [sx, sy] = [pick.x, pick.y];
 			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
 				let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
 				sentinel.draw();

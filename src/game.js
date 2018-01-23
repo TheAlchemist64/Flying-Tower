@@ -47,7 +47,7 @@ export default {
 		let numSentinels = 0;
 		while(!FloorPicker.empty() && numSentinels < SENTINELS){
 			let pick = FloorPicker.pick();
-			let [sx, sy] = pick.split(',').map(x => Number(x));
+			let [sx, sy] = [pick.x, pick.y];
 			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
 				let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
 				sentinel.draw();

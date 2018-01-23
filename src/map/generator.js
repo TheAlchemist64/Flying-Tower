@@ -34,7 +34,7 @@ export default function generateMap(w,h){
 	let done = [];
 	while(!FloorPicker.empty()){
 		let pick = FloorPicker.pick();
-		[rX, rY] = pick.split(',').map(x => Number(x));
+		[rX, rY] = [pick.x, pick.y];
 		let dist = distance(...map.exit, rX, rY);
 		if(dist >= distFromExit){
 			break;

@@ -13,12 +13,15 @@ export default {
     return queue.dequeue();
   },
   put(tile) {
-    queue.queue(tile.x+','+tile.y);
+    if(tile && tile.type!='sky'){
+      queue.queue(tile);
+    }
+  },
+  cycle(f){
+    this.put(f(this.pick()));
   },
   setMap(map){
     queue.clear();
-    Array.from(map.tiles.values()).filter(
-      tile => tile.type == "floor"
-    ).forEach(tile => this.put(tile));
+    Array.from(map.tiles.values()).forEach(tile => this.put(tile));
   }
 }
