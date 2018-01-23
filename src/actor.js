@@ -1,6 +1,7 @@
 import bus from '../vendor/eventbus.min';
 
 import Game from './game';
+import { checkCollision } from './utils';
 
 export default class Actor {
 	constructor(name, x, y, glyph, controller){
@@ -36,17 +37,6 @@ export default class Actor {
 	draw(){
 		this.glyph.draw(this.x, this.y);
 	}
-	collides(x, y){
-		let collides = false;
-		let other = null;
-		Game.actors.forEach((actor)=>{
-			if(this!=actor && x==actor.x && y==actor.y){
-				collides = true;
-				other = actor;
-			}
-		});
-		return [collides, other];
-	}
 	kill(){
 		this.dead = true;
 		Game.map.get(this.x, this.y).draw();
@@ -79,8 +69,8 @@ export default class Actor {
 				break;
 		}
 		//Check actor collision
-		let [collides, other] = this.collides(x, y);
-		if(collides){
+		let other = checkCollision(x, y);
+		if(other){
 			//Push actor
 			let mv = null;
 			let canMove = (x) => mv = x;

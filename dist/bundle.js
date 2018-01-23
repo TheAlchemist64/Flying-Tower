@@ -5373,6 +5373,16 @@ function distance(x1, y1, x2, y2){
 
 
 
+function checkCollision(x, y) {
+  let obj = null;
+  Game.actors.forEach(actor => {
+    if(x == actor.x && y == actor.y){
+      obj = actor;
+    }
+  });
+  return obj;
+}
+
 function betweenPlayerAndExit(x, y){
   let dx = Game.map.exit[0] - Game.player.x;
   let dy = Game.map.exit[1] - Game.player.y;
@@ -5423,17 +5433,6 @@ class Actor {
 	draw(){
 		this.glyph.draw(this.x, this.y);
 	}
-	collides(x, y){
-		let collides = false;
-		let other = null;
-		Game.actors.forEach((actor)=>{
-			if(this!=actor && x==actor.x && y==actor.y){
-				collides = true;
-				other = actor;
-			}
-		});
-		return [collides, other];
-	}
 	kill(){
 		this.dead = true;
 		Game.map.get(this.x, this.y).draw();
@@ -5466,8 +5465,8 @@ class Actor {
 				break;
 		}
 		//Check actor collision
-		let [collides, other] = this.collides(x, y);
-		if(collides){
+		let other = checkCollision(x, y);
+		if(other){
 			//Push actor
 			let mv = null;
 			let canMove = (x) => mv = x;
