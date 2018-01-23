@@ -5875,6 +5875,53 @@ class TileMap {
 	}
 }
 
+var Decorator = {
+  rooms: [],
+  index: 0,
+  createQueue(room){
+    let tiles = [];
+    for(let x = room.getLeft() + 1; x < room.getRight(); x++){
+      for(let y = room.getTop() + 1; y < room.getBottom(); y++){
+        let isDoor = false;
+        room.getDoors((dX, dY) => {
+          if(x==dX && y==dY){
+            isDoor = true;
+          }
+        });
+        if(!isDoor){
+          tiles.push([x, y]);
+        }
+        console.log('tile: ', x, y, 'isDoor: ', isDoor);
+      }
+    }
+    return new priorityQueue_min$1({
+      comparator: (a,b) => Math.floor(rot.RNG.getUniform() * 3) - 1,
+      initialValues: tiles
+    });
+  },
+  setRooms(rooms){
+    rooms.forEach(room => this.rooms.push(this.createQueue(room)));
+  },
+  pickTile(room){
+    let pos = room.getLeft+','+room.getTop();
+    if(!rooms[pos]){
+      rooms[pos] = this.createQueue(room);
+    }
+    if(rooms[pos].length != 0){
+      return rooms[pos].dequeue();
+    }
+    else{
+      return null;
+    }
+  },
+  pickCenter(room){
+    return room.getCenter();
+  },
+  pick(){
+    return this.rooms[(this.index++) % this.rooms.length].dequeue();
+  }
+};
+
 class Frame {
   constructor(opts) {
     this.draw = opts.draw;
@@ -6057,8 +6104,9 @@ function generateMap(w,h){
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
 	//Create Wind Rune
-	let rooms = generator.getRooms();
-	let windXY = rooms[Math.floor(rot.RNG.getUniform() * rooms.length)].getCenter();
+	Decorator.setRooms(generator.getRooms());
+	let windXY = Decorator.pick();
+	console.log(windXY);
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
 
 	//Create exit

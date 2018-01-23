@@ -4,6 +4,7 @@ import { distance } from '../utils';
 import TileMap from './map';
 import Tile from './tile';
 import FloorPicker from '../floorpicker';
+import Decorator from '../decorator';
 import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
 
@@ -19,8 +20,9 @@ export default function generateMap(w,h){
 		map.set(new Tile(x, y+1, wall ? SKY: FLOOR));
 	});
 	//Create Wind Rune
-	let rooms = generator.getRooms();
-	let windXY = rooms[Math.floor(ROT.RNG.getUniform() * rooms.length)].getCenter();
+	Decorator.setRooms(generator.getRooms());
+	let windXY = Decorator.pick();
+	console.log(windXY);
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
 
 	//Create exit
