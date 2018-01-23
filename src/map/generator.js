@@ -22,7 +22,7 @@ export default function generateMap(w,h){
 	//Create Wind Rune
 	Decorator.setRooms(generator.getRooms());
 	let windXY = Decorator.pick();
-	console.log(windXY);
+	//console.log(windXY);
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
 
 	//Create exit

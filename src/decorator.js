@@ -17,7 +17,7 @@ export default {
         if(!isDoor){
           tiles.push([x, y]);
         }
-        console.log('tile: ', x, y, 'isDoor: ', isDoor);
+        //console.log('tile: ', x, y, 'isDoor: ', isDoor);
       }
     }
     return new PriorityQueue({

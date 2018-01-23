@@ -5888,7 +5888,7 @@ var Decorator = {
         if(!isDoor){
           tiles.push([x, y]);
         }
-        console.log('tile: ', x, y, 'isDoor: ', isDoor);
+        //console.log('tile: ', x, y, 'isDoor: ', isDoor);
       }
     }
     return new priorityQueue_min$1({
@@ -6090,7 +6090,7 @@ function generateMap(w,h){
 	//Create Wind Rune
 	Decorator.setRooms(generator.getRooms());
 	let windXY = Decorator.pick();
-	console.log(windXY);
+	//console.log(windXY);
 	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
 
 	//Create exit
