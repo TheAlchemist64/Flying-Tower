@@ -45,7 +45,7 @@ export default {
 		//Create multiple sentinels
 		let picks = [];
 		let numSentinels = 0;
-		while(numSentinels < SENTINELS){
+		while(!FloorPicker.empty() && numSentinels < SENTINELS){
 			let pick = FloorPicker.pick();
 			let [sx, sy] = pick.split(',').map(x => Number(x));
 			if(!Number.isNaN(sx) && !Number.isNaN(sy)){
