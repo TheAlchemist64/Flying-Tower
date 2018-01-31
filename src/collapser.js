@@ -29,12 +29,12 @@ function updateConnections(map, x, y){
 export default class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;
-		this.state = "notInTheWay";
+		this.stage = "notInTheWay";
 		this.timer = new Timer('Stage 1', s1, () => {
-			this.state = "notOnPath";
+			this.stage = "notOnPath";
 		});
 		this.timer.then(new Timer('Stage 2', s2, ()=>{
-			this.state = "canBeFatal";
+			this.stage = "canBeFatal";
 		}));
 		this.timer.activate();
 		Game.scheduler.add(this,true);
@@ -83,7 +83,7 @@ export default class Collapser{
 	act(){
 		let pick = null;
 		let done = [];
-		switch(this.state){
+		switch(this.stage){
 			case "notInTheWay":
 				this.collapseWithMethod((x, y, accept, reject) => {
 					if(betweenPlayerAndExit(x, y)){
