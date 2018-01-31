@@ -1,5 +1,4 @@
 import Glyph from './glyph';
-import TileTypes from './map/tiletypes';
 
 import PlayerController from './controllers/player';
 import SentinelController from './controllers/sentinel';
@@ -7,12 +6,12 @@ import SentinelController from './controllers/sentinel';
 export default {
   PLAYER: {
     name: 'Player',
-    glyph: TileTypes.PLAYER,
+    glyph: new Glyph('@','#fff'),
     controller: PlayerController
   },
   SENTINEL: {
     name: 'Sentinel',
-    glyph: TileTypes.SENTINEL,
+    glyph: new Glyph('s','grey'),
     controller: SentinelController
   }
 }

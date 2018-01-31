@@ -5604,14 +5604,6 @@ class Glyph {
 }
 
 var TileTypes = {
-	PLAYER: {
-		name: 'player',
-		glyph: new Glyph('@','#fff')
-	},
-	SENTINEL: {
-		name: 'sentinel',
-		glyph: new Glyph('s','grey')
-	},
 	WALL: {
 		name: 'wall',
 		glyph: new Glyph('#')
@@ -6105,12 +6097,12 @@ class SentinelController extends Controller {
 var Actors = {
   PLAYER: {
     name: 'Player',
-    glyph: TileTypes.PLAYER,
+    glyph: new Glyph('@','#fff'),
     controller: PlayerController
   },
   SENTINEL: {
     name: 'Sentinel',
-    glyph: TileTypes.SENTINEL,
+    glyph: new Glyph('s','grey'),
     controller: SentinelController
   }
 };
@@ -6121,7 +6113,7 @@ var ActorFactory = {
       Actors[id].name,
       x,
       y,
-      Actors[id].glyph.glyph,
+      Actors[id].glyph,
       new Actors[id].controller()
     );
   },

@@ -7,7 +7,7 @@ export default {
       Actors[id].name,
       x,
       y,
-      Actors[id].glyph.glyph,
+      Actors[id].glyph,
       new Actors[id].controller()
     );
   },
