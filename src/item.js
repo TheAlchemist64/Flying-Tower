@@ -11,9 +11,6 @@ export default class Item {
 		if(evt){
 			this.event = evt;
 			bus.addEventListener(evt.name, Events[evt.name]);
-			/*bus.addEventListener('pickup', (e, actor, x, y)=>{
-				bus.dispatch(evt.name, this, actor, x, y);
-			})*/
 		}
 	}
 	draw(){
