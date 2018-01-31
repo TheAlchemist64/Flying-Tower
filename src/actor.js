@@ -50,6 +50,7 @@ export default class Actor {
 		Game.map.get(this.x, this.y).draw();
 		Game.scheduler.remove(this);
 		Game.actors.splice(Game.actors.indexOf(this),1);
+		//If actor is enemy, remove from enemy list
 		let eIndex = Game.map.enemies.indexOf(this);
 		if(eIndex > -1){
 			Game.map.enemies.splice(eIndex);
