@@ -5854,8 +5854,6 @@ class TileMap {
 			tile.draw();
 		}
 		this.items.forEach(item => item.draw());
-	}
-	drawEnemies(){
 		this.enemies.forEach(enemy => enemy.draw());
 	}
 }
@@ -6178,7 +6176,6 @@ var Game = {
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
-		this.map.drawEnemies();
 		//Tell map to listen for reset tile events
 		eventbus_min.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();

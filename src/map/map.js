@@ -33,8 +33,6 @@ export default class TileMap {
 			tile.draw();
 		}
 		this.items.forEach(item => item.draw());
-	}
-	drawEnemies(){
 		this.enemies.forEach(enemy => enemy.draw());
 	}
 }

@@ -33,7 +33,6 @@ export default {
 		this.map = generateMap(w, h);
 		//Draw map
 		this.map.draw();
-		this.map.drawEnemies();
 		//Tell map to listen for reset tile events
 		bus.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
