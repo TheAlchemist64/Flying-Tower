@@ -5890,7 +5890,6 @@ var Decorator = {
         if(!isDoor){
           tiles.push([x, y]);
         }
-        //console.log('tile: ', x, y, 'isDoor: ', isDoor);
       }
     }
     return new priorityQueue_min$1({
