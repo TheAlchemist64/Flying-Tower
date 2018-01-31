@@ -9,6 +9,23 @@ import TileTypes from './map/tiletypes';
 import Timer from './timer';
 import FloorPicker from './floorpicker';
 
+function updateConnections(map, x, y){
+	if(!map.inBounds(x, y)){
+		return;
+	}
+	if(map.get(x, y).connected){
+		return;
+	}
+	if(map.get(x, y).type == "sky"){
+		return;
+	}
+	map.get(x, y).connected = true;
+	updateConnections(map, x, y-1);
+	updateConnections(map, x+1, y);
+	updateConnections(map, x, y+1);
+	updateConnections(map, x-1, y);
+}
+
 export default class Collapser{
 	constructor(map, s1, s2){
 		this.map = map;
@@ -24,22 +41,6 @@ export default class Collapser{
 	}
 	collapseTile(x, y){
 		this.map.set(new Tile(x, y, TileTypes.SKY));
-	}
-	updateConnections(map, x, y){
-		if(!map.inBounds(x, y)){
-			return;
-		}
-		if(map.get(x, y).connected){
-			return;
-		}
-		if(map.get(x, y).type == "sky"){
-			return;
-		}
-		map.get(x, y).connected = true;
-		this.updateConnections(map, x, y-1);
-		this.updateConnections(map, x+1, y);
-		this.updateConnections(map, x, y+1);
-		this.updateConnections(map, x-1, y);
 	}
 	collapseSection(){
 		this.map.tiles.forEach((tile, pos) => {
@@ -69,7 +70,7 @@ export default class Collapser{
 			this.map.tiles.forEach((tile,k)=>{
 				tile.connected = false;
 			});
-			this.updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
+			updateConnections(this.map, this.map.exit[0], this.map.exit[1]);
 			this.collapseSection();
 		}
 		Game.actors.forEach(actor => {
