@@ -6102,6 +6102,47 @@ class SentinelController extends Controller {
   }
 }
 
+var Actors = {
+  PLAYER: {
+    name: 'Player',
+    glyph: TileTypes.PLAYER,
+    controller: PlayerController
+  },
+  SENTINEL: {
+    name: 'Sentinel',
+    glyph: TileTypes.SENTINEL,
+    controller: SentinelController
+  }
+};
+
+var ActorFactory = {
+  createActor(id, x, y){
+    return new Actor(
+      Actors[id].name,
+      x,
+      y,
+      Actors[id].glyph.glyph,
+      new Actors[id].controller()
+    );
+  },
+  createActors(id, picker, n){
+    let picks = [];
+    let actors = [];
+    let i = 0;
+    while (!picker.empty() && i < n) {
+      let pick = picker.pick();
+      let [x, y] = [pick.x, pick.y];
+      if(!Number.isNaN(x) && !Number.isNaN(y)){
+        actors.push(this.createActor(id, x, y));
+        picks.push({x: x, y: y});
+        i++;
+      }
+    }
+    picks.forEach(p => picker.put(p));
+    return actors;
+  }
+};
+
 const distFromExit = 40;
 const SENTINELS = 5;
 
@@ -6123,7 +6164,7 @@ function generateMap(w,h){
 
 
 	//Create multiple sentinels
-	FloorPicker.setMap(map);
+	/*FloorPicker.setMap(map);
 	let picks = [];
 	let numSentinels = 0;
 	while(!FloorPicker.empty() && numSentinels < SENTINELS){
@@ -6135,7 +6176,9 @@ function generateMap(w,h){
 			numSentinels++;
 		}
 	}
-	picks.forEach(p => FloorPicker.put(p));
+	picks.forEach(p => FloorPicker.put(p));*/
+	FloorPicker.setMap(map);
+	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', FloorPicker, SENTINELS));
 	//Create exit
 	let pickExit = Decorator.pick();
 	map.exit = pickExit;
@@ -6185,7 +6228,8 @@ var Game = {
 			this.map.get(x, y).draw();
 		});
 		//Create Player
-		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
+		//this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
+		this.player = ActorFactory.createActor('PLAYER', this.map.start.x,this.map.start.y);
 		this.player.draw();
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(

@@ -10,6 +10,7 @@ import TileTypes from './map/tiletypes';
 import generateMap from './map/generator';
 import Glyph from './glyph';
 import FloorPicker from './floorpicker';
+import ActorFactory from './actorfactory';
 
 const w = 64;
 const h = 32;
@@ -38,7 +39,8 @@ export default {
 			this.map.get(x, y).draw();
 		});
 		//Create Player
-		this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
+		//this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
+		this.player = ActorFactory.createActor('PLAYER', this.map.start.x,this.map.start.y);
 		this.player.draw();
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(

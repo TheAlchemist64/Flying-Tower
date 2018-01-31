@@ -8,8 +8,9 @@ import FloorPicker from '../floorpicker';
 import Decorator from '../decorator';
 import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
-import Actor from '../actor';
-import SentinelController from '../controllers/sentinel';
+import ActorFactory from '../actorfactory';
+//import Actor from '../actor';
+//import SentinelController from '../controllers/sentinel';
 
 const distFromExit = 40;
 const SENTINELS = 5;
@@ -32,7 +33,7 @@ export default function generateMap(w,h){
 
 
 	//Create multiple sentinels
-	FloorPicker.setMap(map);
+	/*FloorPicker.setMap(map);
 	let picks = [];
 	let numSentinels = 0;
 	while(!FloorPicker.empty() && numSentinels < SENTINELS){
@@ -44,7 +45,9 @@ export default function generateMap(w,h){
 			numSentinels++;
 		}
 	}
-	picks.forEach(p => FloorPicker.put(p));
+	picks.forEach(p => FloorPicker.put(p));*/
+	FloorPicker.setMap(map);
+	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', FloorPicker, SENTINELS));
 	//Create exit
 	let pickExit = Decorator.pick();
 	map.exit = pickExit;
