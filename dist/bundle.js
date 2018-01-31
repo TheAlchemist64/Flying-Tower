@@ -5608,6 +5608,10 @@ var TileTypes = {
 		name: 'player',
 		glyph: new Glyph('@','#fff')
 	},
+	SENTINEL: {
+		name: 'sentinel',
+		glyph: new Glyph('s','grey')
+	},
 	WALL: {
 		name: 'wall',
 		glyph: new Glyph('#')
@@ -6126,7 +6130,7 @@ function generateMap(w,h){
 		let pick = FloorPicker.pick();
 		let [sx, sy] = [pick.x, pick.y];
 		if(!Number.isNaN(sx) && !Number.isNaN(sy)){
-			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
+			let sentinel = new Actor('Sentinel', sx, sy, TileTypes.SENTINEL.glyph, new SentinelController());
 			picks.push({x: sx, y: sy});
 			numSentinels++;
 		}

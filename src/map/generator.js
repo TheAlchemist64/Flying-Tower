@@ -39,7 +39,7 @@ export default function generateMap(w,h){
 		let pick = FloorPicker.pick();
 		let [sx, sy] = [pick.x, pick.y];
 		if(!Number.isNaN(sx) && !Number.isNaN(sy)){
-			let sentinel = new Actor('Sentinel', sx, sy, new Glyph('s','grey'), new SentinelController());
+			let sentinel = new Actor('Sentinel', sx, sy, TileTypes.SENTINEL.glyph, new SentinelController());
 			picks.push({x: sx, y: sy});
 			numSentinels++;
 		}

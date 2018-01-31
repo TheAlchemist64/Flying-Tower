@@ -5,6 +5,10 @@ export default {
 		name: 'player',
 		glyph: new Glyph('@','#fff')
 	},
+	SENTINEL: {
+		name: 'sentinel',
+		glyph: new Glyph('s','grey')
+	},
 	WALL: {
 		name: 'wall',
 		glyph: new Glyph('#')
