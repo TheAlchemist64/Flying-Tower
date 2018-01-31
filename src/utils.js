@@ -57,3 +57,19 @@ export function tileEvent(type, actor, x, y) {
 			break;
 	}
 }
+
+export function canFall(actor){
+  let x = actor.x;
+  let y = actor.y;
+  let neighbors = [[x-1,y],[x,y-1],[x+1,y],[x,y+1]];
+  let sky = null;
+  neighbors.forEach((n)=>{
+    if(Game.map.get(n[0],n[1]).type == 'sky'){
+      sky = {x:n[0],y:n[1]};
+    }
+  });
+  if(!sky){
+    return [false, null];
+  }
+  return [true, sky];
+}
