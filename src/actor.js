@@ -1,22 +1,7 @@
 import bus from '../vendor/eventbus.min';
 
 import Game from './game';
-import { checkCollision } from './utils';
-
-function tileEvent(type, actor, x, y) {
-	switch(type){
-		case 'sky':
-			if(actor.hasItem('Earth Rune')){
-				bus.dispatch('skyStep', actor, x, y);
-				return true;
-			}
-			break;
-		case 'exit':
-			bus.dispatch('exit', actor);
-			return false;
-			break;
-	}
-}
+import { checkCollision, tileEvent } from './utils';
 
 export default class Actor {
 	constructor(name, x, y, glyph, controller){

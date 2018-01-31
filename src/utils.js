@@ -1,4 +1,5 @@
 import ROT from '../vendor/rot';
+import bus from '../vendor/eventbus.min';
 
 import Game from './game';
 
@@ -40,4 +41,19 @@ export function getPathToExit(){
     path.push([x, y]);
   });
   return path;
+}
+
+export function tileEvent(type, actor, x, y) {
+	switch(type){
+		case 'sky':
+			if(actor.hasItem('Earth Rune')){
+				bus.dispatch('skyStep', actor, x, y);
+				return true;
+			}
+			break;
+		case 'exit':
+			bus.dispatch('exit', actor);
+			return false;
+			break;
+	}
 }
