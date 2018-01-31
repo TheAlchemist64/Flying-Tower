@@ -5875,31 +5875,32 @@ class TileMap {
 	}
 }
 
+function createQueue(room){
+  let tiles = [];
+  for(let x = room.getLeft() + 1; x < room.getRight(); x++){
+    for(let y = room.getTop() + 1; y < room.getBottom(); y++){
+      let isDoor = false;
+      room.getDoors((dX, dY) => {
+        if(x==dX && y==dY){
+          isDoor = true;
+        }
+      });
+      if(!isDoor){
+        tiles.push([x, y]);
+      }
+    }
+  }
+  return new priorityQueue_min$1({
+    comparator: (a,b) => Math.floor(rot.RNG.getUniform() * 3) - 1,
+    initialValues: tiles
+  });
+}
+
 var Decorator = {
   rooms: [],
   index: 0,
-  createQueue(room){
-    let tiles = [];
-    for(let x = room.getLeft() + 1; x < room.getRight(); x++){
-      for(let y = room.getTop() + 1; y < room.getBottom(); y++){
-        let isDoor = false;
-        room.getDoors((dX, dY) => {
-          if(x==dX && y==dY){
-            isDoor = true;
-          }
-        });
-        if(!isDoor){
-          tiles.push([x, y]);
-        }
-      }
-    }
-    return new priorityQueue_min$1({
-      comparator: (a,b) => Math.floor(rot.RNG.getUniform() * 3) - 1,
-      initialValues: tiles
-    });
-  },
   setRooms(rooms){
-    rooms.forEach(room => this.rooms.push(this.createQueue(room)));
+    rooms.forEach(room => this.rooms.push(createQueue(room)));
   },
   pick(){
     return this.rooms[(this.index++) % this.rooms.length].dequeue();
