@@ -6048,6 +6048,11 @@ var Items = {
     event: {
       name: 'skyStep'
     }
+  },
+  ICE_RUNE: {
+    name: 'Ice Rune',
+    type: 'rune',
+    glyph: new Glyph('i', 'white')
   }
 };
 
@@ -6135,8 +6140,15 @@ var ActorFactory = {
   }
 };
 
+//import Actor from '../actor';
+//import SentinelController from '../controllers/sentinel';
+
 const distFromExit = 40;
 const SENTINELS = 5;
+
+function placeItem(itemName, map) {
+	ItemFactory.createItem(itemName, map, ...Decorator.pick());
+}
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
@@ -6149,10 +6161,10 @@ function generateMap(w,h){
 	});
 	//Create Items
 	Decorator.setRooms(generator.getRooms());
-	let windXY = Decorator.pick();
-	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
-	let earthXY = Decorator.pick();
-	ItemFactory.createItem('EARTH_RUNE', map, ...earthXY);
+	placeItem('WIND_RUNE', map);
+	placeItem('EARTH_RUNE', map);
+	placeItem('ICE_RUNE', map);
+
 
 
 	//Create multiple sentinels

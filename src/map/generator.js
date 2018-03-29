@@ -15,6 +15,10 @@ import ActorFactory from '../actorfactory';
 const distFromExit = 40;
 const SENTINELS = 5;
 
+function placeItem(itemName, map) {
+	ItemFactory.createItem(itemName, map, ...Decorator.pick());
+}
+
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
 	let generator = new ROT.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
@@ -26,10 +30,10 @@ export default function generateMap(w,h){
 	});
 	//Create Items
 	Decorator.setRooms(generator.getRooms());
-	let windXY = Decorator.pick();
-	ItemFactory.createItem('WIND_RUNE', map, ...windXY);
-	let earthXY = Decorator.pick();
-	ItemFactory.createItem('EARTH_RUNE', map, ...earthXY);
+	placeItem('WIND_RUNE', map);
+	placeItem('EARTH_RUNE', map);
+	placeItem('ICE_RUNE', map);
+
 
 
 	//Create multiple sentinels

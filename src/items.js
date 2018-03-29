@@ -23,5 +23,10 @@ export default {
     event: {
       name: 'skyStep'
     }
+  },
+  ICE_RUNE: {
+    name: 'Ice Rune',
+    type: 'rune',
+    glyph: new Glyph('i', 'white')
   }
 }
