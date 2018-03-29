@@ -24,7 +24,7 @@ export default class SentinelController extends Controller {
   		}
     }
     else{
-      actor.glyph.pop();
+      actor.glyph.back();
     }
     actor.draw();
   }

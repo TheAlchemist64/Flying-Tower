@@ -5617,7 +5617,7 @@ class Glyph {
 	set bg(bg) {
 		this.history.push([this.chr, this.fg, bg]);
 	}
-	pop(){
+	back(){
 		if (this.history.length > 1) {
 			return new Glyph(...this.history.pop());
 		}
@@ -6118,7 +6118,7 @@ class SentinelController extends Controller {
   		}
     }
     else{
-      actor.glyph.pop();
+      actor.glyph.back();
     }
     actor.draw();
   }

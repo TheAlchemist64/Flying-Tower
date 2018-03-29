@@ -25,7 +25,7 @@ export default class Glyph {
 	set bg(bg) {
 		this.history.push([this.chr, this.fg, bg]);
 	}
-	pop(){
+	back(){
 		if (this.history.length > 1) {
 			return new Glyph(...this.history.pop());
 		}
