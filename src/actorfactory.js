@@ -7,7 +7,7 @@ export default {
       Actors[id].name,
       x,
       y,
-      Actors[id].glyph,
+      Actors[id].glyph.copy(),
       new Actors[id].controller()
     );
   },

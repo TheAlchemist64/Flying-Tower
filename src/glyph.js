@@ -31,6 +31,9 @@ export default class Glyph {
 		}
 		return this;
 	}
+	copy(){
+		return new Glyph(this.chr, this.fg, this.bg);
+	}
 	draw(x, y){
 		Game.display.draw(x, y, this.chr, this.fg, this.bg);
 	}
