@@ -5966,6 +5966,40 @@ function animate(glyphs, ...frames){
   requestAnimationFrame(step);
 }
 
+let actors = [];
+function isFrozen(actor) {
+  return actors.includes(actor);
+}
+
+class FrozenController extends Controller {
+  constructor(time, actor){
+    super();
+    this.time = time;
+    this.prev = actor.controller;
+  }
+  run(actor){
+    super.run(actor);
+    if (!isFrozen(actor)) {
+      actor.glyph.fg = 'skyblue';
+      for (var i = 0; i < this.time; i++) {
+        actor.glyph.chr = i + 1;
+      }
+      actors.push(actor);
+    }
+    else{
+      this.time--;
+      actor.glyph.back();
+      if(this.time == 0){
+        actor.glyph.back(); //Remove fg change
+        actor.controller = this.prev;
+        let index = actors.indexOf(actor);
+        actors.splice(index, 1);
+      }
+    }
+    actor.draw();
+  }
+}
+
 var Events = {
   revealExit(e, x, y){
     Game.map.exitRevealed = true;
@@ -6024,6 +6058,11 @@ var Events = {
       delay: 50
     });
   },
+  freezeAttack(e, actor){
+    if (!isFrozen(actor)) {
+      actor.controller = new FrozenController(5, actor);
+    }
+  },
   skyStep(e, x, y){
     let tile = new Tile(x, y, TileTypes.FLOOR);
     Game.map.set(tile);
@@ -6077,7 +6116,11 @@ var Items = {
   ICE_RUNE: {
     name: 'Ice Rune',
     type: 'rune',
-    glyph: new Glyph('i', 'white')
+    glyph: new Glyph('i', 'white'),
+    event: {
+      type: 'attack',
+      name: 'freezeAttack'
+    }
   }
 };
 

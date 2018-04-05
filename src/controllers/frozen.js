@@ -1,19 +1,34 @@
 import Controller from '../controller';
 
+let actors = [];
+export function isFrozen(actor) {
+  return actors.includes(actor);
+}
+
 export default class FrozenController extends Controller {
-  constructor(time, prev){
+  constructor(time, actor){
+    super();
     this.time = time;
-    
-    this.prev = prev;
+    this.prev = actor.controller;
   }
   run(actor){
     super.run(actor);
-    if(this.time > 0){
-      this.time--;
-      actor.glyph.back();
+    if (!isFrozen(actor)) {
+      actor.glyph.fg = 'skyblue';
+      for (var i = 0; i < this.time; i++) {
+        actor.glyph.chr = i + 1;
+      }
+      actors.push(actor);
     }
     else{
-      actor.controller = this.prev;
+      this.time--;
+      actor.glyph.back();
+      if(this.time == 0){
+        actor.glyph.back(); //Remove fg change
+        actor.controller = this.prev;
+        let index = actors.indexOf(actor);
+        actors.splice(index, 1);
+      }
     }
     actor.draw();
   }

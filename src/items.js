@@ -27,6 +27,10 @@ export default {
   ICE_RUNE: {
     name: 'Ice Rune',
     type: 'rune',
-    glyph: new Glyph('i', 'white')
+    glyph: new Glyph('i', 'white'),
+    event: {
+      type: 'attack',
+      name: 'freezeAttack'
+    }
   }
 }

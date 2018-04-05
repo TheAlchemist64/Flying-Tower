@@ -5,6 +5,7 @@ import Glyph from './glyph';
 import Tile from './map/tile';
 import TileTypes from './map/tiletypes';
 import animate from './animate';
+import FrozenController, { isFrozen } from './controllers/frozen';
 
 export default {
   revealExit(e, x, y){
@@ -63,6 +64,11 @@ export default {
       ],
       delay: 50
     });
+  },
+  freezeAttack(e, actor){
+    if (!isFrozen(actor)) {
+      actor.controller = new FrozenController(5, actor);
+    }
   },
   skyStep(e, x, y){
     let tile = new Tile(x, y, TileTypes.FLOOR);
