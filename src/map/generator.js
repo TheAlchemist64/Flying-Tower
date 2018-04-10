@@ -10,7 +10,7 @@ import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
 import ActorFactory from '../actorfactory';
 
-const distFromExit = 40;
+const distFromExit = 20;
 const SENTINELS = 5;
 
 function placeItem(itemName, map) {
@@ -45,7 +45,19 @@ export default function generateMap(w,h){
 	map.exit = pickExit;
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
-	let pickStart = Decorator.pick();
-	map.start = {x: pickStart[0], y: pickStart[1]};
+	let done = [];
+	let pickStart = null;
+	let startIndex = Decorator.index;
+	while (!Decorator.empty()) {
+		pickStart = Decorator.pick();
+		if(distance(...pickStart, ...pickExit) >= distFromExit){
+			map.start = {x: pickStart[0], y: pickStart[1]};
+			break;
+		}
+		else{
+			done.push(pickStart);
+		}
+	}
+	done.forEach(pick => Decorator.put(...pick, startIndex++));
 	return map;
 }
