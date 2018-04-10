@@ -32,5 +32,10 @@ export default {
       type: 'attack',
       name: 'freezeAttack'
     }
+  },
+  FIRE_RUNE: {
+    name: 'Fire Rune',
+    type: 'rune',
+    glyph: new Glyph('f', 'orange')
   }
 }

@@ -6130,6 +6130,11 @@ var Items = {
       type: 'attack',
       name: 'freezeAttack'
     }
+  },
+  FIRE_RUNE: {
+    name: 'Fire Rune',
+    type: 'rune',
+    glyph: new Glyph('f', 'orange')
   }
 };
 
@@ -6234,6 +6239,7 @@ function generateMap(w,h){
 	placeItem('WIND_RUNE', map);
 	placeItem('EARTH_RUNE', map);
 	placeItem('ICE_RUNE', map);
+	placeItem('FIRE_RUNE', map);
 
 
 
