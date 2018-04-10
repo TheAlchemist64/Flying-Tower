@@ -6,10 +6,10 @@ export function isFrozen(actor) {
 }
 
 export default class FrozenController extends Controller {
-  constructor(time, actor){
+  constructor(time, controller){
     super();
     this.time = time;
-    this.prev = actor.controller;
+    this.prev = controller;
   }
   run(actor){
     super.run(actor);

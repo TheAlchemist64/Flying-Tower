@@ -67,7 +67,7 @@ export default {
   },
   freezeAttack(e, actor){
     if (!isFrozen(actor)) {
-      actor.controller = new FrozenController(5, actor);
+      actor.controller = new FrozenController(5, actor.controller);
     }
   },
   skyStep(e, x, y){

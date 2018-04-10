@@ -5975,10 +5975,10 @@ function isFrozen(actor) {
 }
 
 class FrozenController extends Controller {
-  constructor(time, actor){
+  constructor(time, controller){
     super();
     this.time = time;
-    this.prev = actor.controller;
+    this.prev = controller;
   }
   run(actor){
     super.run(actor);
@@ -6063,7 +6063,7 @@ var Events = {
   },
   freezeAttack(e, actor){
     if (!isFrozen(actor)) {
-      actor.controller = new FrozenController(5, actor);
+      actor.controller = new FrozenController(5, actor.controller);
     }
   },
   skyStep(e, x, y){
@@ -6212,9 +6212,6 @@ var ActorFactory = {
     return actors;
   }
 };
-
-//import Actor from '../actor';
-//import SentinelController from '../controllers/sentinel';
 
 const distFromExit = 40;
 const SENTINELS = 5;
