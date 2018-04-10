@@ -38,7 +38,9 @@ export default function generateMap(w,h){
 
 
 
+	//Set Floor Picker for Collapser
 	FloorPicker.setMap(map);
+	//Place enemies
 	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', SENTINELS));
 	//Create exit
 	let pickExit = Decorator.pick();
