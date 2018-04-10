@@ -30,5 +30,8 @@ export default {
   },
   pick(){
     return this.rooms[(this.index++) % this.rooms.length].dequeue();
+  },
+  empty(){
+    return !this.rooms.map((queue) => queue.length == 0).includes(false);
   }
 }

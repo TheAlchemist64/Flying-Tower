@@ -9,14 +9,16 @@ import Decorator from '../decorator';
 import TileTypes from './tiletypes';
 import ItemFactory from '../itemfactory';
 import ActorFactory from '../actorfactory';
-//import Actor from '../actor';
-//import SentinelController from '../controllers/sentinel';
 
 const distFromExit = 40;
 const SENTINELS = 5;
 
 function placeItem(itemName, map) {
 	ItemFactory.createItem(itemName, map, ...Decorator.pick());
+}
+
+function placeEnemy(enemyName, map) {
+	map.enemies.push(ActorFactory.createActor(enemyName, ...Decorator.pick()));
 }
 
 export default function generateMap(w,h){
@@ -36,22 +38,8 @@ export default function generateMap(w,h){
 
 
 
-	//Create multiple sentinels
-	/*FloorPicker.setMap(map);
-	let picks = [];
-	let numSentinels = 0;
-	while(!FloorPicker.empty() && numSentinels < SENTINELS){
-		let pick = FloorPicker.pick();
-		let [sx, sy] = [pick.x, pick.y];
-		if(!Number.isNaN(sx) && !Number.isNaN(sy)){
-			let sentinel = new Actor('Sentinel', sx, sy, TileTypes.SENTINEL.glyph, new SentinelController());
-			picks.push({x: sx, y: sy});
-			numSentinels++;
-		}
-	}
-	picks.forEach(p => FloorPicker.put(p));*/
 	FloorPicker.setMap(map);
-	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', FloorPicker, SENTINELS));
+	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', SENTINELS));
 	//Create exit
 	let pickExit = Decorator.pick();
 	map.exit = pickExit;

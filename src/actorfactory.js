@@ -1,5 +1,6 @@
 import Actor from './actor';
 import Actors from './actors';
+import Decorator from './decorator';
 
 export default {
   createActor(id, x, y){
@@ -11,20 +12,14 @@ export default {
       new Actors[id].controller()
     );
   },
-  createActors(id, picker, n){
+  createActors(id, n){
     let picks = [];
     let actors = [];
     let i = 0;
-    while (!picker.empty() && i < n) {
-      let pick = picker.pick();
-      let [x, y] = [pick.x, pick.y];
-      if(!Number.isNaN(x) && !Number.isNaN(y)){
-        actors.push(this.createActor(id, x, y));
-        picks.push({x: x, y: y});
-        i++;
-      }
+    while (!Decorator.empty() && i < n) {
+      actors.push(this.createActor(id, ...Decorator.pick()));
+      i++;
     }
-    picks.forEach(p => picker.put(p));
     return actors;
   }
 }

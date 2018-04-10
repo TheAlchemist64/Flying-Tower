@@ -5911,6 +5911,9 @@ var Decorator = {
   },
   pick(){
     return this.rooms[(this.index++) % this.rooms.length].dequeue();
+  },
+  empty(){
+    return !this.rooms.map((queue) => queue.length == 0).includes(false);
   }
 };
 
@@ -6195,20 +6198,14 @@ var ActorFactory = {
       new Actors[id].controller()
     );
   },
-  createActors(id, picker, n){
+  createActors(id, n){
     let picks = [];
     let actors = [];
     let i = 0;
-    while (!picker.empty() && i < n) {
-      let pick = picker.pick();
-      let [x, y] = [pick.x, pick.y];
-      if(!Number.isNaN(x) && !Number.isNaN(y)){
-        actors.push(this.createActor(id, x, y));
-        picks.push({x: x, y: y});
-        i++;
-      }
+    while (!Decorator.empty() && i < n) {
+      actors.push(this.createActor(id, ...Decorator.pick()));
+      i++;
     }
-    picks.forEach(p => picker.put(p));
     return actors;
   }
 };
@@ -6237,22 +6234,8 @@ function generateMap(w,h){
 
 
 
-	//Create multiple sentinels
-	/*FloorPicker.setMap(map);
-	let picks = [];
-	let numSentinels = 0;
-	while(!FloorPicker.empty() && numSentinels < SENTINELS){
-		let pick = FloorPicker.pick();
-		let [sx, sy] = [pick.x, pick.y];
-		if(!Number.isNaN(sx) && !Number.isNaN(sy)){
-			let sentinel = new Actor('Sentinel', sx, sy, TileTypes.SENTINEL.glyph, new SentinelController());
-			picks.push({x: sx, y: sy});
-			numSentinels++;
-		}
-	}
-	picks.forEach(p => FloorPicker.put(p));*/
 	FloorPicker.setMap(map);
-	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', FloorPicker, SENTINELS));
+	map.enemies = map.enemies.concat(ActorFactory.createActors('SENTINEL', SENTINELS));
 	//Create exit
 	let pickExit = Decorator.pick();
 	map.exit = pickExit;
