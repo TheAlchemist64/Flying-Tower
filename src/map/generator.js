@@ -45,19 +45,7 @@ export default function generateMap(w,h){
 	map.exit = pickExit;
 	map.set(new Tile(map.exit[0], map.exit[1], TileTypes.EXIT));
 	//Create start location
-	let pick = null;
-	let done = [];
-	while(!FloorPicker.empty()){
-		pick = FloorPicker.pick();
-		let dist = distance(...map.exit, pick.x, pick.y);
-		if(dist >= distFromExit && checkCollision(pick.x, pick.y)==null){
-			break;
-		}
-		else{
-			done.push(pick);
-		}
-	}
-	done.forEach(p => FloorPicker.put(p));
-	map.start = pick;
+	let pickStart = Decorator.pick();
+	map.start = {x: pickStart[0], y: pickStart[1]};
 	return map;
 }
