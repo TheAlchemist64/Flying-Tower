@@ -6213,6 +6213,9 @@ var ActorFactory = {
   }
 };
 
+//import Actor from '../actor';
+//import SentinelController from '../controllers/sentinel';
+
 const distFromExit = 40;
 const SENTINELS = 5;
 
