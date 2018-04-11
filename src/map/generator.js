@@ -11,7 +11,7 @@ import ItemFactory from '../itemfactory';
 import ActorFactory from '../actorfactory';
 
 const distFromExit = 20;
-const SENTINELS = 5;
+const SENTINELS = 10;
 
 function placeItem(itemName, map) {
 	ItemFactory.createItem(itemName, map, ...Decorator.pick());

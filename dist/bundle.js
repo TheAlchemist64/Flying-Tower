@@ -6268,7 +6268,7 @@ var ActorFactory = {
 };
 
 const distFromExit = 20;
-const SENTINELS = 5;
+const SENTINELS = 10;
 
 function placeItem(itemName, map) {
 	ItemFactory.createItem(itemName, map, ...Decorator.pick());
