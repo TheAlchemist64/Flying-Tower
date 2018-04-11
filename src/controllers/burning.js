@@ -30,11 +30,13 @@ export default class BurningController extends Controller {
         actor.controller = this.prev;
         let index = actors.indexOf(actor);
         actors.splice(index, 1);
+        actor.controller.run(actor);
       }
-
-      let dirs = [[1,0],[0,1],[-1,0],[0,-1]];
-      let move = dirs[randInt(0,4)];
-      actor.move(actor.x + move[0], actor.y + move[1], true);
+      else{
+        let dirs = [[1,0],[0,1],[-1,0],[0,-1]];
+        let move = dirs[randInt(0,4)];
+        actor.move(actor.x + move[0], actor.y + move[1], true);
+      }
     }
   }
 }

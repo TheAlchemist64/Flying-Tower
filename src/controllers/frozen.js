@@ -28,6 +28,7 @@ export default class FrozenController extends Controller {
         actor.controller = this.prev;
         let index = actors.indexOf(actor);
         actors.splice(index, 1);
+        actor.controller.run(actor);
       }
     }
     actor.draw();
