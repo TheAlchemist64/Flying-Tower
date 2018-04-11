@@ -5912,7 +5912,13 @@ var Decorator = {
     rooms.forEach(room => this.rooms.push(createQueue(room)));
   },
   pick(){
-    return this.rooms[(this.index++) % this.rooms.length].dequeue();
+    try {
+      return this.rooms[(this.index++) % this.rooms.length].dequeue();
+    } catch (err) {
+      console.log(e.name + ': ' + e.message);
+      console.log(this.rooms);
+      console.log(this.index);
+    }
   },
   put(x, y, index){
     this.rooms[index].queue([x, y]);
