@@ -36,6 +36,10 @@ export default {
   FIRE_RUNE: {
     name: 'Fire Rune',
     type: 'rune',
-    glyph: new Glyph('f', 'orange')
+    glyph: new Glyph('f', 'orange'),
+    event: {
+      type: 'attack',
+      name: 'fireAttack'
+    }
   }
 }

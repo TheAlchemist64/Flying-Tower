@@ -5371,7 +5371,9 @@ function distance(x1, y1, x2, y2){
 	return Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 }
 
-
+function randInt(a, b){
+	return a + Math.floor((b-a) * rot.RNG.getUniform());
+}
 
 function checkCollision(x, y) {
   let obj = null;
@@ -6009,6 +6011,44 @@ class FrozenController extends Controller {
   }
 }
 
+let actors$1 = [];
+function isBurning(actor) {
+  return actors$1.includes(actor);
+}
+
+class BurningController extends Controller {
+  constructor(time, controller){
+    super();
+    this.time = time;
+    this.prev = controller;
+  }
+  run(actor){
+    super.run(actor);
+    if (!isBurning(actor)) {
+      actor.glyph.fg = 'orange';
+      for (var i = 0; i < this.time; i++) {
+        actor.glyph.chr = i + 1;
+      }
+      actors$1.push(actor);
+      actor.draw();
+    }
+    else{
+      this.time--;
+      actor.glyph.back();
+      if(this.time == 0){
+        actor.glyph.back(); //Remove fg change
+        actor.controller = this.prev;
+        let index = actors$1.indexOf(actor);
+        actors$1.splice(index, 1);
+      }
+
+      let dirs = [[1,0],[0,1],[-1,0],[0,-1]];
+      let move = dirs[randInt(0,4)];
+      actor.move(actor.x + move[0], actor.y + move[1], true);
+    }
+  }
+}
+
 var Events = {
   revealExit(e, x, y){
     Game.map.exitRevealed = true;
@@ -6070,6 +6110,11 @@ var Events = {
   freezeAttack(e, actor){
     if (!isFrozen(actor)) {
       actor.controller = new FrozenController(5, actor.controller);
+    }
+  },
+  fireAttack(e, actor){
+    if (!isBurning(actor)) {
+      actor.controller = new BurningController(5, actor.controller);
     }
   },
   skyStep(e, x, y){
@@ -6134,7 +6179,11 @@ var Items = {
   FIRE_RUNE: {
     name: 'Fire Rune',
     type: 'rune',
-    glyph: new Glyph('f', 'orange')
+    glyph: new Glyph('f', 'orange'),
+    event: {
+      type: 'attack',
+      name: 'fireAttack'
+    }
   }
 };
 

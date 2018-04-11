@@ -6,6 +6,7 @@ import Tile from './map/tile';
 import TileTypes from './map/tiletypes';
 import animate from './animate';
 import FrozenController, { isFrozen } from './controllers/frozen';
+import BurningController, { isBurning } from './controllers/burning';
 
 export default {
   revealExit(e, x, y){
@@ -68,6 +69,11 @@ export default {
   freezeAttack(e, actor){
     if (!isFrozen(actor)) {
       actor.controller = new FrozenController(5, actor.controller);
+    }
+  },
+  fireAttack(e, actor){
+    if (!isBurning(actor)) {
+      actor.controller = new BurningController(5, actor.controller);
     }
   },
   skyStep(e, x, y){
