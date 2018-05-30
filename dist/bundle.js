@@ -5913,15 +5913,23 @@ var Decorator = {
   },
   pick(){
     try {
-      return this.rooms[(this.index++) % this.rooms.length].dequeue();
+      let tile = this.rooms[this.index].dequeue();
+      this.index = (this.index+1) % this.rooms.length;
+      return tile;
     } catch (err) {
-      console.log(e.name + ': ' + e.message);
+      console.log(err.name + ': ' + err.message);
       console.log(this.rooms);
       console.log(this.index);
     }
   },
   put(x, y, index){
-    this.rooms[index].queue([x, y]);
+    try {
+      this.rooms[index].queue([x, y]);
+    } catch (err) {
+      console.log(err.name + ': ' + err.message);
+      console.log(this.rooms);
+      console.log(this.index);
+    }
   },
   empty(){
     return !this.rooms.map((queue) => queue.length == 0).includes(false);
