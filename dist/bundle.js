@@ -6348,7 +6348,7 @@ var Game = {
 	init(){
 		//Initialize Display
 		this.display = new rot.Display({width: w, height: h + 4});
-		document.body.appendChild(this.display.getContainer());
+		document.body.prepend(this.display.getContainer());
 		//Initialize Turn Engine
 		this.scheduler = new rot.Scheduler.Simple();
 		this.engine = new rot.Engine(this.scheduler);

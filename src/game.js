@@ -26,7 +26,7 @@ export default {
 	init(){
 		//Initialize Display
 		this.display = new ROT.Display({width: w, height: h + 4});
-		document.body.appendChild(this.display.getContainer());
+		document.body.prepend(this.display.getContainer());
 		//Initialize Turn Engine
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
