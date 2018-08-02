@@ -6376,8 +6376,8 @@ var Game = {
 		astar.compute(this.player.x, this.player.y, (x, y)=>{
 			totalTime++;
 		});
-		let firstTimer = Math.max(totalTime, 100);
-		let secondTimer = Math.max(totalTime / 2, 50);
+		let firstTimer = Math.max(totalTime, 50);
+		let secondTimer = Math.max(totalTime / 2, 25);
 
 		//console.log(totalTime);
 		let c = new Collapser(
