@@ -150,6 +150,7 @@ export default {
 	},
 	nextLevel(){
 		this.scheduler.clear();
+		this.engine.lock();
 		let text = 'Multiple levels not implemented yet.'
 		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	},

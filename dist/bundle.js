@@ -5555,6 +5555,16 @@ class PlayerController extends Controller {
 	drawFOV(){
 		this.fov.compute(Game.player.x, Game.player.y, 10, (x, y, r, v) => {
 			Game.map.get(x, y).draw();
+			Game.map.items.forEach(item => {
+				if(item.x == x && item.y == y){
+					item.draw();
+				}
+			});
+			Game.map.enemies.forEach(enemy => {
+				if(enemy.x == x && enemy.y == y){
+					enemy.draw();
+				}
+			});
 		});
 	}
 	run(actor){
@@ -6266,6 +6276,10 @@ class SentinelController extends Controller {
       actor.glyph.back();
     }
     //actor.draw();
+    if(!Game.player.dead){
+      Game.player.controller.drawFOV();
+      Game.player.draw();
+    }
   }
 }
 
@@ -6493,6 +6507,7 @@ var Game = {
 	},
 	nextLevel(){
 		this.scheduler.clear();
+		this.engine.lock();
 		let text = 'Multiple levels not implemented yet.';
 		this.display.drawText(Math.floor(w/2)-Math.floor(text.length/2),Math.floor(h/2),text);
 	},

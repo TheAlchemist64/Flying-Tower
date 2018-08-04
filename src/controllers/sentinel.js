@@ -28,5 +28,9 @@ export default class SentinelController extends Controller {
       actor.glyph.back();
     }
     //actor.draw();
+    if(!Game.player.dead){
+      Game.player.controller.drawFOV();
+      Game.player.draw();
+    }
   }
 }

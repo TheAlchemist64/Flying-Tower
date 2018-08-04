@@ -22,6 +22,16 @@ export default class PlayerController extends Controller {
 	drawFOV(){
 		this.fov.compute(Game.player.x, Game.player.y, 10, (x, y, r, v) => {
 			Game.map.get(x, y).draw();
+			Game.map.items.forEach(item => {
+				if(item.x == x && item.y == y){
+					item.draw();
+				}
+			});
+			Game.map.enemies.forEach(enemy => {
+				if(enemy.x == x && enemy.y == y){
+					enemy.draw();
+				}
+			});
 		});
 	}
 	run(actor){
