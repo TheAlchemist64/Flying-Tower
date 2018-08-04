@@ -7,7 +7,7 @@ export default {
 	},
 	FLOOR: {
 		name: 'floor',
-		glyph: new Glyph(' ')
+		glyph: new Glyph('.')
 	},
 	DOOR: {
 		name: 'door',

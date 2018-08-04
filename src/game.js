@@ -32,8 +32,6 @@ export default {
 		this.engine = new ROT.Engine(this.scheduler);
 		//Generate map with dimensions (w, h)
 		this.map = generateMap(w, h);
-		//Draw map
-		this.map.draw();
 		//Tell map to listen for reset tile events
 		bus.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
@@ -41,6 +39,9 @@ export default {
 		//Create Player
 		//this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player = ActorFactory.createActor('PLAYER', this.map.start.x,this.map.start.y);
+		//Draw map
+		this.player.controller.drawFOV();
+		//this.map.draw();
 		this.player.draw();
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(

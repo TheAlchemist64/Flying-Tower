@@ -5526,9 +5526,9 @@ class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
-		if(!nodraw){
+		/*if(!nodraw){
 			this.draw();
-		}
+		}*/
 		return 1;
 	}
 }
@@ -5537,14 +5537,24 @@ class Controller {
 	run(actor){}
 }
 
+function lightPasses(x, y) {
+	return Game.map.get(x, y).type != 'wall';
+}
+
 class PlayerController extends Controller {
 	constructor(){
 		super();
 		this.actor = null;
+		this.fov = new rot.FOV.RecursiveShadowcasting(lightPasses);
 		eventbus_min.addEventListener('exit', (e)=>{
 			if(e.target==this.actor){
 				Game.nextLevel();
 			}
+		});
+	}
+	drawFOV(){
+		this.fov.compute(Game.player.x, Game.player.y, 10, (x, y, r, v) => {
+			Game.map.get(x, y).draw();
 		});
 	}
 	run(actor){
@@ -5556,6 +5566,7 @@ class PlayerController extends Controller {
 		window.addEventListener('keydown',this);
 	}
 	handleEvent(e){
+		this.drawFOV();
 		let code = e.keyCode;
 		let x = this.actor.x;
 		let y = this.actor.y;
@@ -5575,11 +5586,12 @@ class PlayerController extends Controller {
 				break;
 			case rot.VK_PERIOD:
 				endTurn = true;
-				this.actor.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
 		}
+		this.drawFOV();
+		this.actor.draw();
 		if(endTurn){
 			this.actor = null;
 			window.removeEventListener('keydown',this);
@@ -5649,7 +5661,7 @@ var TileTypes = {
 	},
 	FLOOR: {
 		name: 'floor',
-		glyph: new Glyph(' ')
+		glyph: new Glyph('.')
 	},
 	DOOR: {
 		name: 'door',
@@ -5885,11 +5897,11 @@ class TileMap {
 		this.items.push(item);
 	}
 	draw(){
-		for(var tile of this.tiles.values()){
+		/*for(var tile of this.tiles.values()){
 			tile.draw();
-		}
+		}*/
 		this.items.forEach(item => item.draw());
-		this.enemies.forEach(enemy => enemy.draw());
+		//this.enemies.forEach(enemy => enemy.draw());
 	}
 }
 
@@ -6253,7 +6265,7 @@ class SentinelController extends Controller {
     else{
       actor.glyph.back();
     }
-    actor.draw();
+    //actor.draw();
   }
 }
 
@@ -6363,8 +6375,6 @@ var Game = {
 		this.engine = new rot.Engine(this.scheduler);
 		//Generate map with dimensions (w, h)
 		this.map = generateMap(w, h);
-		//Draw map
-		this.map.draw();
 		//Tell map to listen for reset tile events
 		eventbus_min.addEventListener('resetTile', (e, x, y) => {
 			this.map.get(x, y).draw();
@@ -6372,6 +6382,9 @@ var Game = {
 		//Create Player
 		//this.player = new Actor('Player',this.map.start.x,this.map.start.y,TileTypes.PLAYER.glyph, new PlayerController());
 		this.player = ActorFactory.createActor('PLAYER', this.map.start.x,this.map.start.y);
+		//Draw map
+		this.player.controller.drawFOV();
+		//this.map.draw();
 		this.player.draw();
 		//Add Tile Collapser to map
 		/*let distKeyToExit = distance(

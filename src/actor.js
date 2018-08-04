@@ -107,9 +107,9 @@ export default class Actor {
 		this.y = y;
 		//Reset actor's previous tile and draw actor on new tile
 		Game.map.get(cx, cy).draw();
-		if(!nodraw){
+		/*if(!nodraw){
 			this.draw();
-		}
+		}*/
 		return 1;
 	}
 }

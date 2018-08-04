@@ -4,15 +4,25 @@ import bus from '../../vendor/eventbus.min';
 import Game from '../game';
 import Controller from '../controller';
 
+function lightPasses(x, y) {
+	return Game.map.get(x, y).type != 'wall';
+}
+
 export default class PlayerController extends Controller {
 	constructor(){
 		super();
 		this.actor = null;
+		this.fov = new ROT.FOV.RecursiveShadowcasting(lightPasses);
 		bus.addEventListener('exit', (e)=>{
 			if(e.target==this.actor){
 				Game.nextLevel();
 			}
 		})
+	}
+	drawFOV(){
+		this.fov.compute(Game.player.x, Game.player.y, 10, (x, y, r, v) => {
+			Game.map.get(x, y).draw();
+		});
 	}
 	run(actor){
 		super.run(actor);
@@ -23,6 +33,7 @@ export default class PlayerController extends Controller {
 		window.addEventListener('keydown',this);
 	}
 	handleEvent(e){
+		this.drawFOV();
 		let code = e.keyCode;
 		let x = this.actor.x;
 		let y = this.actor.y;
@@ -42,11 +53,12 @@ export default class PlayerController extends Controller {
 				break;
 			case ROT.VK_PERIOD:
 				endTurn = true;
-				this.actor.draw();
 				break; //Wait
 			default:
 				return; //Keyboard input not recognized.
 		}
+		this.drawFOV();
+		this.actor.draw();
 		if(endTurn){
 			this.actor = null;
 			window.removeEventListener('keydown',this);

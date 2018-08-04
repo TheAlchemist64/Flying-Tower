@@ -29,10 +29,10 @@ export default class TileMap {
 		this.items.push(item);
 	}
 	draw(){
-		for(var tile of this.tiles.values()){
+		/*for(var tile of this.tiles.values()){
 			tile.draw();
-		}
+		}*/
 		this.items.forEach(item => item.draw());
-		this.enemies.forEach(enemy => enemy.draw());
+		//this.enemies.forEach(enemy => enemy.draw());
 	}
 }
