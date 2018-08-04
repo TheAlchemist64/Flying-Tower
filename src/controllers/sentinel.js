@@ -1,6 +1,6 @@
 import ROT from '../../vendor/rot';
 
-import { distance, passable } from '../utils';
+import { distance, isFloor } from '../utils';
 import Game from '../game';
 import Controller from '../controller';
 
@@ -8,7 +8,7 @@ export default class SentinelController extends Controller {
   run(actor){
     super.run(actor);
     //Initialize pathfinder
-    let finder = new ROT.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
+    let finder = new ROT.Path.AStar(Game.player.x, Game.player.y, isFloor, {topology:4});
     //Find path from AI to player
     let path = [];
     finder.compute(actor.x, actor.y, (x, y)=>{

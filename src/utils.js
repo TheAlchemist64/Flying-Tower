@@ -6,7 +6,13 @@ import Game from './game';
 export function passable(x, y) {
   let t = Game.map.get(x, y);
   if(!t) return false;
-  return t.type != "sky";
+  return t.type!='wall';
+}
+
+export function isFloor(x, y){
+  let t = Game.map.get(x, y);
+  if(!t) return false;
+  return t.type=='floor';
 }
 
 export function distance(x1, y1, x2, y2){

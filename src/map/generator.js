@@ -23,12 +23,12 @@ function placeEnemy(enemyName, map) {
 
 export default function generateMap(w,h){
 	let map = new TileMap(w, h);
-	let generator = new ROT.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
+	let generator = new ROT.Map.Digger(w-2, h-2, { dugPercentage: 0.8});
 	//Create Floor and Sky tiles
 	generator.create((x, y, wall)=>{
-		let SKY = TileTypes.SKY;
+		let WALL = TileTypes.WALL;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
+		map.set(new Tile(x+1, y+1, wall ? WALL: FLOOR));
 	});
 	//Create Items
 	Decorator.setRooms(generator.getRooms());

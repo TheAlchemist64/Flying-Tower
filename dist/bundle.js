@@ -5364,7 +5364,13 @@ var eventbus_min = createCommonjsModule(function (module, exports) {
 function passable(x, y) {
   let t = Game.map.get(x, y);
   if(!t) return false;
-  return t.type != "sky";
+  return t.type!='wall';
+}
+
+function isFloor(x, y){
+  let t = Game.map.get(x, y);
+  if(!t) return false;
+  return t.type=='floor';
 }
 
 function distance(x1, y1, x2, y2){
@@ -5483,6 +5489,9 @@ class Actor {
 			return 1;
 		}
 		switch(tileType){
+			case 'wall':
+				return 0;
+				break;
 			case 'sky':
 				if(pusher){
 					this.kill();
@@ -6225,7 +6234,7 @@ class SentinelController extends Controller {
   run(actor){
     super.run(actor);
     //Initialize pathfinder
-    let finder = new rot.Path.AStar(Game.player.x, Game.player.y, passable, {topology:4});
+    let finder = new rot.Path.AStar(Game.player.x, Game.player.y, isFloor, {topology:4});
     //Find path from AI to player
     let path = [];
     finder.compute(actor.x, actor.y, (x, y)=>{
@@ -6292,12 +6301,12 @@ function placeItem(itemName, map) {
 
 function generateMap(w,h){
 	let map = new TileMap(w, h);
-	let generator = new rot.Map.Digger(w-1, h-1, { dugPercentage: 0.8});
+	let generator = new rot.Map.Digger(w-2, h-2, { dugPercentage: 0.8});
 	//Create Floor and Sky tiles
 	generator.create((x, y, wall)=>{
-		let SKY = TileTypes.SKY;
+		let WALL = TileTypes.WALL;
 		let FLOOR = TileTypes.FLOOR;
-		map.set(new Tile(x+1, y+1, wall ? SKY: FLOOR));
+		map.set(new Tile(x+1, y+1, wall ? WALL: FLOOR));
 	});
 	//Create Items
 	Decorator.setRooms(generator.getRooms());

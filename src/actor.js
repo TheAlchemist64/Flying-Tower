@@ -70,6 +70,9 @@ export default class Actor {
 			return 1;
 		}
 		switch(tileType){
+			case 'wall':
+				return 0;
+				break;
 			case 'sky':
 				if(pusher){
 					this.kill();
