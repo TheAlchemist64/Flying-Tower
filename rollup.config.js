@@ -1,9 +1,11 @@
 import commonjs from 'rollup-plugin-commonjs';
 
 export default {
-	entry: 'src/app.js',
-	format: 'iife',
-	plugins: [ commonjs() ],
-	dest: 'dist/bundle.js',
-	sourceMap: true
+	input: 'src/app.js',
+	output: {
+		file: 'dist/bundle.js',
+		format: 'iife',
+		sourcemap: true
+	}
+	plugins: [ commonjs() ]
 }
