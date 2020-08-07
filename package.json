@@ -28,7 +28,5 @@
     "@rollup/plugin-commonjs": "^14.0.0",
     "rollup": "^2.23.0"
   },
-  "dependencies": {
-    "rot-js": "^2.1.4"
-  }
+  "dependencies": {}
 }
