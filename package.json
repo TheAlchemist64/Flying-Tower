@@ -25,9 +25,10 @@
   },
   "homepage": "https://github.com/TheAlchemist64/Flying-Tower#readme",
   "devDependencies": {
-    "rollup": "^0.45.2",
-    "rollup-plugin-commonjs": "^8.0.2",
-    "rollup-watch": "^4.3.1"
+    "@rollup/plugin-commonjs": "^14.0.0",
+    "rollup": "^2.23.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "rot-js": "^2.1.4"
+  }
 }
